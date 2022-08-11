@@ -1,12 +1,16 @@
-require "core"
-require "core.options"
+pcall(require, 'impatient')
 
-vim.defer_fn(function()
-  require("core.utils").load_mappings()
-end, 0)
+require('packer_commands')
+require('globals')
+require('config')
+require('settings')
+require('colorscheme')
+require('keymappings')
+require('autocmds')
+require('functions')
 
--- setup packer + plugins
-require("core.packer").bootstrap()
-require "plugins"
+require('lsp.config')
+require('lsp.setup')
+require('lsp.functions')
 
-pcall(require, "custom")
+require('snippets.react')

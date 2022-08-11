@@ -1,3 +1,7 @@
 dot_git/
 dot_github/
 examples/
+
+dot_config/nvim/plugin/
+dot_config/nvim/spell
+
