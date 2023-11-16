@@ -47,6 +47,22 @@ else
 	fi
 fi
 
+# Install Google Chrome using Homebrew
+if [ "$install_command" = "brew" ]; then
+	if ! command -v google-chrome &>/dev/null; then
+		echo "Installing Google Chrome..."
+		if $install_command install --cask google-chrome; then
+			echo -e "Google Chrome installed.\n"
+		else
+			echo -e "Error installing Google Chrome.\n" && exit 1
+		fi
+	else
+		echo -e "Google Chrome is already installed.\n"
+	fi
+else
+	echo -e "Homebrew is not the package manager. Please install Homebrew first, then try again.\n" && exit 1
+fi
+
 # Install antigen
 antigen_file="$HOME/antigen.zsh"
 antigen_url="https://git.io/antigen"
