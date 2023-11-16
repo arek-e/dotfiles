@@ -13,3 +13,14 @@
 ### TMUX
 
 ### NEOVIM
+
+## Current problems
+- Docker
+- Maven
+- Nvm reinstalling
+- Angular reinstalling
+- Go
+- Changing shell (fixed)
+- Neovim not installing?
+- Brew bringing trouble
+- Macports needs auto installer
