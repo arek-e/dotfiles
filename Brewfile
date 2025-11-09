@@ -63,7 +63,7 @@ brew "zsh"           # Shell (comes with macOS but good to track)
 # ============================================
 # Fonts (Nerd Fonts v3+ for tokyo-night-tmux)
 # ============================================
-cask "font-monaspace-nerd-font"      # Recommended by tokyo-night-tmux
+cask "font-monaspice-nerd-font"      # Monaspace with Nerd Font patches (UPDATED NAME)
 cask "font-noto-sans-symbols-2"      # For segmented digit numbers
 cask "font-hack-nerd-font"
 cask "font-jetbrains-mono-nerd-font"
