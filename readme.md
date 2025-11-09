@@ -1,4 +1,4 @@
-# My macOS Dotfiles 🚀
+# My macOS Dotfiles
 
 <div align="center">
 
@@ -14,16 +14,16 @@ A clean, minimal macOS development environment featuring the **Tokyo Night** the
 
 ---
 
-## ✨ Features
+## Features
 
-- 🎨 **Consistent Tokyo Night theme** across all tools
-- ⚡ **Lightning fast** terminal with Kitty
-- 🔧 **Powerful multiplexer** with Tmux + plugins
-- 📝 **Modern text editor** with Neovim (NvChad)
-- 🐚 **Enhanced shell** with Zsh + Oh My Zsh
-- 🚀 **Beautiful prompt** with Starship
-- 🔍 **Smart search** with Ripgrep + FZF
-- 🎯 **Productivity launcher** with Raycast
+-  **Consistent Tokyo Night theme** across all tools
+-  **Lightning fast** terminal with Kitty
+-  **Powerful multiplexer** with Tmux + plugins
+-  **Modern text editor** with Neovim (NvChad)
+-  **Enhanced shell** with Zsh + Oh My Zsh
+-  **Beautiful prompt** with Starship
+-  **Smart search** with Ripgrep + FZF
+-  **Productivity launcher** with Raycast
 
 ## 🛠️ What's Included
 
@@ -38,7 +38,7 @@ A clean, minimal macOS development environment featuring the **Tokyo Night** the
 | [Ripgrep](https://github.com/BurntSushi/ripgrep) | Lightning-fast search tool |
 | [Lazygit](https://github.com/jesseduffield/lazygit) | Terminal UI for git |
 
-## 📦 Installation
+## Installation
 
 ### Quick Install (One Command)
 
@@ -58,16 +58,16 @@ make install
 ```
 
 The install script will:
-1. ✅ Install Homebrew (if not already installed)
-2. ✅ Install all packages from Brewfile
-3. ✅ Backup existing configurations
-4. ✅ Symlink dotfiles using GNU Stow
-5. ✅ Install Tmux Plugin Manager (TPM)
-6. ✅ Install Oh My Zsh + plugins
-7. ✅ Configure macOS settings
-8. ✅ Set Zsh as default shell
+1. Install Homebrew (if not already installed)
+2. Install all packages from Brewfile
+3. Backup existing configurations
+4. Symlink dotfiles using GNU Stow
+5. Install Tmux Plugin Manager (TPM)
+6. Install Oh My Zsh + plugins
+7. Configure macOS settings
+8. Set Zsh as default shell
 
-## 📁 Structure
+## Structure
 
 ```
 dotfiles/
@@ -104,7 +104,7 @@ dotfiles/
     └── .config/raycast/
 ```
 
-## 🎯 Post-Install
+##  Post-Install
 
 ### 1. Restart Terminal
 ```bash
@@ -123,8 +123,8 @@ exec zsh
 
 ### 4. Configure Git (if needed)
 ```bash
-git config --global user.name "Your Name"
-git config --global user.email "your.email@example.com"
+git config --global user.name "Alexander Eklund"
+git config --global user.email "alexander.eklund@cluro.io"
 ```
 
 ## ⌨️ Key Bindings
@@ -148,37 +148,19 @@ git config --global user.email "your.email@example.com"
 | `Cmd+Plus/Minus` | Increase/decrease font size |
 | `Cmd+0` | Reset font size |
 
-## 🔄 Update
+## Update
 
 Update packages and dotfiles:
 ```bash
 make update
 ```
 
-## 🗑️ Uninstall
+## Uninstall
 
 Remove all symlinks:
 ```bash
 make clean
 ```
-
-## 🎨 Screenshots
-
-> Add your screenshots here!
-
-### Terminal
-![Terminal Screenshot](screenshots/terminal.png)
-
-### Neovim
-![Neovim Screenshot](screenshots/neovim.png)
-
-### Tmux
-![Tmux Screenshot](screenshots/tmux.png)
-
-## 🛠️ Customization
-
-### Change Theme Colors
-Edit `~/.config/kitty/kitty.conf` and `~/.config/tmux/tmux.conf`
 
 ### Add More Packages
 Edit `Brewfile` and run:
@@ -189,33 +171,7 @@ brew bundle install
 ### Modify Zsh Config
 Edit `~/.zshrc` or add custom configs to `~/.config/zsh/`
 
-## 📝 Requirements
+## Requirements
 
-- macOS (tested on Ventura and Sonoma)
+- macOS
 - Git
-- Internet connection for initial setup
-
-## 🤝 Contributing
-
-Feel free to open issues or submit pull requests with improvements!
-
-## 📄 License
-
-MIT License - feel free to use and modify as you wish!
-
-## 🙏 Acknowledgments
-
-- [Tokyo Night](https://github.com/enkia/tokyo-night-vscode-theme) - Amazing theme
-- [janoamaral/tokyo-night-tmux](https://github.com/janoamaral/tokyo-night-tmux) - Tmux theme
-- [NvChad](https://nvchad.com/) - Neovim config
-- [Oh My Zsh](https://ohmyz.sh/) - Zsh framework
-
----
-
-<div align="center">
-
-Made with ❤️ and ☕
-
-**[⬆ Back to Top](#my-macos-dotfiles-)**
-
-</div>
