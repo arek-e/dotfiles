@@ -11,6 +11,9 @@ brew "stow"          # For dotfiles management
 cask "kitty"         # GPU-based terminal emulator
 brew "neofetch"      # System info tool
 cask "raycast"       # Spotlight replacement
+cask "notion"        # Note-taking and organization
+cask "notion-calendar" # Calendar management
+cask "bitwarden"     # Password manager
 
 # ============================================
 # Tmux & Dependencies
