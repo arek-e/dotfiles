@@ -132,12 +132,12 @@ git config --global user.email "alexander.eklund@cluro.io"
 ### Tmux
 | Key | Action |
 |-----|--------|
-| `Ctrl+Space` | Prefix key |
-| `Prefix + |` | Split vertically |
+| `Ctrl + Space` | Prefix key |
+| `Prefix + % ` | Split vertically |
 | `Prefix + -` | Split horizontally |
 | `Prefix + h/j/k/l` | Navigate panes (Vim-style) |
-| `Shift+Left/Right` | Switch windows |
-| `Alt+H/L` | Switch windows (Vim-style) |
+| `Shift + Left/Right` | Switch windows |
+| `Alt + H/L` | Switch windows (Vim-style) |
 | `Prefix + r` | Reload config |
 
 ### Kitty
