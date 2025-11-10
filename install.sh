@@ -144,6 +144,11 @@ if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
     print_success "zsh-syntax-highlighting installed"
 fi
 
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-history-substring-search" ]; then
+   git clone https://github.com/zsh-users/zsh-history-substring-search $ZSH_CUSTOM/plugins/zsh-history-substring-search
+   print_success "zsh-history-substring-search installed"
+fi
+
 # =============================================================================
 # 7. Set Zsh as default shell
 # =============================================================================

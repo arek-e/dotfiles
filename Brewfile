@@ -30,6 +30,7 @@ brew "gh"            # GitHub CLI (for git widgets)
 brew "glab"          # GitLab CLI (for git widgets)
 brew "nowplaying-cli" # Now playing widget for macOS
 
+
 # ============================================
 # Neovim & Dependencies
 # ============================================
@@ -39,6 +40,7 @@ brew "ninja"
 brew "cmake"
 brew "gettext"
 brew "curl"
+brew "zoxide"              # smarter cd
 
 # ============================================
 # Language Servers & Tools (for NvChad)
