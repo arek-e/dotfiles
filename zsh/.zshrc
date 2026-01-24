@@ -139,9 +139,16 @@ eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
 # ============================================
-# Welcome Message
+# Dashboard & Dotfiles
 # ============================================
-neofetch
+alias dashboard='wtfutil'
+alias db='wtfutil'
+alias dotup='~/dotfiles/update.sh'
+
+# Quick welcome (fastfetch is faster than neofetch)
+if command -v fastfetch &> /dev/null; then
+  fastfetch --logo none
+fi
 
 # ============================================
 # Custom Functions & Shortcuts

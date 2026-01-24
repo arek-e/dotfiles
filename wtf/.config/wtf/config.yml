@@ -13,14 +13,14 @@ wtf:
     title: "#7dcfff"
   grid:
     columns: [40, 40, 40]
-    rows: [10, 10, 10, 4]
+    rows: [12, 12, 6]
   refreshInterval: 30s
   openFileUtil: "open"
   term: "xterm-256color"
 
 mods:
   # ===========================================
-  # GitHub - Your PRs (via gh CLI)
+  # GitHub - Your Open PRs
   # ===========================================
   github_prs:
     type: cmdrunner
@@ -28,105 +28,85 @@ mods:
     position:
       top: 0
       left: 0
-      height: 2
+      height: 1
       width: 1
     refreshInterval: 5m
-    title: " GitHub PRs"
+    title: " My PRs"
     cmd: "gh"
-    args: ["pr", "list", "--author", "@me", "--state", "open", "--limit", "10"]
+    args: ["pr", "list", "--author", "@me", "--state", "open", "--limit", "8"]
 
   # ===========================================
-  # GitHub - Issues Assigned to You (via gh CLI)
+  # GitHub - Issues Created by You
   # ===========================================
-  github_issues:
+  github_issues_created:
     type: cmdrunner
     enabled: true
     position:
       top: 0
       left: 1
-      height: 2
+      height: 1
       width: 1
     refreshInterval: 5m
-    title: " GitHub Issues"
+    title: " Issues I Created"
     cmd: "gh"
-    args: ["issue", "list", "--assignee", "@me", "--state", "open", "--limit", "10"]
+    args: ["issue", "list", "--author", "@me", "--state", "open", "--limit", "8"]
 
   # ===========================================
-  # Linear - Your Tasks (via linear-cli)
+  # GitHub - Issues Assigned to You
   # ===========================================
-  # Install: npx @schpet/linear-cli (first run will auth)
+  github_issues_assigned:
+    type: cmdrunner
+    enabled: true
+    position:
+      top: 0
+      left: 2
+      height: 1
+      width: 1
+    refreshInterval: 5m
+    title: " Issues Assigned"
+    cmd: "gh"
+    args: ["issue", "list", "--assignee", "@me", "--state", "open", "--limit", "8"]
+
+  # ===========================================
+  # Linear - Your Tasks
+  # ===========================================
   linear_tasks:
     type: cmdrunner
     enabled: true
     position:
-      top: 0
-      left: 2
-      height: 2
-      width: 1
+      top: 1
+      left: 0
+      height: 1
+      width: 2
     refreshInterval: 5m
-    title: " Linear Tasks"
+    title: " Linear Issues"
     cmd: "npx"
     args: ["@schpet/linear-cli", "list", "--limit", "10"]
 
   # ===========================================
-  # Git Status (Current Directory)
+  # PRs to Review
   # ===========================================
-  git:
-    type: git
-    enabled: true
-    position:
-      top: 2
-      left: 0
-      height: 1
-      width: 1
-    commitCount: 5
-    commitFormat: "[short]"
-    dateFormat: "Jan 02"
-    repositories:
-      - "~/projects"
-    refreshInterval: 30s
-    title: " Git"
-
-  # ===========================================
-  # System Info
-  # ===========================================
-  system:
+  github_prs_review:
     type: cmdrunner
     enabled: true
     position:
-      top: 2
-      left: 1
-      height: 1
-      width: 1
-    refreshInterval: 60s
-    title: " System"
-    cmd: "fastfetch"
-    args: ["--logo", "none", "--structure", "OS:Kernel:Uptime:CPU:Memory:Disk"]
-
-  # ===========================================
-  # Weather (Optional - set location)
-  # ===========================================
-  weather:
-    type: cmdrunner
-    enabled: true
-    position:
-      top: 2
+      top: 1
       left: 2
       height: 1
       width: 1
-    refreshInterval: 30m
-    title: " Weather"
-    cmd: "curl"
-    args: ["-s", "wttr.in/?format=3"]
+    refreshInterval: 5m
+    title: " PRs to Review"
+    cmd: "gh"
+    args: ["pr", "list", "--search", "is:open review-requested:@me", "--limit", "8"]
 
   # ===========================================
-  # Clock
+  # Clock & Date
   # ===========================================
   clocks:
     type: clocks
     enabled: true
     position:
-      top: 3
+      top: 2
       left: 0
       height: 1
       width: 1
@@ -144,7 +124,7 @@ mods:
     type: resourceusage
     enabled: true
     position:
-      top: 3
+      top: 2
       left: 1
       height: 1
       width: 2
