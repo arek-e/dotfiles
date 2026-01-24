@@ -43,9 +43,12 @@ fi
 # Re-stow all dotfiles
 print_step "Re-stowing dotfiles..."
 for dir in */; do
-    if [ -d "$dir" ] && [ "$dir" != ".git/" ] && [ "$dir" != ".context/" ]; then
-        stow -R "${dir%/}" 2>/dev/null || true
+    dir_name="${dir%/}"
+    # Skip hidden dirs and non-stow directories
+    if [[ "$dir_name" == .* ]] || [[ "$dir_name" == "_"* ]]; then
+        continue
     fi
+    stow -R "$dir_name" 2>/dev/null || print_warning "Failed to stow $dir_name"
 done
 print_success "Dotfiles re-stowed"
 
