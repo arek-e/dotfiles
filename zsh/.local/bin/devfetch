@@ -36,8 +36,12 @@ ISSUE_ICON=""
 REVIEW_ICON=""
 LINEAR_ICON=""
 CHECK_ICON=""
+USER_ICON=""
+COMMIT_ICON=""
 ARROW="›"
 DOT="•"
+CHECKMARK="✓"
+CROSS="✗"
 
 # Get terminal width
 WIDTH=$(tput cols 2>/dev/null || echo 80)
@@ -152,10 +156,58 @@ center_text "developer dashboard" "$WIDTH"
 printf "%s\n\n" "$RESET"
 
 # ─────────────────────────────────────────────────────────────
+# User & Auth Section
+# ─────────────────────────────────────────────────────────────
+
+draw_top_border "Session" "$USER_ICON" "$GRAY"
+draw_empty_line "$GRAY"
+
+# GitHub Auth Status
+if command -v gh &> /dev/null; then
+    gh_user=$(gh api user --jq '.login' 2>/dev/null)
+    if [[ -n "$gh_user" ]]; then
+        gh_name=$(gh api user --jq '.name // .login' 2>/dev/null)
+        draw_line "$GRAY" "${GREEN}${CHECKMARK}${RESET} ${BOLD}GitHub${RESET}  ${DIM}logged in as${RESET} ${CYAN}@${gh_user}${RESET} ${DIM}(${gh_name})${RESET}"
+
+        # Get contribution stats
+        commits_today=$(get_cached "commits_today" "gh api graphql -f query='query { viewer { contributionsCollection { contributionCalendar { weeks { contributionDays { contributionCount date } } } } } }' --jq '[.data.viewer.contributionsCollection.contributionCalendar.weeks[-1].contributionDays[] | select(.date == \"'$(date +%Y-%m-%d)'\") | .contributionCount] | add // 0'" 2>/dev/null)
+        commits_week=$(get_cached "commits_week" "gh api graphql -f query='query { viewer { contributionsCollection { contributionCalendar { weeks { contributionDays { contributionCount } } } } } }' --jq '[.data.viewer.contributionsCollection.contributionCalendar.weeks[-1].contributionDays[].contributionCount] | add'" 2>/dev/null)
+
+        if [[ -n "$commits_today" && "$commits_today" != "null" ]]; then
+            draw_line "$GRAY" "  ${DIM}${COMMIT_ICON} Contributions:${RESET} ${GREEN}${commits_today}${RESET} ${DIM}today${RESET}  ${DOT}  ${CYAN}${commits_week:-0}${RESET} ${DIM}this week${RESET}"
+        fi
+    else
+        draw_line "$GRAY" "${RED}${CROSS}${RESET} ${BOLD}GitHub${RESET}  ${DIM}not authenticated${RESET}  ${YELLOW}run: gh auth login${RESET}"
+    fi
+else
+    draw_line "$GRAY" "${RED}${CROSS}${RESET} ${BOLD}GitHub CLI${RESET}  ${DIM}not installed${RESET}  ${YELLOW}run: brew install gh${RESET}"
+fi
+
+# Linear Auth Status
+if [[ -f "$HOME/.config/linear/config.json" ]]; then
+    draw_line "$GRAY" "${GREEN}${CHECKMARK}${RESET} ${BOLD}Linear${RESET}  ${DIM}configured${RESET}"
+else
+    draw_line "$GRAY" "${YELLOW}${DOT}${RESET} ${BOLD}Linear${RESET}  ${DIM}not configured (optional)${RESET}"
+fi
+
+# Git user config
+git_user=$(git config --global user.name 2>/dev/null)
+git_email=$(git config --global user.email 2>/dev/null)
+if [[ -n "$git_user" ]]; then
+    draw_line "$GRAY" "${GREEN}${CHECKMARK}${RESET} ${BOLD}Git${RESET}  ${DIM}${git_user}${RESET} ${DIM}<${git_email}>${RESET}"
+else
+    draw_line "$GRAY" "${YELLOW}${DOT}${RESET} ${BOLD}Git${RESET}  ${DIM}user not configured${RESET}"
+fi
+
+draw_empty_line "$GRAY"
+draw_bottom_border "$GRAY"
+echo ""
+
+# ─────────────────────────────────────────────────────────────
 # GitHub Section
 # ─────────────────────────────────────────────────────────────
 
-if command -v gh &> /dev/null; then
+if command -v gh &> /dev/null && gh auth status &>/dev/null; then
 
     draw_top_border "GitHub" "$GITHUB_ICON" "$BLUE"
     draw_empty_line "$BLUE"
