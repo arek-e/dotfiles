@@ -4,22 +4,20 @@
 # devfetch - Developer dashboard with style (full-width)
 # =============================================================================
 
-# Colors (Tokyo Night inspired)
-RESET='\033[0m'
-BOLD='\033[1m'
-DIM='\033[2m'
+# Colors (Tokyo Night inspired) - using $'...' for proper escape interpretation
+RESET=$'\033[0m'
+BOLD=$'\033[1m'
+DIM=$'\033[2m'
 
-# Tokyo Night palette
-BLUE='\033[38;5;111m'
-PURPLE='\033[38;5;141m'
-CYAN='\033[38;5;117m'
-GREEN='\033[38;5;150m'
-YELLOW='\033[38;5;222m'
-ORANGE='\033[38;5;215m'
-RED='\033[38;5;203m'
-GRAY='\033[38;5;243m'
-WHITE='\033[38;5;255m'
-DARK='\033[38;5;236m'
+BLUE=$'\033[38;5;111m'
+PURPLE=$'\033[38;5;141m'
+CYAN=$'\033[38;5;117m'
+GREEN=$'\033[38;5;150m'
+YELLOW=$'\033[38;5;222m'
+ORANGE=$'\033[38;5;215m'
+RED=$'\033[38;5;203m'
+GRAY=$'\033[38;5;243m'
+WHITE=$'\033[38;5;255m'
 
 # Box drawing
 H="─"
@@ -28,8 +26,6 @@ TL="╭"
 TR="╮"
 BL="╰"
 BR="╯"
-T="┬"
-B="┴"
 L="├"
 R="┤"
 
@@ -45,13 +41,8 @@ DOT="•"
 
 # Get terminal width
 WIDTH=$(tput cols 2>/dev/null || echo 80)
-# Cap at reasonable max
 [[ $WIDTH -gt 120 ]] && WIDTH=120
-# Minimum width
 [[ $WIDTH -lt 50 ]] && WIDTH=50
-
-# Inner width (minus borders)
-INNER=$((WIDTH - 4))
 
 # Cache settings
 CACHE_DIR="$HOME/.cache/devfetch"
@@ -65,16 +56,15 @@ mkdir -p "$CACHE_DIR"
 repeat_char() {
     local char="$1"
     local count="$2"
-    printf "%${count}s" | sed "s/ /${char}/g"
+    printf "%${count}s" | tr ' ' "$char"
 }
 
 center_text() {
     local text="$1"
     local width="$2"
     local text_len=${#text}
-    local pad_left=$(( (width - text_len) / 2 ))
-    local pad_right=$(( width - text_len - pad_left ))
-    printf "%${pad_left}s%s%${pad_right}s" "" "$text" ""
+    local pad=$(( (width - text_len) / 2 ))
+    printf "%${pad}s%s" "" "$text"
 }
 
 draw_top_border() {
@@ -82,49 +72,48 @@ draw_top_border() {
     local icon="$2"
     local color="$3"
     local title_with_icon=" ${icon} ${title} "
-    local title_len=$((${#title} + 5))  # icon + spaces
+    local title_len=$((${#title} + 5))
     local right_padding=$((WIDTH - title_len - 4))
 
-    printf "${color}${TL}${H}${H}${title_with_icon}"
+    printf "%s%s%s%s" "$color" "$TL" "$H$H" "$title_with_icon"
     repeat_char "$H" $right_padding
-    printf "${TR}${RESET}\n"
+    printf "%s%s\n" "$TR" "$RESET"
 }
 
 draw_bottom_border() {
     local color="$1"
-    printf "${color}${BL}"
+    printf "%s%s" "$color" "$BL"
     repeat_char "$H" $((WIDTH - 2))
-    printf "${BR}${RESET}\n"
+    printf "%s%s\n" "$BR" "$RESET"
 }
 
 draw_separator() {
     local color="$1"
-    printf "${color}${L}"
+    printf "%s%s" "$color" "$L"
     repeat_char "$H" $((WIDTH - 2))
-    printf "${R}${RESET}\n"
+    printf "%s%s\n" "$R" "$RESET"
 }
 
 draw_empty_line() {
     local color="$1"
-    printf "${color}${V}${RESET}"
+    printf "%s%s%s" "$color" "$V" "$RESET"
     printf "%$((WIDTH - 2))s"
-    printf "${color}${V}${RESET}\n"
+    printf "%s%s%s\n" "$color" "$V" "$RESET"
 }
 
-draw_content_line() {
-    local content="$1"
-    local border_color="$2"
+draw_line() {
+    local color="$1"
+    shift
+    local content="$*"
 
-    # Print left border
-    printf "${border_color}${V}${RESET}  "
-    # Print content with interpreted escape codes
-    printf "%b" "$content"
-    # Calculate visible length (strip ANSI codes)
-    local stripped=$(printf "%b" "$content" | sed 's/\x1b\[[0-9;]*m//g')
+    # Strip ANSI codes for length calculation
+    local stripped=$(echo "$content" | sed $'s/\033\\[[0-9;]*m//g')
     local visible_len=${#stripped}
-    local remaining=$((WIDTH - visible_len - 4))
-    [[ $remaining -gt 0 ]] && printf "%${remaining}s" ""
-    printf "${border_color}${V}${RESET}\n"
+    local padding=$((WIDTH - visible_len - 4))
+
+    printf "%s%s%s  %s" "$color" "$V" "$RESET" "$content"
+    [[ $padding -gt 0 ]] && printf "%${padding}s"
+    printf "%s%s%s\n" "$color" "$V" "$RESET"
 }
 
 get_cached() {
@@ -149,28 +138,18 @@ get_cached() {
 
 echo ""
 
-# ASCII art lines
-art1="██████╗ ███████╗██╗   ██╗███████╗███████╗████████╗ ██████╗██╗  ██╗"
-art2="██╔══██╗██╔════╝██║   ██║██╔════╝██╔════╝╚══██╔══╝██╔════╝██║  ██║"
-art3="██║  ██║█████╗  ██║   ██║█████╗  █████╗     ██║   ██║     ███████║"
-art4="██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══╝  ██╔══╝     ██║   ██║     ██╔══██║"
-art5="██████╔╝███████╗ ╚████╔╝ ██║     ███████╗   ██║   ╚██████╗██║  ██║"
-art6="╚═════╝ ╚══════╝  ╚═══╝  ╚═╝     ╚══════╝   ╚═╝    ╚═════╝╚═╝  ╚═╝"
+printf "%s%s" "$PURPLE" "$BOLD"
+center_text "██████╗ ███████╗██╗   ██╗███████╗███████╗████████╗ ██████╗██╗  ██╗" "$WIDTH"; echo
+center_text "██╔══██╗██╔════╝██║   ██║██╔════╝██╔════╝╚══██╔══╝██╔════╝██║  ██║" "$WIDTH"; echo
+center_text "██║  ██║█████╗  ██║   ██║█████╗  █████╗     ██║   ██║     ███████║" "$WIDTH"; echo
+center_text "██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══╝  ██╔══╝     ██║   ██║     ██╔══██║" "$WIDTH"; echo
+center_text "██████╔╝███████╗ ╚████╔╝ ██║     ███████╗   ██║   ╚██████╗██║  ██║" "$WIDTH"; echo
+center_text "╚═════╝ ╚══════╝  ╚═══╝  ╚═╝     ╚══════╝   ╚═╝    ╚═════╝╚═╝  ╚═╝" "$WIDTH"; echo
+printf "%s" "$RESET"
 
-art_width=67
-
-printf "${PURPLE}${BOLD}"
-for art in "$art1" "$art2" "$art3" "$art4" "$art5" "$art6"; do
-    center_text "$art" "$WIDTH"
-    echo ""
-done
-printf "${RESET}"
-
-subtitle="developer dashboard"
-printf "${DIM}${GRAY}"
-center_text "$subtitle" "$WIDTH"
-printf "${RESET}\n"
-echo ""
+printf "%s%s" "$DIM" "$GRAY"
+center_text "developer dashboard" "$WIDTH"
+printf "%s\n\n" "$RESET"
 
 # ─────────────────────────────────────────────────────────────
 # GitHub Section
@@ -182,17 +161,15 @@ if command -v gh &> /dev/null; then
     draw_empty_line "$BLUE"
 
     # My PRs
-    section_header="${CYAN}${BOLD}${PR_ICON} My Pull Requests${RESET}"
-    draw_content_line "$section_header" "$BLUE"
+    draw_line "$BLUE" "${CYAN}${BOLD}${PR_ICON} My Pull Requests${RESET}"
 
     prs=$(get_cached "prs" "gh pr list --author @me --state open --limit 5 --json title,repository --jq '.[] | .repository.name + \": \" + .title'")
     if [[ -n "$prs" ]]; then
         while IFS= read -r pr; do
-            item="${GREEN}${ARROW}${RESET} ${WHITE}${pr}${RESET}"
-            draw_content_line "  $item" "$BLUE"
+            draw_line "$BLUE" "  ${GREEN}${ARROW}${RESET} ${WHITE}${pr}${RESET}"
         done <<< "$prs"
     else
-        draw_content_line "  ${DIM}No open PRs${RESET}" "$BLUE"
+        draw_line "$BLUE" "  ${DIM}No open PRs${RESET}"
     fi
 
     draw_empty_line "$BLUE"
@@ -200,17 +177,15 @@ if command -v gh &> /dev/null; then
     draw_empty_line "$BLUE"
 
     # Issues Assigned
-    section_header="${YELLOW}${BOLD}${ISSUE_ICON} Assigned Issues${RESET}"
-    draw_content_line "$section_header" "$BLUE"
+    draw_line "$BLUE" "${YELLOW}${BOLD}${ISSUE_ICON} Assigned Issues${RESET}"
 
     issues=$(get_cached "issues" "gh issue list --assignee @me --state open --limit 5 --json title,repository --jq '.[] | .repository.name + \": \" + .title'")
     if [[ -n "$issues" ]]; then
         while IFS= read -r issue; do
-            item="${YELLOW}${ARROW}${RESET} ${WHITE}${issue}${RESET}"
-            draw_content_line "  $item" "$BLUE"
+            draw_line "$BLUE" "  ${YELLOW}${ARROW}${RESET} ${WHITE}${issue}${RESET}"
         done <<< "$issues"
     else
-        draw_content_line "  ${DIM}No assigned issues${RESET}" "$BLUE"
+        draw_line "$BLUE" "  ${DIM}No assigned issues${RESET}"
     fi
 
     draw_empty_line "$BLUE"
@@ -218,17 +193,15 @@ if command -v gh &> /dev/null; then
     draw_empty_line "$BLUE"
 
     # PRs to Review
-    section_header="${PURPLE}${BOLD}${REVIEW_ICON} Review Requests${RESET}"
-    draw_content_line "$section_header" "$BLUE"
+    draw_line "$BLUE" "${PURPLE}${BOLD}${REVIEW_ICON} Review Requests${RESET}"
 
     reviews=$(get_cached "reviews" "gh pr list --search 'is:open review-requested:@me' --limit 5 --json title,repository --jq '.[] | .repository.name + \": \" + .title'")
     if [[ -n "$reviews" ]]; then
         while IFS= read -r review; do
-            item="${PURPLE}${ARROW}${RESET} ${WHITE}${review}${RESET}"
-            draw_content_line "  $item" "$BLUE"
+            draw_line "$BLUE" "  ${PURPLE}${ARROW}${RESET} ${WHITE}${review}${RESET}"
         done <<< "$reviews"
     else
-        draw_content_line "  ${DIM}No PRs to review${RESET}" "$BLUE"
+        draw_line "$BLUE" "  ${DIM}No PRs to review${RESET}"
     fi
 
     draw_empty_line "$BLUE"
@@ -245,17 +218,15 @@ if command -v npx &> /dev/null && [[ -f "$HOME/.config/linear/config.json" ]] 2>
     draw_top_border "Linear" "$LINEAR_ICON" "$PURPLE"
     draw_empty_line "$PURPLE"
 
-    section_header="${CYAN}${BOLD}${CHECK_ICON} My Issues${RESET}"
-    draw_content_line "$section_header" "$PURPLE"
+    draw_line "$PURPLE" "${CYAN}${BOLD}${CHECK_ICON} My Issues${RESET}"
 
     linear=$(get_cached "linear" "npx -y @schpet/linear-cli list --limit 5 2>/dev/null")
     if [[ -n "$linear" ]]; then
         while IFS= read -r task; do
-            item="${CYAN}${ARROW}${RESET} ${WHITE}${task}${RESET}"
-            draw_content_line "  $item" "$PURPLE"
+            draw_line "$PURPLE" "  ${CYAN}${ARROW}${RESET} ${WHITE}${task}${RESET}"
         done <<< "$linear"
     else
-        draw_content_line "  ${DIM}No Linear issues${RESET}" "$PURPLE"
+        draw_line "$PURPLE" "  ${DIM}No Linear issues${RESET}"
     fi
 
     draw_empty_line "$PURPLE"
@@ -264,14 +235,17 @@ if command -v npx &> /dev/null && [[ -f "$HOME/.config/linear/config.json" ]] 2>
 fi
 
 # ─────────────────────────────────────────────────────────────
-# Footer - Full Width
+# Footer
 # ─────────────────────────────────────────────────────────────
 
-footer_line=$(repeat_char "─" $((WIDTH - 4)))
-footer_text="  ${BOLD}db${RESET}${DIM}${GRAY} full dashboard  ${DOT}  ${BOLD}dotup${RESET}${DIM}${GRAY} sync dotfiles  ${DOT}  ${BOLD}reload${RESET}${DIM}${GRAY} refresh shell"
+printf "%s%s  " "$DIM" "$GRAY"
+repeat_char "─" $((WIDTH - 4))
+printf "%s\n" "$RESET"
 
-printf "${DIM}${GRAY}  ${footer_line}${RESET}\n"
-center_text "$(echo -e "$footer_text")" "$WIDTH"
+footer="${BOLD}db${RESET}${DIM}${GRAY} dashboard  ${DOT}  ${RESET}${BOLD}dotup${RESET}${DIM}${GRAY} sync  ${DOT}  ${RESET}${BOLD}reload${RESET}${DIM}${GRAY} shell"
+center_text "$footer" "$WIDTH"
 echo ""
-printf "${DIM}${GRAY}  ${footer_line}${RESET}\n"
-echo ""
+
+printf "%s%s  " "$DIM" "$GRAY"
+repeat_char "─" $((WIDTH - 4))
+printf "%s\n\n" "$RESET"
