@@ -20,12 +20,8 @@ install:
 	@./install.sh
 
 update:
-	@echo "Updating packages..."
-	@brew update && brew upgrade && brew bundle install
-	@echo "Updating dotfiles..."
-	@git pull origin main
-	@stow -R */
-	@echo "✓ Updated!"
+	@chmod +x update.sh
+	@./update.sh
 
 clean:
 	@echo "Removing dotfile symlinks..."
