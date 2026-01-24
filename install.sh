@@ -15,19 +15,19 @@ NC='\033[0m' # No Color
 
 # Helper functions
 print_step() {
-    echo -e "${BLUE}==>${NC} $1"
+    printf "${BLUE}==>${NC} %s\n" "$1"
 }
 
 print_success() {
-    echo -e "${GREEN}✓${NC} $1"
+    printf "${GREEN}✓${NC} %s\n" "$1"
 }
 
 print_error() {
-    echo -e "${RED}✗${NC} $1"
+    printf "${RED}✗${NC} %s\n" "$1"
 }
 
 print_warning() {
-    echo -e "${YELLOW}⚠${NC} $1"
+    printf "${YELLOW}⚠${NC} %s\n" "$1"
 }
 
 # =============================================================================
@@ -198,16 +198,16 @@ killall Finder 2>/dev/null || true
 # =============================================================================
 # Finish
 # =============================================================================
-echo ""
-echo -e "${GREEN}═══════════════════════════════════════════════════════${NC}"
-echo -e "${GREEN}✓ Setup Complete!${NC}"
-echo -e "${GREEN}═══════════════════════════════════════════════════════${NC}"
-echo ""
-echo "Next steps:"
-echo "  1. Restart your terminal or run: exec zsh"
-echo "  2. Open tmux and press Ctrl+Space then Shift+I to install plugins"
-echo "  3. Open Neovim - plugins should be configured already"
-echo ""
-echo "Your old configs were backed up to: $backup_dir"
-echo ""
-echo -e "${BLUE}Happy coding! 🚀${NC}"
+printf "\n"
+printf "${GREEN}═══════════════════════════════════════════════════════${NC}\n"
+printf "${GREEN}✓ Setup Complete!${NC}\n"
+printf "${GREEN}═══════════════════════════════════════════════════════${NC}\n"
+printf "\n"
+printf "Next steps:\n"
+printf "  1. Restart your terminal or run: exec zsh\n"
+printf "  2. Open tmux and press Ctrl+Space then Shift+I to install plugins\n"
+printf "  3. Open Neovim - plugins should be configured already\n"
+printf "\n"
+printf "Your old configs were backed up to: %s\n" "$backup_dir"
+printf "\n"
+printf "${BLUE}Happy coding!${NC}\n"
