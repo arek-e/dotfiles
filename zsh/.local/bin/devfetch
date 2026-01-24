@@ -1,35 +1,96 @@
 #!/bin/bash
 
 # =============================================================================
-# devfetch - Developer dashboard summary (like neofetch but for dev work)
+# devfetch - Developer dashboard with style
 # =============================================================================
 
-# Colors
-CYAN='\033[0;36m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-MAGENTA='\033[0;35m'
+# Colors (Tokyo Night inspired)
+RESET='\033[0m'
+BOLD='\033[1m'
 DIM='\033[2m'
-NC='\033[0m'
 
-# Print section header
-header() {
-    printf "${CYAN}━━━ %s ━━━${NC}\n" "$1"
-}
+# Tokyo Night palette
+BLUE='\033[38;5;111m'
+PURPLE='\033[38;5;141m'
+CYAN='\033[38;5;117m'
+GREEN='\033[38;5;150m'
+YELLOW='\033[38;5;222m'
+ORANGE='\033[38;5;215m'
+RED='\033[38;5;203m'
+GRAY='\033[38;5;243m'
+WHITE='\033[38;5;255m'
 
-# Cache timeout (5 minutes)
+# Box drawing
+H_LINE="─"
+V_LINE="│"
+TL="╭"
+TR="╮"
+BL="╰"
+BR="╯"
+
+# Icons (Nerd Fonts)
+GITHUB_ICON=""
+PR_ICON=""
+ISSUE_ICON=""
+REVIEW_ICON=""
+LINEAR_ICON=""
+CHECK_ICON=""
+ARROW_ICON=""
+
+# Terminal width (default 60, or detect)
+WIDTH=60
+
+# Cache settings
 CACHE_DIR="$HOME/.cache/devfetch"
 CACHE_TIMEOUT=300
 mkdir -p "$CACHE_DIR"
 
-# Helper to get cached or fresh data
+# ─────────────────────────────────────────────────────────────
+# Helper functions
+# ─────────────────────────────────────────────────────────────
+
+draw_line() {
+    local char="$1"
+    local count="$2"
+    printf "%0.s$char" $(seq 1 $count)
+}
+
+draw_top() {
+    local title="$1"
+    local icon="$2"
+    local color="$3"
+    local title_len=${#title}
+    local padding=$((WIDTH - title_len - 6))
+
+    printf "${color}${TL}${H_LINE}${H_LINE} ${icon} ${title} "
+    draw_line "$H_LINE" $padding
+    printf "${TR}${RESET}\n"
+}
+
+draw_bottom() {
+    local color="$1"
+    printf "${color}${BL}"
+    draw_line "$H_LINE" $((WIDTH - 1))
+    printf "${BR}${RESET}\n"
+}
+
+draw_row() {
+    local content="$1"
+    local color="${2:-$GRAY}"
+    # Simple row - just print with padding
+    printf "${color}${V_LINE}${RESET}  %s\n" "$content"
+}
+
+draw_empty() {
+    local color="${1:-$GRAY}"
+    printf "${color}${V_LINE}${RESET}\n"
+}
+
 get_cached() {
     local name="$1"
     local cmd="$2"
     local cache_file="$CACHE_DIR/$name"
 
-    # Check if cache exists and is fresh
     if [[ -f "$cache_file" ]]; then
         local age=$(($(date +%s) - $(stat -f%m "$cache_file" 2>/dev/null || echo 0)))
         if [[ $age -lt $CACHE_TIMEOUT ]]; then
@@ -38,70 +99,106 @@ get_cached() {
         fi
     fi
 
-    # Fetch fresh data and cache it
     eval "$cmd" 2>/dev/null | tee "$cache_file"
 }
 
+# ─────────────────────────────────────────────────────────────
+# Header
+# ─────────────────────────────────────────────────────────────
+
+echo ""
+printf "${PURPLE}${BOLD}"
+cat << 'EOF'
+     ██████╗ ███████╗██╗   ██╗
+     ██╔══██╗██╔════╝██║   ██║
+     ██║  ██║█████╗  ██║   ██║
+     ██║  ██║██╔══╝  ╚██╗ ██╔╝
+     ██████╔╝███████╗ ╚████╔╝
+     ╚═════╝ ╚══════╝  ╚═══╝
+EOF
+printf "${RESET}"
+printf "${DIM}${GRAY}     developer dashboard${RESET}\n"
 echo ""
 
-# ─────────────────────────────────────────────────────────────────
-# GitHub PRs
-# ─────────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────
+# GitHub Section
+# ─────────────────────────────────────────────────────────────
+
 if command -v gh &> /dev/null; then
-    header " My Open PRs"
-    prs=$(get_cached "prs" "gh pr list --author @me --state open --limit 5 --json title,url,repository --jq '.[] | \"  ${GREEN}•${NC} \" + .repository.name + \": \" + .title'")
+
+    # GitHub header
+    draw_top "GitHub" "$GITHUB_ICON" "$BLUE"
+    draw_empty "$BLUE"
+
+    # My PRs
+    printf "${BLUE}${V_LINE}${RESET}  ${CYAN}${BOLD}${PR_ICON} My Pull Requests${RESET}\n"
+    prs=$(get_cached "prs" "gh pr list --author @me --state open --limit 5 --json title,repository --jq '.[] | .repository.name + \": \" + .title'")
     if [[ -n "$prs" ]]; then
-        echo -e "$prs"
+        while IFS= read -r pr; do
+            printf "${BLUE}${V_LINE}${RESET}    ${GREEN}${ARROW_ICON}${RESET} ${WHITE}%s${RESET}\n" "$pr"
+        done <<< "$prs"
     else
-        printf "  ${DIM}No open PRs${NC}\n"
+        printf "${BLUE}${V_LINE}${RESET}    ${DIM}No open PRs${RESET}\n"
     fi
-    echo ""
+    draw_empty "$BLUE"
 
-    # ─────────────────────────────────────────────────────────────────
-    # GitHub Issues Assigned
-    # ─────────────────────────────────────────────────────────────────
-    header " Issues Assigned to Me"
-    issues=$(get_cached "issues" "gh issue list --assignee @me --state open --limit 5 --json title,repository --jq '.[] | \"  ${YELLOW}•${NC} \" + .repository.name + \": \" + .title'")
+    # Issues Assigned
+    printf "${BLUE}${V_LINE}${RESET}  ${YELLOW}${BOLD}${ISSUE_ICON} Assigned Issues${RESET}\n"
+    issues=$(get_cached "issues" "gh issue list --assignee @me --state open --limit 5 --json title,repository --jq '.[] | .repository.name + \": \" + .title'")
     if [[ -n "$issues" ]]; then
-        echo -e "$issues"
+        while IFS= read -r issue; do
+            printf "${BLUE}${V_LINE}${RESET}    ${YELLOW}${ARROW_ICON}${RESET} ${WHITE}%s${RESET}\n" "$issue"
+        done <<< "$issues"
     else
-        printf "  ${DIM}No assigned issues${NC}\n"
+        printf "${BLUE}${V_LINE}${RESET}    ${DIM}No assigned issues${RESET}\n"
     fi
-    echo ""
+    draw_empty "$BLUE"
 
-    # ─────────────────────────────────────────────────────────────────
     # PRs to Review
-    # ─────────────────────────────────────────────────────────────────
-    header " PRs Waiting for Review"
-    reviews=$(get_cached "reviews" "gh pr list --search 'is:open review-requested:@me' --limit 5 --json title,repository --jq '.[] | \"  ${MAGENTA}•${NC} \" + .repository.name + \": \" + .title'")
+    printf "${BLUE}${V_LINE}${RESET}  ${PURPLE}${BOLD}${REVIEW_ICON} Review Requests${RESET}\n"
+    reviews=$(get_cached "reviews" "gh pr list --search 'is:open review-requested:@me' --limit 5 --json title,repository --jq '.[] | .repository.name + \": \" + .title'")
     if [[ -n "$reviews" ]]; then
-        echo -e "$reviews"
+        while IFS= read -r review; do
+            printf "${BLUE}${V_LINE}${RESET}    ${PURPLE}${ARROW_ICON}${RESET} ${WHITE}%s${RESET}\n" "$review"
+        done <<< "$reviews"
     else
-        printf "  ${DIM}No PRs to review${NC}\n"
+        printf "${BLUE}${V_LINE}${RESET}    ${DIM}No PRs to review${RESET}\n"
     fi
+    draw_empty "$BLUE"
+
+    draw_bottom "$BLUE"
     echo ""
 fi
 
-# ─────────────────────────────────────────────────────────────────
-# Linear Issues (if available)
-# ─────────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────
+# Linear Section
+# ─────────────────────────────────────────────────────────────
+
 if command -v npx &> /dev/null && [[ -f "$HOME/.config/linear/config.json" ]] 2>/dev/null; then
-    header " Linear Issues"
-    linear=$(get_cached "linear" "npx -y @schpet/linear-cli list --limit 5 2>/dev/null | head -5")
+
+    draw_top "Linear" "$LINEAR_ICON" "$PURPLE"
+    draw_empty "$PURPLE"
+
+    printf "${PURPLE}${V_LINE}${RESET}  ${CYAN}${BOLD}${CHECK_ICON} My Issues${RESET}\n"
+    linear=$(get_cached "linear" "npx -y @schpet/linear-cli list --limit 5 2>/dev/null")
     if [[ -n "$linear" ]]; then
-        echo "$linear" | while read -r line; do
-            printf "  ${BLUE}•${NC} %s\n" "$line"
-        done
+        while IFS= read -r task; do
+            printf "${PURPLE}${V_LINE}${RESET}    ${CYAN}${ARROW_ICON}${RESET} ${WHITE}%s${RESET}\n" "$task"
+        done <<< "$linear"
     else
-        printf "  ${DIM}No Linear issues${NC}\n"
+        printf "${PURPLE}${V_LINE}${RESET}    ${DIM}No Linear issues${RESET}\n"
     fi
+    draw_empty "$PURPLE"
+
+    draw_bottom "$PURPLE"
     echo ""
 fi
 
-# ─────────────────────────────────────────────────────────────────
-# Quick Stats
-# ─────────────────────────────────────────────────────────────────
-printf "${DIM}─────────────────────────────────────────────${NC}\n"
-printf "${DIM}  Run 'db' for full interactive dashboard${NC}\n"
-printf "${DIM}─────────────────────────────────────────────${NC}\n"
+# ─────────────────────────────────────────────────────────────
+# Footer
+# ─────────────────────────────────────────────────────────────
+
+printf "${DIM}${GRAY}  ─────────────────────────────────────────────────────${RESET}\n"
+printf "${DIM}${GRAY}   ${BOLD}db${RESET}${DIM}${GRAY} for full dashboard  •  ${BOLD}dotup${RESET}${DIM}${GRAY} to sync dotfiles${RESET}\n"
+printf "${DIM}${GRAY}  ─────────────────────────────────────────────────────${RESET}\n"
 echo ""
