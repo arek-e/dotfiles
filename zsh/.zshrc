@@ -1,5 +1,5 @@
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+# Add local bin to PATH
+export PATH="$HOME/.local/bin:$PATH"
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -145,9 +145,9 @@ alias dashboard='wtfutil'
 alias db='wtfutil'
 alias dotup='~/dotfiles/update.sh'
 
-# Quick welcome (fastfetch is faster than neofetch)
-if command -v fastfetch &> /dev/null; then
-  fastfetch --logo none
+# Developer dashboard on startup (shows GitHub/Linear summary)
+if command -v devfetch &> /dev/null; then
+  devfetch
 fi
 
 # ============================================

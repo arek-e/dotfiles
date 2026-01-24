@@ -1,0 +1,107 @@
+#!/bin/bash
+
+# =============================================================================
+# devfetch - Developer dashboard summary (like neofetch but for dev work)
+# =============================================================================
+
+# Colors
+CYAN='\033[0;36m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
+DIM='\033[2m'
+NC='\033[0m'
+
+# Print section header
+header() {
+    printf "${CYAN}━━━ %s ━━━${NC}\n" "$1"
+}
+
+# Cache timeout (5 minutes)
+CACHE_DIR="$HOME/.cache/devfetch"
+CACHE_TIMEOUT=300
+mkdir -p "$CACHE_DIR"
+
+# Helper to get cached or fresh data
+get_cached() {
+    local name="$1"
+    local cmd="$2"
+    local cache_file="$CACHE_DIR/$name"
+
+    # Check if cache exists and is fresh
+    if [[ -f "$cache_file" ]]; then
+        local age=$(($(date +%s) - $(stat -f%m "$cache_file" 2>/dev/null || echo 0)))
+        if [[ $age -lt $CACHE_TIMEOUT ]]; then
+            cat "$cache_file"
+            return
+        fi
+    fi
+
+    # Fetch fresh data and cache it
+    eval "$cmd" 2>/dev/null | tee "$cache_file"
+}
+
+echo ""
+
+# ─────────────────────────────────────────────────────────────────
+# GitHub PRs
+# ─────────────────────────────────────────────────────────────────
+if command -v gh &> /dev/null; then
+    header " My Open PRs"
+    prs=$(get_cached "prs" "gh pr list --author @me --state open --limit 5 --json title,url,repository --jq '.[] | \"  ${GREEN}•${NC} \" + .repository.name + \": \" + .title'")
+    if [[ -n "$prs" ]]; then
+        echo -e "$prs"
+    else
+        printf "  ${DIM}No open PRs${NC}\n"
+    fi
+    echo ""
+
+    # ─────────────────────────────────────────────────────────────────
+    # GitHub Issues Assigned
+    # ─────────────────────────────────────────────────────────────────
+    header " Issues Assigned to Me"
+    issues=$(get_cached "issues" "gh issue list --assignee @me --state open --limit 5 --json title,repository --jq '.[] | \"  ${YELLOW}•${NC} \" + .repository.name + \": \" + .title'")
+    if [[ -n "$issues" ]]; then
+        echo -e "$issues"
+    else
+        printf "  ${DIM}No assigned issues${NC}\n"
+    fi
+    echo ""
+
+    # ─────────────────────────────────────────────────────────────────
+    # PRs to Review
+    # ─────────────────────────────────────────────────────────────────
+    header " PRs Waiting for Review"
+    reviews=$(get_cached "reviews" "gh pr list --search 'is:open review-requested:@me' --limit 5 --json title,repository --jq '.[] | \"  ${MAGENTA}•${NC} \" + .repository.name + \": \" + .title'")
+    if [[ -n "$reviews" ]]; then
+        echo -e "$reviews"
+    else
+        printf "  ${DIM}No PRs to review${NC}\n"
+    fi
+    echo ""
+fi
+
+# ─────────────────────────────────────────────────────────────────
+# Linear Issues (if available)
+# ─────────────────────────────────────────────────────────────────
+if command -v npx &> /dev/null && [[ -f "$HOME/.config/linear/config.json" ]] 2>/dev/null; then
+    header " Linear Issues"
+    linear=$(get_cached "linear" "npx -y @schpet/linear-cli list --limit 5 2>/dev/null | head -5")
+    if [[ -n "$linear" ]]; then
+        echo "$linear" | while read -r line; do
+            printf "  ${BLUE}•${NC} %s\n" "$line"
+        done
+    else
+        printf "  ${DIM}No Linear issues${NC}\n"
+    fi
+    echo ""
+fi
+
+# ─────────────────────────────────────────────────────────────────
+# Quick Stats
+# ─────────────────────────────────────────────────────────────────
+printf "${DIM}─────────────────────────────────────────────${NC}\n"
+printf "${DIM}  Run 'db' for full interactive dashboard${NC}\n"
+printf "${DIM}─────────────────────────────────────────────${NC}\n"
+echo ""
