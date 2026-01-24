@@ -1,0 +1,156 @@
+wtf:
+  colors:
+    background: "transparent"
+    border:
+      focusable: "#7aa2f7"
+      focused: "#bb9af7"
+      normal: "#3b4261"
+    checked: "#9ece6a"
+    highlight:
+      fore: "#1a1b26"
+      back: "#7aa2f7"
+    text: "#c0caf5"
+    title: "#7dcfff"
+  grid:
+    columns: [40, 40, 40]
+    rows: [10, 10, 10, 4]
+  refreshInterval: 30s
+  openFileUtil: "open"
+  term: "xterm-256color"
+
+mods:
+  # ===========================================
+  # GitHub - Your PRs (via gh CLI)
+  # ===========================================
+  github_prs:
+    type: cmdrunner
+    enabled: true
+    position:
+      top: 0
+      left: 0
+      height: 2
+      width: 1
+    refreshInterval: 5m
+    title: " GitHub PRs"
+    cmd: "gh"
+    args: ["pr", "list", "--author", "@me", "--state", "open", "--limit", "10"]
+
+  # ===========================================
+  # GitHub - Issues Assigned to You (via gh CLI)
+  # ===========================================
+  github_issues:
+    type: cmdrunner
+    enabled: true
+    position:
+      top: 0
+      left: 1
+      height: 2
+      width: 1
+    refreshInterval: 5m
+    title: " GitHub Issues"
+    cmd: "gh"
+    args: ["issue", "list", "--assignee", "@me", "--state", "open", "--limit", "10"]
+
+  # ===========================================
+  # Linear - Your Tasks (via linear-cli)
+  # ===========================================
+  # Install: npx @schpet/linear-cli (first run will auth)
+  linear_tasks:
+    type: cmdrunner
+    enabled: true
+    position:
+      top: 0
+      left: 2
+      height: 2
+      width: 1
+    refreshInterval: 5m
+    title: " Linear Tasks"
+    cmd: "npx"
+    args: ["@schpet/linear-cli", "list", "--limit", "10"]
+
+  # ===========================================
+  # Git Status (Current Directory)
+  # ===========================================
+  git:
+    type: git
+    enabled: true
+    position:
+      top: 2
+      left: 0
+      height: 1
+      width: 1
+    commitCount: 5
+    commitFormat: "[short]"
+    dateFormat: "Jan 02"
+    repositories:
+      - "~/projects"
+    refreshInterval: 30s
+    title: " Git"
+
+  # ===========================================
+  # System Info
+  # ===========================================
+  system:
+    type: cmdrunner
+    enabled: true
+    position:
+      top: 2
+      left: 1
+      height: 1
+      width: 1
+    refreshInterval: 60s
+    title: " System"
+    cmd: "fastfetch"
+    args: ["--logo", "none", "--structure", "OS:Kernel:Uptime:CPU:Memory:Disk"]
+
+  # ===========================================
+  # Weather (Optional - set location)
+  # ===========================================
+  weather:
+    type: cmdrunner
+    enabled: true
+    position:
+      top: 2
+      left: 2
+      height: 1
+      width: 1
+    refreshInterval: 30m
+    title: " Weather"
+    cmd: "curl"
+    args: ["-s", "wttr.in/?format=3"]
+
+  # ===========================================
+  # Clock
+  # ===========================================
+  clocks:
+    type: clocks
+    enabled: true
+    position:
+      top: 3
+      left: 0
+      height: 1
+      width: 1
+    title: " Time"
+    locations:
+      Local: "Local"
+    sort: "alphabetical"
+    dateFormat: "Monday, Jan 02"
+    timeFormat: "15:04"
+
+  # ===========================================
+  # Resource Usage
+  # ===========================================
+  resourceusage:
+    type: resourceusage
+    enabled: true
+    position:
+      top: 3
+      left: 1
+      height: 1
+      width: 2
+    title: " Resources"
+    cpuCombined: true
+    showCPU: true
+    showMem: true
+    showSwp: false
+    refreshInterval: 5s

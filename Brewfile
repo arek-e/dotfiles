@@ -1,87 +1,126 @@
-# Brewfile - Tmux + Neovim Development Environment
-# ============================================
+# Brewfile - Modern Terminal Development Environment
+# ==================================================
+# Ghostty + Tmux + LazyVim + Modern CLI Tools
+
+# ==============================================
 # Core Tools
-# ============================================
+# ==============================================
 brew "git"
-brew "stow"          # For dotfiles management
+brew "stow"               # Dotfiles management
 
-# ============================================
-# Terminal & Apps
-# ============================================
-cask "kitty"         # GPU-based terminal emulator
-brew "neofetch"      # System info tool
-cask "raycast"       # Spotlight replacement
-cask "notion"        # Note-taking and organization
-cask "notion-calendar" # Calendar management
-cask "bitwarden"     # Password manager
+# ==============================================
+# Terminal Emulator
+# ==============================================
+cask "ghostty"            # Fast, native terminal
 
-# ============================================
+# ==============================================
+# Productivity Apps
+# ==============================================
+cask "raycast"            # Spotlight replacement
+cask "notion"             # Note-taking
+cask "notion-calendar"    # Calendar
+cask "bitwarden"          # Password manager
+
+# ==============================================
+# Shell & Prompt
+# ==============================================
+brew "zsh"                # Shell
+brew "starship"           # Modern prompt
+brew "atuin"              # Magical shell history with sync
+
+# ==============================================
 # Tmux & Dependencies
-# ============================================
-brew "tmux"          # Terminal multiplexer
-brew "tpm"           # Tmux Plugin Manager
-brew "bash"          # Bash 4.2+ (required for tokyo-night-tmux)
-brew "bc"            # Calculator (for netspeed widget)
-brew "coreutils"     # GNU core utilities
-brew "gawk"          # GNU awk
-brew "gsed"          # GNU sed
-brew "jq"            # JSON processor (for git widgets)
-brew "gh"            # GitHub CLI (for git widgets)
-brew "glab"          # GitLab CLI (for git widgets)
-brew "nowplaying-cli" # Now playing widget for macOS
+# ==============================================
+brew "tmux"               # Terminal multiplexer
+brew "tpm"                # Tmux Plugin Manager
+brew "bash"               # Bash 4.2+ (for tokyo-night-tmux)
+brew "bc"                 # Calculator (netspeed widget)
+brew "coreutils"          # GNU core utilities
+brew "gawk"               # GNU awk
+brew "gsed"               # GNU sed
+brew "jq"                 # JSON processor
+brew "gh"                 # GitHub CLI
+brew "glab"               # GitLab CLI
+brew "nowplaying-cli"     # Now playing widget
 
-
-# ============================================
-# Neovim & Dependencies
-# ============================================
-brew "neovim"        # Neovim 0.9.0+ (required for NvChad)
-# Neovim build prerequisites (if building from source)
+# ==============================================
+# Neovim & Build Tools
+# ==============================================
+brew "neovim"             # Neovim 0.10+ (for LazyVim)
 brew "ninja"
 brew "cmake"
 brew "gettext"
 brew "curl"
-brew "zoxide"              # smarter cd
 
-# ============================================
-# Language Servers & Tools (for NvChad)
-# ============================================
-brew "node"          # Required for many LSP servers
-brew "python3"       # Python support
-brew "rust"          # Rust support (optional)
-brew "go"            # Go support (optional)
+# ==============================================
+# File Management
+# ==============================================
+brew "yazi"               # Blazing fast file manager
+brew "ffmpeg"             # Video preview in yazi
+brew "sevenzip"           # Archive support
+brew "poppler"            # PDF preview
+brew "imagemagick"        # Image processing
+brew "resvg"              # SVG preview
 
-# Modern CLI tools (enhance the experience)
-brew "ripgrep"       # Fast grep (used by Telescope in Neovim)
-brew "fd"            # Fast find (used by Telescope)
-brew "fzf"           # Fuzzy finder
-brew "bat"           # Better cat with syntax highlighting
-brew "eza"           # Modern ls replacement
-brew "tree"          # Directory tree viewer
-brew "lazygit"       # Git TUI (optional but great with Neovim)
+# ==============================================
+# Modern CLI Replacements
+# ==============================================
+brew "ripgrep"            # grep replacement (rg)
+brew "fd"                 # find replacement
+brew "fzf"                # Fuzzy finder
+brew "bat"                # cat replacement with syntax highlighting
+brew "eza"                # ls replacement with icons
+brew "zoxide"             # Smarter cd
+brew "delta"              # Beautiful git diffs
+brew "sd"                 # Simpler sed
+brew "dust"               # Better du (disk usage)
+brew "duf"                # Better df (disk free)
+brew "bottom"             # Better htop (system monitor)
+brew "procs"              # Better ps (process viewer)
 
-# ============================================
-# Terminal Enhancements
-# ============================================
-brew "starship"      # Modern shell prompt
-brew "zsh"           # Shell (comes with macOS but good to track)
+# ==============================================
+# Developer Utilities
+# ==============================================
+brew "lazygit"            # Git TUI
+brew "tldr"               # Simplified man pages
+brew "tree"               # Directory tree viewer
+brew "jless"              # Interactive JSON viewer
+brew "xh"                 # Fast HTTP client
+brew "tokei"              # Code statistics
+brew "hyperfine"          # Command benchmarking
+brew "gping"              # Ping with graph
 
-# ============================================
-# Fonts (Nerd Fonts v3+ for tokyo-night-tmux)
-# ============================================
-cask "font-monaspice-nerd-font"      # Monaspace with Nerd Font patches (UPDATED NAME)
-cask "font-noto-sans-symbols-2"      # For segmented digit numbers
-cask "font-hack-nerd-font"
-cask "font-jetbrains-mono-nerd-font"
-cask "font-meslo-lg-nerd-font"
-cask "font-fira-code-nerd-font"
+# ==============================================
+# Language Support
+# ==============================================
+brew "node"               # Node.js (LSP servers)
+brew "python3"            # Python
+brew "rust"               # Rust
+brew "go"                 # Go
+brew "lua"                # Lua
+brew "luajit"             # LuaJIT
 
-# ============================================
-# Optional but Recommended
-# ============================================
-brew "wget"          # Download tool
+# ==============================================
+# System Info & Dashboard
+# ==============================================
+brew "neofetch"           # System info display
+brew "fastfetch"          # Faster neofetch alternative
+brew "wtfutil"            # Terminal dashboard (GitHub, Linear, etc.)
 
-# Additional language support (uncomment as needed)
-brew "lua"
-brew "luajit"
-# brew "ruby"
-# brew "php"
+# ==============================================
+# Fonts (Nerd Fonts v3+)
+# ==============================================
+cask "font-monaspice-nerd-font"       # Monaspace with ligatures
+cask "font-jetbrains-mono-nerd-font"  # JetBrains Mono
+cask "font-meslo-lg-nerd-font"        # Meslo
+cask "font-fira-code-nerd-font"       # Fira Code
+cask "font-hack-nerd-font"            # Hack
+cask "font-symbols-only-nerd-font"    # Symbols only
+cask "font-noto-sans-symbols-2"       # Unicode symbols
+
+# ==============================================
+# Optional
+# ==============================================
+brew "wget"               # Download tool
+# brew "ruby"             # Uncomment if needed
+# brew "php"              # Uncomment if needed

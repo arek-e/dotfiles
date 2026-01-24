@@ -1,0 +1,122 @@
+# Atuin Shell History Configuration
+# ==================================
+# Magical shell history with sync
+
+# ==============================================
+# Database Settings
+# ==============================================
+db_path = "~/.local/share/atuin/history.db"
+key_path = "~/.local/share/atuin/key"
+
+# Record session and cwd
+session_path = "~/.local/share/atuin/session"
+record_session = true
+
+# ==============================================
+# Sync Settings
+# ==============================================
+# Set to true to enable sync (requires account)
+auto_sync = false
+
+# Sync frequency (when auto_sync is enabled)
+sync_frequency = "5m"
+
+# Sync address (default: Atuin hosted)
+# sync_address = "https://api.atuin.sh"
+
+# ==============================================
+# Search Settings
+# ==============================================
+# Search mode: prefix, fulltext, fuzzy, skim
+search_mode = "fuzzy"
+
+# Filter mode: global, host, session, directory
+# global = search all history
+# host = search history from this machine
+# session = search history from this session
+# directory = search history from this directory
+filter_mode = "global"
+
+# Default filter for up arrow
+filter_mode_shell_up_key_binding = "host"
+
+# Search style: prefix, substring, fulltext, fuzzy
+# style = "auto"  # Commented out - conflicts with [style] section
+
+# Inline height (0 = full screen)
+inline_height = 0
+
+# Show preview of the selected command
+show_preview = true
+
+# Show context (cwd, hostname, etc.)
+show_context = true
+
+# Max preview height
+max_preview_height = 4
+
+# Show help in footer
+show_help = true
+
+# Show tabs for different filter modes
+show_tabs = true
+
+# ==============================================
+# History Settings
+# ==============================================
+# Prefix with underscore to ignore command
+# Only filter truly useless commands (not ls/cd which may have useful args)
+history_filter = [
+  "^_",
+  "^exit$",
+  "^clear$",
+  "^pwd$",
+]
+
+# Minimum command length to record
+# filter_mode = 2
+
+# ==============================================
+# Key Bindings
+# ==============================================
+# ctrl-r: search history (default)
+# up: previous command
+
+# ==============================================
+# Display Settings
+# ==============================================
+# Timezone for timestamps
+# local = use local timezone
+# utc = use UTC
+# timezone = "local"
+
+# Date format
+# Default: "%Y-%m-%d %H:%M"
+
+# How many items to show per page
+# results_per_page = 200
+
+# ==============================================
+# Stats Settings
+# ==============================================
+# Count for stats
+# common_prefix = ["/usr/bin/", "/usr/local/bin/"]
+# common_subcommands = ["cargo", "go", "npm", "git"]
+
+# ==============================================
+# Secrets Filter
+# ==============================================
+# Filter out secrets from history
+secrets_filter = true
+
+# Regex patterns for secrets
+# Atuin has built-in patterns for common secrets
+# Add custom patterns here:
+# secrets_patterns = [
+#   "my-secret-pattern",
+# ]
+
+# ==============================================
+# UI Style
+# ==============================================
+# Atuin uses terminal colors, so styling inherits from your terminal theme (Tokyo Night)

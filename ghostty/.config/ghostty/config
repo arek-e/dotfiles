@@ -1,0 +1,111 @@
+# Ghostty Terminal Configuration
+# ================================
+# Fast, native terminal with Tokyo Night theme
+
+# ==============================================
+# Shell / Tmux Integration
+# ==============================================
+# Auto-start tmux on FIRST window only (initial-command)
+# - New tabs/splits get plain shell (use tmux for multiplexing)
+# - Detaching from tmux drops you into shell (doesn't close Ghostty)
+initial-command = ~/.config/ghostty/scripts/tmux-session.sh
+
+# ==============================================
+# Theme - Tokyo Night
+# ==============================================
+theme = tokyonight
+
+# ==============================================
+# Font Configuration
+# ==============================================
+font-family = "MonaspiceNe Nerd Font Mono"
+font-size = 13
+font-feature = calt
+font-feature = liga
+font-feature = ss01
+font-feature = ss02
+font-feature = ss03
+font-feature = ss04
+font-feature = ss05
+font-feature = ss06
+font-feature = ss07
+font-feature = ss08
+
+# Fallback fonts for symbols
+font-family-bold = "MonaspiceNe Nerd Font Mono"
+font-family-italic = "MonaspiceNe Nerd Font Mono"
+font-family-bold-italic = "MonaspiceNe Nerd Font Mono"
+
+# ==============================================
+# Window
+# ==============================================
+window-padding-x = 8
+window-padding-y = 8
+window-decoration = true
+window-theme = ghostty
+macos-titlebar-style = tabs
+macos-option-as-alt = true
+confirm-close-surface = false
+
+# Window size
+window-width = 160
+window-height = 45
+
+# ==============================================
+# Cursor
+# ==============================================
+cursor-style = block
+cursor-style-blink = false
+shell-integration-features = no-cursor
+
+# ==============================================
+# Mouse
+# ==============================================
+mouse-hide-while-typing = true
+copy-on-select = clipboard
+
+# ==============================================
+# Scrollback
+# ==============================================
+scrollback-limit = 10000
+
+# ==============================================
+# Clipboard
+# ==============================================
+clipboard-read = allow
+clipboard-write = allow
+clipboard-paste-protection = false
+
+# ==============================================
+# Keybindings
+# ==============================================
+# Splits (like tmux)
+keybind = super+d=new_split:right
+keybind = super+shift+d=new_split:down
+keybind = super+w=close_surface
+
+# Navigation
+keybind = super+shift+left=goto_split:left
+keybind = super+shift+right=goto_split:right
+keybind = super+shift+up=goto_split:top
+keybind = super+shift+down=goto_split:bottom
+
+# Tabs
+keybind = super+t=new_tab
+keybind = super+shift+]=next_tab
+keybind = super+shift+[=previous_tab
+
+# Font size
+keybind = super+plus=increase_font_size:1
+keybind = super+minus=decrease_font_size:1
+keybind = super+zero=reset_font_size
+
+# Quick actions
+keybind = super+k=clear_screen
+keybind = super+shift+c=copy_to_clipboard
+keybind = super+shift+v=paste_from_clipboard
+
+# ==============================================
+# Performance
+# ==============================================
+gtk-single-instance = true
