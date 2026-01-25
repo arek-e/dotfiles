@@ -76,6 +76,17 @@ autocmd({ "BufRead", "BufNewFile" }, {
   end,
 })
 
+-- Terminal buffer settings (for Claude Code, etc.)
+autocmd("TermOpen", {
+  group = augroup("terminal_settings", { clear = true }),
+  callback = function(event)
+    -- q in normal mode closes the terminal window
+    vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = event.buf, silent = true, desc = "Close terminal" })
+    -- Don't show in buffer list
+    vim.bo[event.buf].buflisted = false
+  end,
+})
+
 -- Transparent background overrides (runs after colorscheme loads)
 autocmd("ColorScheme", {
   group = augroup("transparent_overrides", { clear = true }),
