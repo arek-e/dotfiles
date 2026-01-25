@@ -1,6 +1,6 @@
 # Ghostty Terminal Configuration
 # ================================
-# Fast, native terminal with Tokyo Night theme
+# Fast, native terminal with One Dark Pro theme
 
 # ==============================================
 # Shell / Tmux Integration
@@ -11,9 +11,34 @@
 initial-command = ~/.config/ghostty/scripts/tmux-session.sh
 
 # ==============================================
-# Theme - One Dark
+# Theme - One Dark Pro
 # ==============================================
-theme = "One Dark"
+# Explicit colors for consistency across all tools
+background = 282c34
+foreground = abb2bf
+cursor-color = 528bff
+selection-background = 3e4452
+selection-foreground = abb2bf
+
+# Normal colors (0-7)
+palette = 0=#282c34
+palette = 1=#e06c75
+palette = 2=#98c379
+palette = 3=#e5c07b
+palette = 4=#61afef
+palette = 5=#c678dd
+palette = 6=#56b6c2
+palette = 7=#abb2bf
+
+# Bright colors (8-15)
+palette = 8=#5c6370
+palette = 9=#e06c75
+palette = 10=#98c379
+palette = 11=#e5c07b
+palette = 12=#61afef
+palette = 13=#c678dd
+palette = 14=#56b6c2
+palette = 15=#ffffff
 
 # ==============================================
 # Font Configuration
