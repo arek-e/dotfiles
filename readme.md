@@ -333,7 +333,7 @@ Switch themes in Neovim with `<leader>uC`:
 ### Terminal Theme
 
 - Ghostty: `tokyonight` theme
-- Tmux: [tokyo-night-tmux](https://github.com/janoamaral/tokyo-night-tmux)
+- Tmux: [catppuccin/tmux](https://github.com/catppuccin/tmux) (matches nvim default)
 - Yazi: Custom Tokyo Night
 - fzf/bat: Tokyo Night colors
 
