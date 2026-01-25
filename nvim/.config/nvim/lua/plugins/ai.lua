@@ -11,11 +11,14 @@ return {
     },
     opts = {
       window = {
-        type = "float",
-        position = "center",
-        width = 0.85,
-        height = 0.85,
-        border = "rounded",
+        position = "float",
+        float = {
+          width = "85%",
+          height = "85%",
+          row = "center",
+          col = "center",
+          border = "rounded",
+        },
       },
       refresh = {
         enable = true,
