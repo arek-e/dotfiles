@@ -87,9 +87,9 @@ autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "FloatBorder", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "SignColumn", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "EndOfBuffer", { bg = "NONE" })
-    -- Transparent cursorline (no bg, just highlight line number)
-    vim.api.nvim_set_hl(0, "CursorLine", { bg = "NONE" })
-    vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#7aa2f7", bold = true, bg = "NONE" })
+    -- Semi-transparent cursorline (subtle dark bg that blends with transparency)
+    vim.api.nvim_set_hl(0, "CursorLine", { bg = "#1f1f28" })
+    vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#7aa2f7", bold = true, bg = "#1f1f28" })
     -- Transparent statusline
     vim.api.nvim_set_hl(0, "StatusLine", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "StatusLineNC", { bg = "NONE" })
