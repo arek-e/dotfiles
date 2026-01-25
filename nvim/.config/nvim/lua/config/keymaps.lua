@@ -71,6 +71,7 @@ map("n", "-", "<cmd>Oil<cr>", { desc = "Open parent directory (Oil)" })
 
 -- Theme switcher
 local themes = {
+  { name = "onedark", variants = { "onedark", "onelight", "onedark_vivid", "onedark_dark" } },
   { name = "catppuccin", variants = { "mocha", "macchiato", "frappe", "latte" } },
   { name = "tokyonight", variants = { "night", "storm", "moon", "day" } },
   { name = "kanagawa", variants = { "wave", "dragon", "lotus" } },
@@ -100,17 +101,29 @@ map("n", "<leader>uC", function()
   }, function(choice)
     if choice then
       -- Set variant before colorscheme for themes that need it
-      if choice.theme == "catppuccin" then
+      if choice.theme == "onedark" then
+        vim.cmd.colorscheme(choice.variant)
+      elseif choice.theme == "catppuccin" then
         require("catppuccin").setup({ flavour = choice.variant })
+        vim.cmd.colorscheme(choice.colorscheme)
       elseif choice.theme == "tokyonight" then
         require("tokyonight").setup({ style = choice.variant })
+        vim.cmd.colorscheme(choice.colorscheme)
       elseif choice.theme == "kanagawa" then
         require("kanagawa").setup({ theme = choice.variant })
+        vim.cmd.colorscheme(choice.colorscheme)
       elseif choice.theme == "rose-pine" then
         require("rose-pine").setup({ variant = choice.variant })
+        vim.cmd.colorscheme(choice.colorscheme)
+      else
+        vim.cmd.colorscheme(choice.colorscheme)
       end
-      vim.cmd.colorscheme(choice.colorscheme)
       vim.notify("Theme: " .. choice.name, vim.log.levels.INFO)
     end
   end)
 end, { desc = "Change Colorscheme" })
+
+-- Cheatsheet
+map("n", "<leader>?", function()
+  require("config.cheatsheet").open()
+end, { desc = "Keybindings Cheatsheet" })
