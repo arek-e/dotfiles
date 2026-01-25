@@ -20,6 +20,11 @@ return {
         terminal_colors = true,
         highlight_inactive_windows = false,
       },
+      highlights = {
+        -- More visible cursorline (lighter than default)
+        CursorLine = { bg = "#3e4452" },
+        CursorLineNr = { fg = "#61afef", bold = true },
+      },
     },
   },
 
