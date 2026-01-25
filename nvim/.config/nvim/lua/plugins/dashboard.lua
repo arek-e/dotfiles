@@ -142,6 +142,7 @@ return {
             { action = function() require("telescope.builtin").find_files() end, desc = " Find File    ", icon = "  ", key = "f", key_hl = "DashboardKey" },
             { action = "ene | startinsert", desc = " New File     ", icon = "  ", key = "n", key_hl = "DashboardKey" },
             { action = function() require("telescope.builtin").oldfiles() end, desc = " Recent Files ", icon = "  ", key = "r", key_hl = "DashboardKey" },
+            { action = function() require("persistence").load() end, desc = " Restore Session", icon = "  ", key = "s", key_hl = "DashboardKey" },
             { action = function() require("telescope.builtin").live_grep() end, desc = " Find Text    ", icon = "  ", key = "g", key_hl = "DashboardKey" },
             { action = function() vim.cmd("e " .. vim.fn.stdpath("config") .. "/init.lua") end, desc = " Config       ", icon = "  ", key = "c", key_hl = "DashboardKey" },
             { action = "Lazy", desc = " Plugins      ", icon = " 󰒲 ", key = "l", key_hl = "DashboardKey" },
