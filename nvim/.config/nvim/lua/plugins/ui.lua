@@ -96,11 +96,11 @@ return {
     },
   },
 
-  -- Configure LazyVim colorscheme (default to catppuccin)
+  -- Configure LazyVim colorscheme (default to tokyonight)
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "catppuccin",
+      colorscheme = "tokyonight",
     },
   },
 
