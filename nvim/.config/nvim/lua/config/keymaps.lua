@@ -75,8 +75,6 @@ map("n", "<C-u>", "<C-u>zz")
 map("n", "n", "nzzzv")
 map("n", "N", "Nzzzv")
 
--- Oil file explorer
-map("n", "-", "<cmd>Oil<cr>", { desc = "Open parent directory (Oil)" })
 
 -- Harpoon quick access (also configured in harpoon plugin)
 -- <leader>a to add, <leader>h to toggle menu, <leader>1-4 for quick access

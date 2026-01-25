@@ -32,10 +32,10 @@ local sections = {
     icon = "",
     color = "#e0af68",
     keys = {
-      { "-", "Parent dir (Oil)" },
-      { "<leader>o", "Oil explorer" },
+      { "<leader>e", "File explorer" },
       { "<leader>ff", "Find files" },
       { "<leader>fr", "Recent files" },
+      { "<leader>fg", "Find git files" },
     },
   },
   {

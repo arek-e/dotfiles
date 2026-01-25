@@ -27,9 +27,7 @@
 ### File Explorer
 | Key | Action |
 |-----|--------|
-| `-` | Open parent directory (Oil) |
-| `<leader>o` | Oil file explorer |
-| `<leader>e` | Neo-tree (LazyVim default) |
+| `<leader>e` | Neo-tree file explorer |
 
 ### Buffer Navigation
 | Key | Action |
@@ -245,22 +243,6 @@
 | `<A-j>` | Move line down |
 | `<A-k>` | Move line up |
 | `q` | Close help/qf/man windows |
-
----
-
-## Oil File Explorer (Inside Oil)
-
-| Key | Action |
-|-----|--------|
-| `<CR>` | Select/open |
-| `<C-v>` | Open in vsplit |
-| `<C-x>` | Open in split |
-| `<C-t>` | Open in tab |
-| `<C-p>` | Preview |
-| `-` | Go to parent |
-| `g.` | Toggle hidden files |
-| `gs` | Change sort |
-| `g?` | Show help |
 
 ---
 
