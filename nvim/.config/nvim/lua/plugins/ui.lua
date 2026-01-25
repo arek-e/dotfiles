@@ -24,6 +24,18 @@ return {
         -- More visible cursorline (lighter than default)
         CursorLine = { bg = "#3e4452" },
         CursorLineNr = { fg = "#61afef", bold = true },
+        -- Status line with visible background
+        StatusLine = { bg = "#3e4452", fg = "#abb2bf" },
+        StatusLineNC = { bg = "#2c323c", fg = "#5c6370" },
+        -- Visual selection
+        Visual = { bg = "#3e4452" },
+        VisualNOS = { bg = "#3e4452" },
+        -- Popup menu
+        Pmenu = { bg = "#3e4452", fg = "#abb2bf" },
+        PmenuSel = { bg = "#61afef", fg = "#282c34" },
+        -- Float windows
+        NormalFloat = { bg = "#2c323c" },
+        FloatBorder = { bg = "#2c323c", fg = "#5c6370" },
       },
     },
   },
