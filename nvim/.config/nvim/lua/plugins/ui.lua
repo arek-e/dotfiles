@@ -24,6 +24,14 @@ return {
         hl.DiffAdd = { bg = "#1a3a1a" }
         hl.DiffChange = { bg = "#1a2a3a" }
         hl.DiffDelete = { bg = "#3a1a1a" }
+        -- Dashboard colors
+        hl.DashboardHeader = { fg = c.purple }
+        hl.DashboardCenter = { fg = c.cyan }
+        hl.DashboardFooter = { fg = c.comment }
+        hl.DashboardShortCut = { fg = c.orange }
+        hl.DashboardKey = { fg = c.green }
+        hl.DashboardDesc = { fg = c.blue }
+        hl.DashboardIcon = { fg = c.cyan }
       end,
     },
   },
