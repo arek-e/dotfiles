@@ -93,8 +93,7 @@ $crystal\
 $custom\
 $status\
 $os\
-$battery\
-$time"""
+$battery"""
 
 [fill]
 symbol = ' '
@@ -151,11 +150,7 @@ format = " ◯[$localipv4](bold magenta)"
 disabled = false
 
 [time]
-disabled = false
-format = "[ $time]($style)"
-time_format = "%R"
-utc_time_offset = "local"
-style = "italic dimmed white"
+disabled = true
 
 [battery]
 format = "[ $percentage $symbol]($style)"
