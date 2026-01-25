@@ -6,6 +6,16 @@ local map = vim.keymap.set
 -- Quick escape from insert mode
 map("i", "jk", "<ESC>", { desc = "Exit insert mode" })
 
+-- Terminal mode keybindings (for Claude Code, etc.)
+-- Exit terminal mode to normal mode
+map("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+map("t", "jk", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+-- Window navigation from terminal mode
+map("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "Navigate left" })
+map("t", "<C-j>", "<C-\\><C-n><C-w>j", { desc = "Navigate down" })
+map("t", "<C-k>", "<C-\\><C-n><C-w>k", { desc = "Navigate up" })
+map("t", "<C-l>", "<C-\\><C-n><C-w>l", { desc = "Navigate right" })
+
 -- Better up/down (handles wrapped lines)
 map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
