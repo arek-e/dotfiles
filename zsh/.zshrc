@@ -76,7 +76,7 @@ fi
 # bat instead of cat
 if command -v bat &> /dev/null; then
   alias cat='bat'
-  export BAT_THEME="gruvbox-dark"
+  export BAT_THEME="OneHalfDark"
 fi
 
 # fd instead of find
@@ -91,6 +91,15 @@ if command -v fzf &> /dev/null; then
   # Key bindings & completion from brew-installed fzf (more reliable than process substitution)
   [[ -f "$(brew --prefix)/opt/fzf/shell/key-bindings.zsh" ]] && source "$(brew --prefix)/opt/fzf/shell/key-bindings.zsh"
   [[ -f "$(brew --prefix)/opt/fzf/shell/completion.zsh"   ]] && source "$(brew --prefix)/opt/fzf/shell/completion.zsh"
+
+  # One Dark colors for fzf
+  export FZF_DEFAULT_OPTS='
+    --color=dark
+    --color=fg:#abb2bf,bg:#282c34,hl:#61afef
+    --color=fg+:#abb2bf,bg+:#3e4452,hl+:#61afef
+    --color=info:#e5c07b,prompt:#61afef,pointer:#c678dd
+    --color=marker:#98c379,spinner:#c678dd,header:#98c379
+  '
 
   # Use fd with fzf
   if command -v fd &> /dev/null; then

@@ -11,9 +11,9 @@
 initial-command = ~/.config/ghostty/scripts/tmux-session.sh
 
 # ==============================================
-# Theme - Tokyo Night
+# Theme - One Dark
 # ==============================================
-theme = tokyonight
+theme = "One Dark"
 
 # ==============================================
 # Font Configuration

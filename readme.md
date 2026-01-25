@@ -324,7 +324,8 @@ Switch themes in Neovim with `<leader>uC`:
 
 | Theme | Variants | Description |
 |-------|----------|-------------|
-| **Catppuccin** (default) | mocha, macchiato, frappe, latte | Best plugin support, soothing pastels |
+| **One Dark Pro** (default) | onedark, onelight, onedark_vivid, onedark_dark | Atom's iconic theme, 50+ plugin integrations |
+| **Catppuccin** | mocha, macchiato, frappe, latte | Best plugin support, soothing pastels |
 | **TokyoNight** | night, storm, moon, day | Clean dark theme by Folke |
 | **Kanagawa** | wave, dragon, lotus | Inspired by Hokusai painting |
 | **Rose Pine** | main, moon, dawn | Soho vibes |
@@ -332,10 +333,11 @@ Switch themes in Neovim with `<leader>uC`:
 
 ### Terminal Theme
 
-- Ghostty: `tokyonight` theme
-- Tmux: [catppuccin/tmux](https://github.com/catppuccin/tmux) (matches nvim default)
-- Yazi: Custom Tokyo Night
-- fzf/bat: Tokyo Night colors
+- Ghostty: `One Dark` theme
+- Tmux: [odedlaz/tmux-onedark-theme](https://github.com/odedlaz/tmux-onedark-theme)
+- Yazi: Custom One Dark Pro
+- fzf/bat: One Dark colors
+- Starship: One Dark Pro colors
 
 ### Visual Enhancements
 

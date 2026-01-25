@@ -3,6 +3,26 @@ return {
   -- THEMES (switch with <leader>uC)
   -- ============================================================================
 
+  -- One Dark Pro - Atom's iconic theme (default)
+  {
+    "olimorris/onedarkpro.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {
+      styles = {
+        comments = "italic",
+        keywords = "italic",
+        conditionals = "italic",
+      },
+      options = {
+        cursorline = true,
+        transparency = false,
+        terminal_colors = true,
+        highlight_inactive_windows = false,
+      },
+    },
+  },
+
   -- Catppuccin - best plugin integration, 4 flavors
   {
     "catppuccin/nvim",
@@ -96,11 +116,11 @@ return {
     },
   },
 
-  -- Configure LazyVim colorscheme (default to tokyonight)
+  -- Configure LazyVim colorscheme (default to onedark)
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "tokyonight",
+      colorscheme = "onedark",
     },
   },
 
