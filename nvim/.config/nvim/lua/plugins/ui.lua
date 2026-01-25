@@ -317,11 +317,15 @@ return {
     },
   },
 
-  -- Lualine status line
+  -- Lualine status line (simplified - dropbar shows path)
   {
     "nvim-lualine/lualine.nvim",
     opts = function(_, opts)
       opts.sections = vim.tbl_deep_extend("force", opts.sections or {}, {
+        -- Remove filename since dropbar already shows full path
+        lualine_c = {
+          { "diagnostics" },
+        },
         lualine_z = {
           { "location", padding = { left = 1, right = 1 } },
         },
