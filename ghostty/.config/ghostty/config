@@ -76,6 +76,10 @@ confirm-close-surface = false
 window-width = 160
 window-height = 45
 
+# Transparency
+background-opacity = 0.92
+background-blur-radius = 20
+
 # ==============================================
 # Cursor
 # ==============================================

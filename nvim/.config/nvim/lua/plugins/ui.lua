@@ -16,26 +16,9 @@ return {
       },
       options = {
         cursorline = true,
-        transparency = false,
+        transparency = true,
         terminal_colors = true,
         highlight_inactive_windows = false,
-      },
-      highlights = {
-        -- More visible cursorline (lighter than default)
-        CursorLine = { bg = "#3e4452" },
-        CursorLineNr = { fg = "#61afef", bold = true },
-        -- Status line with visible background
-        StatusLine = { bg = "#3e4452", fg = "#abb2bf" },
-        StatusLineNC = { bg = "#2c323c", fg = "#5c6370" },
-        -- Visual selection
-        Visual = { bg = "#3e4452" },
-        VisualNOS = { bg = "#3e4452" },
-        -- Popup menu
-        Pmenu = { bg = "#3e4452", fg = "#abb2bf" },
-        PmenuSel = { bg = "#61afef", fg = "#282c34" },
-        -- Float windows
-        NormalFloat = { bg = "#2c323c" },
-        FloatBorder = { bg = "#2c323c", fg = "#5c6370" },
       },
     },
   },
@@ -48,7 +31,7 @@ return {
     priority = 1000,
     opts = {
       flavour = "mocha", -- latte, frappe, macchiato, mocha
-      transparent_background = false,
+      transparent_background = true,
       term_colors = true,
       styles = {
         comments = { "italic" },
@@ -83,13 +66,13 @@ return {
     priority = 1000,
     opts = {
       style = "night", -- night, storm, day, moon
-      transparent = false,
+      transparent = true,
       terminal_colors = true,
       styles = {
         comments = { italic = true },
         keywords = { italic = true },
-        sidebars = "dark",
-        floats = "dark",
+        sidebars = "transparent",
+        floats = "transparent",
       },
       sidebars = { "qf", "help", "neo-tree", "terminal", "Trouble" },
     },
@@ -102,7 +85,7 @@ return {
     priority = 1000,
     opts = {
       theme = "wave", -- wave, dragon, lotus
-      transparent = false,
+      transparent = true,
       terminalColors = true,
       colors = { theme = { all = { ui = { bg_gutter = "none" } } } },
     },
@@ -117,7 +100,7 @@ return {
     opts = {
       variant = "main", -- main, moon, dawn
       dark_variant = "main",
-      styles = { italic = true, transparency = false },
+      styles = { italic = true, transparency = true },
     },
   },
 
@@ -128,6 +111,7 @@ return {
     priority = 1000,
     opts = {
       options = {
+        transparent = true,
         styles = { comments = "italic", keywords = "italic" },
       },
     },
