@@ -239,4 +239,270 @@ return {
       },
     },
   },
+
+  -- ============================================================================
+  -- EDITING ENHANCEMENTS
+  -- ============================================================================
+
+  -- TreeSJ - split/join code blocks with treesitter
+  {
+    "Wansmer/treesj",
+    keys = {
+      { "<leader>j", "<cmd>TSJToggle<cr>", desc = "Toggle Split/Join" },
+      { "<leader>cJ", "<cmd>TSJSplit<cr>", desc = "Split Code Block" },
+      { "<leader>cj", "<cmd>TSJJoin<cr>", desc = "Join Code Block" },
+    },
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    opts = {
+      use_default_keymaps = false,
+      max_join_length = 150,
+    },
+  },
+
+  -- Dial - enhanced increment/decrement
+  {
+    "monaqa/dial.nvim",
+    keys = {
+      { "<C-a>", function() return require("dial.map").inc_normal() end, expr = true, desc = "Increment" },
+      { "<C-x>", function() return require("dial.map").dec_normal() end, expr = true, desc = "Decrement" },
+      { "g<C-a>", function() return require("dial.map").inc_gnormal() end, expr = true, desc = "Increment (additive)" },
+      { "g<C-x>", function() return require("dial.map").dec_gnormal() end, expr = true, desc = "Decrement (additive)" },
+      { "<C-a>", function() return require("dial.map").inc_visual() end, mode = "v", expr = true, desc = "Increment" },
+      { "<C-x>", function() return require("dial.map").dec_visual() end, mode = "v", expr = true, desc = "Decrement" },
+      { "g<C-a>", function() return require("dial.map").inc_gvisual() end, mode = "v", expr = true, desc = "Increment (additive)" },
+      { "g<C-x>", function() return require("dial.map").dec_gvisual() end, mode = "v", expr = true, desc = "Decrement (additive)" },
+    },
+    config = function()
+      local augend = require("dial.augend")
+      require("dial.config").augends:register_group({
+        default = {
+          augend.integer.alias.decimal_int,
+          augend.integer.alias.hex,
+          augend.date.alias["%Y-%m-%d"],
+          augend.date.alias["%Y/%m/%d"],
+          augend.date.alias["%m/%d"],
+          augend.date.alias["%H:%M"],
+          augend.constant.alias.bool,
+          augend.constant.new({ elements = { "true", "false" } }),
+          augend.constant.new({ elements = { "True", "False" } }),
+          augend.constant.new({ elements = { "yes", "no" } }),
+          augend.constant.new({ elements = { "on", "off" } }),
+          augend.constant.new({ elements = { "left", "right" } }),
+          augend.constant.new({ elements = { "up", "down" } }),
+          augend.constant.new({ elements = { "enable", "disable" } }),
+          augend.constant.new({ elements = { "enabled", "disabled" } }),
+          augend.constant.new({ elements = { "public", "private", "protected" } }),
+          augend.constant.new({ elements = { "&&", "||" }, word = false }),
+          augend.constant.new({ elements = { "let", "const" } }),
+          augend.semver.alias.semver,
+        },
+      })
+    end,
+  },
+
+  -- Spider - better word motions (respects camelCase)
+  {
+    "chrisgrieser/nvim-spider",
+    keys = {
+      { "w", "<cmd>lua require('spider').motion('w')<CR>", mode = { "n", "o", "x" }, desc = "Spider w" },
+      { "e", "<cmd>lua require('spider').motion('e')<CR>", mode = { "n", "o", "x" }, desc = "Spider e" },
+      { "b", "<cmd>lua require('spider').motion('b')<CR>", mode = { "n", "o", "x" }, desc = "Spider b" },
+    },
+    opts = {
+      skipInsignificantPunctuation = true,
+    },
+  },
+
+  -- Todo Comments - highlight and search TODOs
+  {
+    "folke/todo-comments.nvim",
+    event = "VeryLazy",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    opts = {
+      signs = true,
+      keywords = {
+        FIX = { icon = " ", color = "error", alt = { "FIXME", "BUG", "FIXIT", "ISSUE" } },
+        TODO = { icon = " ", color = "info" },
+        HACK = { icon = " ", color = "warning" },
+        WARN = { icon = " ", color = "warning", alt = { "WARNING", "XXX" } },
+        PERF = { icon = " ", alt = { "OPTIM", "PERFORMANCE", "OPTIMIZE" } },
+        NOTE = { icon = " ", color = "hint", alt = { "INFO" } },
+        TEST = { icon = "⏲ ", color = "test", alt = { "TESTING", "PASSED", "FAILED" } },
+      },
+    },
+    keys = {
+      { "]t", function() require("todo-comments").jump_next() end, desc = "Next Todo" },
+      { "[t", function() require("todo-comments").jump_prev() end, desc = "Prev Todo" },
+      { "<leader>xt", "<cmd>Trouble todo toggle<cr>", desc = "Todo (Trouble)" },
+      { "<leader>xT", "<cmd>Trouble todo toggle filter = {tag = {TODO,FIX,FIXME}}<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
+      { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Search Todos" },
+    },
+  },
+
+  -- UFO - modern code folding
+  {
+    "kevinhwang91/nvim-ufo",
+    dependencies = { "kevinhwang91/promise-async" },
+    event = "BufReadPost",
+    init = function()
+      vim.o.foldcolumn = "1"
+      vim.o.foldlevel = 99
+      vim.o.foldlevelstart = 99
+      vim.o.foldenable = true
+    end,
+    opts = {
+      provider_selector = function(_, filetype, buftype)
+        if buftype == "nofile" then
+          return ""
+        end
+        return { "treesitter", "indent" }
+      end,
+      fold_virt_text_handler = function(virtText, lnum, endLnum, width, truncate)
+        local newVirtText = {}
+        local suffix = (" 󰁂 %d "):format(endLnum - lnum)
+        local sufWidth = vim.fn.strdisplaywidth(suffix)
+        local targetWidth = width - sufWidth
+        local curWidth = 0
+        for _, chunk in ipairs(virtText) do
+          local chunkText = chunk[1]
+          local chunkWidth = vim.fn.strdisplaywidth(chunkText)
+          if targetWidth > curWidth + chunkWidth then
+            table.insert(newVirtText, chunk)
+          else
+            chunkText = truncate(chunkText, targetWidth - curWidth)
+            local hlGroup = chunk[2]
+            table.insert(newVirtText, { chunkText, hlGroup })
+            chunkWidth = vim.fn.strdisplaywidth(chunkText)
+            if curWidth + chunkWidth < targetWidth then
+              suffix = suffix .. (" "):rep(targetWidth - curWidth - chunkWidth)
+            end
+            break
+          end
+          curWidth = curWidth + chunkWidth
+        end
+        table.insert(newVirtText, { suffix, "MoreMsg" })
+        return newVirtText
+      end,
+    },
+    keys = {
+      { "zR", function() require("ufo").openAllFolds() end, desc = "Open all folds" },
+      { "zM", function() require("ufo").closeAllFolds() end, desc = "Close all folds" },
+      { "zr", function() require("ufo").openFoldsExceptKinds() end, desc = "Open folds except kinds" },
+      { "zm", function() require("ufo").closeFoldsWith() end, desc = "Close folds with" },
+      { "K", function()
+        local winid = require("ufo").peekFoldedLinesUnderCursor()
+        if not winid then
+          vim.lsp.buf.hover()
+        end
+      end, desc = "Peek Fold or Hover" },
+    },
+  },
+
+  -- ============================================================================
+  -- SEARCH & REPLACE
+  -- ============================================================================
+
+  -- Grug-far - search and replace
+  {
+    "MagicDuck/grug-far.nvim",
+    cmd = "GrugFar",
+    keys = {
+      { "<leader>sr", function() require("grug-far").open({ transient = true }) end, desc = "Search & Replace (Grug-far)" },
+      { "<leader>sR", function() require("grug-far").open({ transient = true, prefills = { paths = vim.fn.expand("%") } }) end, desc = "Search & Replace (current file)" },
+      { "<leader>sw", function() require("grug-far").open({ transient = true, prefills = { search = vim.fn.expand("<cword>") } }) end, desc = "Search word under cursor" },
+      { "<leader>sr", function()
+        require("grug-far").open({
+          transient = true,
+          prefills = { search = vim.fn.getreg("v") },
+        })
+      end, mode = "v", desc = "Search selection" },
+    },
+    opts = {
+      headerMaxWidth = 80,
+      icons = {
+        enabled = true,
+      },
+      keymaps = {
+        replace = { n = "<localleader>r" },
+        qflist = { n = "<localleader>q" },
+        syncLocations = { n = "<localleader>s" },
+        syncLine = { n = "<localleader>l" },
+        close = { n = "<localleader>c" },
+        historyOpen = { n = "<localleader>t" },
+        historyAdd = { n = "<localleader>a" },
+        refresh = { n = "<localleader>f" },
+        openLocation = { n = "<localleader>o" },
+        abort = { n = "<localleader>b" },
+        toggleShowCommand = { n = "<localleader>p" },
+        swapEngine = { n = "<localleader>e" },
+      },
+    },
+  },
+
+  -- ============================================================================
+  -- TASK RUNNER
+  -- ============================================================================
+
+  -- Overseer - task runner and job management
+  {
+    "stevearc/overseer.nvim",
+    cmd = {
+      "OverseerRun",
+      "OverseerToggle",
+      "OverseerOpen",
+      "OverseerClose",
+      "OverseerBuild",
+      "OverseerTaskAction",
+      "OverseerQuickAction",
+    },
+    keys = {
+      { "<leader>ot", "<cmd>OverseerToggle<cr>", desc = "Toggle Overseer" },
+      { "<leader>or", "<cmd>OverseerRun<cr>", desc = "Run Task" },
+      { "<leader>oq", "<cmd>OverseerQuickAction<cr>", desc = "Quick Action" },
+      { "<leader>oa", "<cmd>OverseerTaskAction<cr>", desc = "Task Action" },
+      { "<leader>ob", "<cmd>OverseerBuild<cr>", desc = "Build" },
+    },
+    opts = {
+      task_list = {
+        direction = "bottom",
+        min_height = 15,
+        max_height = 25,
+        default_detail = 1,
+        bindings = {
+          ["?"] = "ShowHelp",
+          ["g?"] = "ShowHelp",
+          ["<CR>"] = "RunAction",
+          ["<C-e>"] = "Edit",
+          ["o"] = "Open",
+          ["<C-v>"] = "OpenVsplit",
+          ["<C-s>"] = "OpenSplit",
+          ["<C-f>"] = "OpenFloat",
+          ["<C-q>"] = "OpenQuickFix",
+          ["p"] = "TogglePreview",
+          ["<C-l>"] = "IncreaseDetail",
+          ["<C-h>"] = "DecreaseDetail",
+          ["L"] = "IncreaseAllDetail",
+          ["H"] = "DecreaseAllDetail",
+          ["["] = "DecreaseWidth",
+          ["]"] = "IncreaseWidth",
+          ["{"] = "PrevTask",
+          ["}"] = "NextTask",
+          ["<C-k>"] = "ScrollOutputUp",
+          ["<C-j>"] = "ScrollOutputDown",
+          ["q"] = "Close",
+        },
+      },
+      templates = { "builtin" },
+      strategy = {
+        "toggleterm",
+        direction = "horizontal",
+        highlights = nil,
+        auto_scroll = true,
+        close_on_exit = false,
+        quit_on_exit = "never",
+        open_on_start = true,
+        hidden = false,
+      },
+    },
+  },
 }
