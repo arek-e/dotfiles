@@ -1,174 +1,176 @@
--- Cheatsheet - NvChad-style floating keybinding reference
+-- Cheatsheet - Clean floating keybinding reference
 -- Open with <leader>? or :Cheatsheet
 
 local M = {}
 
-local cheatsheet_data = {
+local sections = {
   {
-    name = "Navigation",
+    title = "Navigation",
+    icon = "󰆧",
     color = "#7aa2f7",
-    mappings = {
-      { "<C-h/j/k/l>", "Navigate splits/tmux panes" },
-      { "<leader>wf", "Toggle focus mode" },
-      { "<S-h> / <S-l>", "Prev/next buffer" },
+    keys = {
+      { "C-h/j/k/l", "Navigate splits/tmux" },
+      { "S-h / S-l", "Prev/next buffer" },
       { "<leader>,", "Switch buffer" },
-      { "<leader>e", "Neo-tree explorer" },
+      { "<leader>e", "File explorer" },
+      { "<leader>wf", "Toggle focus" },
     },
   },
   {
-    name = "Harpoon",
+    title = "Harpoon",
+    icon = "󱡀",
     color = "#9ece6a",
-    mappings = {
-      { "<leader>a", "Add file to harpoon" },
-      { "<leader>h", "Open harpoon menu" },
-      { "<leader>1-5", "Jump to file 1-5" },
-      { "[H / ]H", "Prev/next harpoon file" },
+    keys = {
+      { "<leader>a", "Add file" },
+      { "<leader>h", "Open menu" },
+      { "<leader>1-5", "Jump to file" },
+      { "[H / ]H", "Prev/next file" },
     },
   },
   {
-    name = "File Explorer",
+    title = "Files",
+    icon = "",
     color = "#e0af68",
-    mappings = {
-      { "-", "Open parent dir (Oil)" },
+    keys = {
+      { "-", "Parent dir (Oil)" },
       { "<leader>o", "Oil explorer" },
-      { "<CR>", "Open file (in Oil)" },
-      { "<C-v> / <C-x>", "Open vsplit/split" },
-      { "g.", "Toggle hidden files" },
+      { "<leader>ff", "Find files" },
+      { "<leader>fr", "Recent files" },
     },
   },
   {
-    name = "Search (Telescope)",
+    title = "Search",
+    icon = "",
     color = "#bb9af7",
-    mappings = {
-      { "<leader>ff", "Find files" },
-      { "<leader>fg", "Find git files" },
-      { "<leader>fr", "Recent files" },
+    keys = {
       { "<leader>sg", "Live grep" },
       { "<leader>sw", "Search word" },
       { "<leader>st", "Search TODOs" },
-      { "<leader>/", "Grep in project" },
+      { "<leader>/", "Grep project" },
     },
   },
   {
-    name = "Search & Replace",
+    title = "Replace",
+    icon = "󰛔",
     color = "#f7768e",
-    mappings = {
-      { "<leader>sr", "Search & replace (Grug)" },
-      { "<leader>sR", "S&R current file" },
-      { "<leader>sw", "Search word under cursor" },
+    keys = {
+      { "<leader>sr", "Search & replace" },
+      { "<leader>sR", "Replace in file" },
     },
   },
   {
-    name = "Code Editing",
+    title = "Code",
+    icon = "",
     color = "#7dcfff",
-    mappings = {
-      { "<leader>j", "Toggle split/join" },
-      { "<C-a> / <C-x>", "Increment/decrement" },
-      { "w / e / b", "Word motion (camelCase)" },
-      { "zR / zM", "Open/close all folds" },
-      { "K", "Peek fold or LSP hover" },
+    keys = {
+      { "<leader>j", "Split/join" },
+      { "C-a / C-x", "Inc/decrement" },
+      { "zR / zM", "Open/close folds" },
+      { "K", "Hover/peek fold" },
     },
   },
   {
-    name = "Git",
+    title = "Git",
+    icon = "",
     color = "#9ece6a",
-    mappings = {
+    keys = {
       { "<leader>gg", "LazyGit" },
       { "]h / [h", "Next/prev hunk" },
       { "<leader>ghs", "Stage hunk" },
-      { "<leader>ghr", "Reset hunk" },
       { "<leader>ghp", "Preview hunk" },
-      { "<leader>ghb", "Blame line" },
       { "<leader>gd", "Diff view" },
       { "<leader>gm", "Diff vs main" },
-      { "<leader>gf", "File history" },
     },
   },
   {
-    name = "Diagnostics",
-    color = "#f7768e",
-    mappings = {
-      { "<leader>xx", "Diagnostics (Trouble)" },
-      { "<leader>xX", "Buffer diagnostics" },
-      { "<leader>xt", "TODOs (Trouble)" },
-      { "]t / [t", "Next/prev TODO" },
-      { "]d / [d", "Next/prev diagnostic" },
-    },
-  },
-  {
-    name = "LSP",
+    title = "LSP",
+    icon = "",
     color = "#7aa2f7",
-    mappings = {
-      { "gd", "Go to definition" },
-      { "gr", "Go to references" },
-      { "gI", "Go to implementation" },
+    keys = {
+      { "gd", "Definition" },
+      { "gr", "References" },
+      { "gI", "Implementation" },
       { "<leader>ca", "Code action" },
-      { "<leader>cr", "Rename symbol" },
-      { "<leader>cf", "Format" },
+      { "<leader>cr", "Rename" },
     },
   },
   {
-    name = "AI (Claude)",
+    title = "Diagnostics",
+    icon = "",
+    color = "#f7768e",
+    keys = {
+      { "<leader>xx", "Diagnostics" },
+      { "<leader>xt", "TODOs" },
+      { "]d / [d", "Next/prev diag" },
+      { "]t / [t", "Next/prev TODO" },
+    },
+  },
+  {
+    title = "AI",
+    icon = "󰚩",
     color = "#bb9af7",
-    mappings = {
-      { "<C-,>", "Toggle Claude Code" },
-      { "<leader>ac", "Open Claude Code" },
-      { "<leader>aC", "Claude continue" },
-      { "<leader>aR", "Claude resume" },
+    keys = {
+      { "C-,", "Toggle Claude" },
+      { "<leader>ac", "Claude Code" },
+      { "<leader>aC", "Continue" },
     },
   },
   {
-    name = "Tasks (Overseer)",
+    title = "Tasks",
+    icon = "",
     color = "#e0af68",
-    mappings = {
-      { "<leader>ot", "Toggle Overseer" },
+    keys = {
+      { "<leader>ot", "Toggle tasks" },
       { "<leader>or", "Run task" },
-      { "<leader>oq", "Quick action" },
       { "<leader>ob", "Build" },
     },
   },
   {
-    name = "Sessions",
+    title = "Sessions",
+    icon = "󰆓",
     color = "#7dcfff",
-    mappings = {
-      { "<leader>qs", "Restore session" },
-      { "<leader>qS", "Select session" },
-      { "<leader>ql", "Restore last session" },
+    keys = {
+      { "<leader>qs", "Restore" },
+      { "<leader>qS", "Select" },
+      { "<leader>ql", "Last session" },
     },
   },
   {
-    name = "UI Toggles",
+    title = "UI",
+    icon = "󰔎",
     color = "#9ece6a",
-    mappings = {
-      { "<leader>uC", "Change colorscheme" },
+    keys = {
+      { "<leader>uC", "Colorscheme" },
       { "<leader>z", "Zen mode" },
-      { "<leader>Z", "Zen zoom" },
-      { "<leader>un", "Notification history" },
+      { "<leader>un", "Notifications" },
     },
   },
   {
-    name = "Tmux",
-    color = "#7aa2f7",
-    mappings = {
-      { "<leader>tp", "Tmux pane (file dir)" },
-      { "<leader>tP", "Tmux pane (project)" },
-      { "<leader>tw", "Tmux window (file dir)" },
-    },
-  },
-  {
-    name = "General",
+    title = "General",
+    icon = "󰌌",
     color = "#c0caf5",
-    mappings = {
-      { "jk", "Exit insert mode" },
-      { "<C-s>", "Save file" },
-      { "<A-j> / <A-k>", "Move line down/up" },
-      { "q", "Close help/qf windows" },
-      { "<leader>?", "This cheatsheet" },
+    keys = {
+      { "jk", "Exit insert" },
+      { "C-s", "Save" },
+      { "A-j / A-k", "Move line" },
+      { "<leader>?", "This help" },
     },
   },
 }
 
--- Create the cheatsheet content
+local function setup_highlights()
+  vim.api.nvim_set_hl(0, "CheatHeader", { fg = "#7aa2f7", bold = true })
+  vim.api.nvim_set_hl(0, "CheatSubheader", { fg = "#565f89", italic = true })
+  vim.api.nvim_set_hl(0, "CheatKey", { fg = "#9ece6a", bold = true })
+  vim.api.nvim_set_hl(0, "CheatDesc", { fg = "#a9b1d6" })
+  vim.api.nvim_set_hl(0, "CheatSep", { fg = "#3b4261" })
+  vim.api.nvim_set_hl(0, "CheatFooter", { fg = "#565f89", italic = true })
+
+  for i, section in ipairs(sections) do
+    vim.api.nvim_set_hl(0, "CheatSection" .. i, { fg = section.color, bold = true })
+  end
+end
+
 local function create_content()
   local lines = {}
   local highlights = {}
@@ -177,91 +179,86 @@ local function create_content()
   -- Header
   table.insert(lines, "")
   line_num = line_num + 1
-  local header = "  ╭─────────────────────────────────────────────────────────────────────────────────╮"
-  table.insert(lines, header)
-  line_num = line_num + 1
-  table.insert(highlights, { line = line_num, col = 0, end_col = #header, hl = "CheatsheetBorder" })
 
-  local title = "  │                            NEOVIM KEYBINDINGS                                   │"
+  local title = "    NEOVIM KEYBINDINGS"
   table.insert(lines, title)
   line_num = line_num + 1
-  table.insert(highlights, { line = line_num, col = 0, end_col = #title, hl = "CheatsheetTitle" })
+  table.insert(highlights, { line = line_num, col = 0, end_col = #title, hl = "CheatHeader" })
 
-  local subheader = "  │                              <leader> = Space                                   │"
-  table.insert(lines, subheader)
+  local subtitle = "    <leader> = Space"
+  table.insert(lines, subtitle)
   line_num = line_num + 1
-  table.insert(highlights, { line = line_num, col = 0, end_col = #subheader, hl = "CheatsheetSubtitle" })
-
-  local border_bottom = "  ╰─────────────────────────────────────────────────────────────────────────────────╯"
-  table.insert(lines, border_bottom)
-  line_num = line_num + 1
-  table.insert(highlights, { line = line_num, col = 0, end_col = #border_bottom, hl = "CheatsheetBorder" })
+  table.insert(highlights, { line = line_num, col = 0, end_col = #subtitle, hl = "CheatSubheader" })
 
   table.insert(lines, "")
   line_num = line_num + 1
 
-  -- Render sections in two columns
-  local col_width = 42
-  local sections_per_col = math.ceil(#cheatsheet_data / 2)
+  -- Calculate columns
+  local col_width = 38
+  local num_cols = 2
+  local sections_per_col = math.ceil(#sections / num_cols)
 
-  for i = 1, sections_per_col do
-    local left_section = cheatsheet_data[i]
-    local right_section = cheatsheet_data[i + sections_per_col]
+  -- Build rows
+  for row = 1, sections_per_col do
+    local left_idx = row
+    local right_idx = row + sections_per_col
 
+    local left_section = sections[left_idx]
+    local right_section = sections[right_idx]
+
+    -- Section headers
     if left_section then
-      -- Section headers
-      local left_header = string.format("  ┌─ %s ", left_section.name)
-      left_header = left_header .. string.rep("─", col_width - #left_header + 2)
+      local left_header = string.format("  %s %s", left_section.icon, left_section.title)
       local right_header = ""
       if right_section then
-        right_header = string.format("  ┌─ %s ", right_section.name)
-        right_header = right_header .. string.rep("─", col_width - #right_header + 2)
+        right_header = string.format("  %s %s", right_section.icon, right_section.title)
       end
 
-      table.insert(lines, left_header .. right_header)
+      local padding = col_width - vim.fn.strdisplaywidth(left_header)
+      local line = left_header .. string.rep(" ", padding) .. right_header
+      table.insert(lines, line)
       line_num = line_num + 1
-      table.insert(highlights, { line = line_num, col = 0, end_col = #left_header, hl = "Cheatsheet" .. i })
+      table.insert(highlights, { line = line_num, col = 0, end_col = vim.fn.strdisplaywidth(left_header), hl = "CheatSection" .. left_idx })
       if right_section then
-        table.insert(highlights, { line = line_num, col = #left_header, end_col = #left_header + #right_header, hl = "Cheatsheet" .. (i + sections_per_col) })
+        table.insert(highlights, { line = line_num, col = col_width, end_col = col_width + vim.fn.strdisplaywidth(right_header), hl = "CheatSection" .. right_idx })
       end
 
-      -- Find max mappings in either section
-      local max_mappings = #left_section.mappings
+      -- Find max keys
+      local max_keys = #left_section.keys
       if right_section then
-        max_mappings = math.max(max_mappings, #right_section.mappings)
+        max_keys = math.max(max_keys, #right_section.keys)
       end
 
-      for j = 1, max_mappings do
-        local left_mapping = left_section.mappings[j]
-        local right_mapping = right_section and right_section.mappings[j]
+      for k = 1, max_keys do
+        local left_key = left_section.keys[k]
+        local right_key = right_section and right_section.keys[k]
 
-        local left_line = ""
-        if left_mapping then
-          local key_part = string.format("  │ %-18s", left_mapping[1])
-          local desc_part = string.format("%-22s", left_mapping[2])
-          left_line = key_part .. desc_part
-        else
-          left_line = string.rep(" ", col_width)
+        local left_str = ""
+        local left_key_end = 0
+        if left_key then
+          left_str = string.format("    %-14s %s", left_key[1], left_key[2])
+          left_key_end = 4 + 14 -- "    " + key width
         end
 
-        local right_line = ""
-        if right_mapping then
-          local key_part = string.format("  │ %-18s", right_mapping[1])
-          local desc_part = string.format("%-22s", right_mapping[2])
-          right_line = key_part .. desc_part
+        local right_str = ""
+        if right_key then
+          right_str = string.format("    %-14s %s", right_key[1], right_key[2])
         end
 
-        table.insert(lines, left_line .. right_line)
+        local left_pad = col_width - vim.fn.strdisplaywidth(left_str)
+        if left_pad < 0 then left_pad = 0 end
+        local full_line = left_str .. string.rep(" ", left_pad) .. right_str
+
+        table.insert(lines, full_line)
         line_num = line_num + 1
 
-        -- Highlight keys
-        if left_mapping then
-          table.insert(highlights, { line = line_num, col = 4, end_col = 22, hl = "CheatsheetKey" })
-          table.insert(highlights, { line = line_num, col = 22, end_col = col_width, hl = "CheatsheetDesc" })
+        if left_key then
+          table.insert(highlights, { line = line_num, col = 4, end_col = left_key_end, hl = "CheatKey" })
+          table.insert(highlights, { line = line_num, col = left_key_end, end_col = col_width, hl = "CheatDesc" })
         end
-        if right_mapping then
-          table.insert(highlights, { line = line_num, col = col_width + 4, end_col = col_width + 22, hl = "CheatsheetKey" })
-          table.insert(highlights, { line = line_num, col = col_width + 22, end_col = col_width * 2, hl = "CheatsheetDesc" })
+        if right_key then
+          table.insert(highlights, { line = line_num, col = col_width + 4, end_col = col_width + 4 + 14, hl = "CheatKey" })
+          table.insert(highlights, { line = line_num, col = col_width + 4 + 14, end_col = #full_line, hl = "CheatDesc" })
         end
       end
 
@@ -271,61 +268,43 @@ local function create_content()
   end
 
   -- Footer
-  table.insert(lines, "  Press q or <Esc> to close")
+  local footer = "  Press q or <Esc> to close"
+  table.insert(lines, footer)
   line_num = line_num + 1
-  table.insert(highlights, { line = line_num, col = 0, end_col = 30, hl = "CheatsheetFooter" })
+  table.insert(highlights, { line = line_num, col = 0, end_col = #footer, hl = "CheatFooter" })
+
   table.insert(lines, "")
 
   return lines, highlights
 end
 
--- Set up highlight groups
-local function setup_highlights()
-  vim.api.nvim_set_hl(0, "CheatsheetBorder", { fg = "#3b4261" })
-  vim.api.nvim_set_hl(0, "CheatsheetTitle", { fg = "#7aa2f7", bold = true })
-  vim.api.nvim_set_hl(0, "CheatsheetSubtitle", { fg = "#565f89", italic = true })
-  vim.api.nvim_set_hl(0, "CheatsheetKey", { fg = "#9ece6a", bold = true })
-  vim.api.nvim_set_hl(0, "CheatsheetDesc", { fg = "#c0caf5" })
-  vim.api.nvim_set_hl(0, "CheatsheetFooter", { fg = "#565f89", italic = true })
-
-  -- Section colors
-  for i, section in ipairs(cheatsheet_data) do
-    vim.api.nvim_set_hl(0, "Cheatsheet" .. i, { fg = section.color, bold = true })
-  end
-end
-
--- Open the cheatsheet in a floating window
 function M.open()
   setup_highlights()
 
   local lines, highlights = create_content()
 
   -- Calculate window size
-  local width = 88
+  local width = 78
   local height = #lines
-  local max_height = math.floor(vim.o.lines * 0.85)
+  local max_height = math.floor(vim.o.lines * 0.9)
   if height > max_height then
     height = max_height
   end
 
-  -- Center the window
   local row = math.floor((vim.o.lines - height) / 2)
   local col = math.floor((vim.o.columns - width) / 2)
 
-  -- Create buffer
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
   vim.bo[buf].modifiable = false
   vim.bo[buf].bufhidden = "wipe"
   vim.bo[buf].filetype = "cheatsheet"
 
-  -- Apply highlights
   local ns = vim.api.nvim_create_namespace("cheatsheet")
   for _, hl in ipairs(highlights) do
-    vim.api.nvim_buf_add_highlight(buf, ns, hl.hl, hl.line - 1, hl.col, hl.end_col)
+    pcall(vim.api.nvim_buf_add_highlight, buf, ns, hl.hl, hl.line - 1, hl.col, hl.end_col)
   end
 
-  -- Create window
   local win = vim.api.nvim_open_win(buf, true, {
     relative = "editor",
     width = width,
@@ -334,15 +313,14 @@ function M.open()
     col = col,
     style = "minimal",
     border = "rounded",
-    title = " Cheatsheet ",
+    title = " 󰌌 Cheatsheet ",
     title_pos = "center",
   })
 
-  -- Window options
   vim.wo[win].winblend = 0
   vim.wo[win].cursorline = false
+  vim.wo[win].wrap = false
 
-  -- Close on q or Escape
   local close = function()
     if vim.api.nvim_win_is_valid(win) then
       vim.api.nvim_win_close(win, true)
@@ -353,7 +331,6 @@ function M.open()
   vim.keymap.set("n", "<Esc>", close, { buffer = buf, nowait = true })
   vim.keymap.set("n", "<leader>?", close, { buffer = buf, nowait = true })
 
-  -- Close on buffer leave
   vim.api.nvim_create_autocmd("BufLeave", {
     buffer = buf,
     once = true,
@@ -361,7 +338,6 @@ function M.open()
   })
 end
 
--- Create user command
 vim.api.nvim_create_user_command("Cheatsheet", M.open, { desc = "Open keybindings cheatsheet" })
 
 return M
