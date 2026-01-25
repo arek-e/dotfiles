@@ -4,16 +4,17 @@ return {
     "greggh/claude-code.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
     keys = {
-      { "<C-,>", desc = "Toggle Claude Code" },
-      { "<leader>ac", desc = "Claude Code" },
+      { "<C-,>", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude Code" },
+      { "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Claude Code" },
       { "<leader>aC", "<cmd>ClaudeCodeContinue<cr>", desc = "Claude Continue" },
       { "<leader>aR", "<cmd>ClaudeCodeResume<cr>", desc = "Claude Resume (pick session)" },
     },
     opts = {
       window = {
         type = "float",
-        width = "85%",
-        height = "85%",
+        position = "center",
+        width = 0.85,
+        height = 0.85,
         border = "rounded",
       },
       refresh = {
