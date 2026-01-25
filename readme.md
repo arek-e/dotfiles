@@ -6,7 +6,7 @@
 ![Neovim](https://img.shields.io/badge/LazyVim-%2357A143.svg?&style=for-the-badge&logo=neovim&logoColor=white)
 ![Tmux](https://img.shields.io/badge/tmux-1BB91F?style=for-the-badge&logo=tmux&logoColor=white)
 
-A modern, terminal-first development environment featuring **Ghostty**, **Tmux**, **LazyVim**, and curated CLI tools - unified with the **Tokyo Night** theme.
+A modern, terminal-first development environment featuring **Ghostty**, **Tmux**, **LazyVim**, and curated CLI tools - with **5 switchable themes** and smooth animations.
 
 [Tools](#-tools) | [Installation](#-installation) | [Key Bindings](#-key-bindings) | [Customization](#-customization)
 
@@ -183,6 +183,8 @@ dash
 | **Git** | |
 | `<leader>gd` | Diffview (working tree) |
 | `<leader>gD` | Diffview (last commit) |
+| `<leader>gm` | Diffview (vs main branch) |
+| `<leader>gB` | Branch files vs main (Telescope) |
 | `<leader>gf` | File history (current) |
 | `<leader>gF` | File history (repo) |
 | `<leader>gq` | Close diffview |
@@ -206,6 +208,23 @@ dash
 | `<leader>xx` | Trouble diagnostics |
 | `<leader>xX` | Buffer diagnostics |
 | `]d` / `[d` | Next/prev diagnostic |
+| **AI (Claude Code)** | |
+| `<C-,>` | Toggle Claude Code terminal |
+| `<leader>ac` | Claude Code |
+| `<leader>aC` | Claude Continue |
+| `<leader>aR` | Claude Resume (pick session) |
+| **UI & Themes** | |
+| `<leader>uC` | Switch colorscheme |
+| `<leader>z` | Zen mode |
+| `<leader>Z` | Zen zoom (fullscreen) |
+| `<leader>un` | Notification history |
+| `<leader>uD` | Toggle dim (focus scope) |
+| `<leader>wf` | Toggle focus mode (golden ratio) |
+| `<leader>;` | Dropbar pick (breadcrumb) |
+| **Noice (Messages)** | |
+| `<leader>snl` | Last message |
+| `<leader>snh` | Message history |
+| `<leader>snd` | Dismiss all |
 | **Editing** | |
 | `jk` | Exit insert mode |
 | `Ctrl+s` | Save file |
@@ -299,15 +318,36 @@ make clean   # Remove symlinks
 
 ---
 
-## Theme
+## Themes
 
-**Tokyo Night** across all tools:
+Switch themes in Neovim with `<leader>uC`:
+
+| Theme | Variants | Description |
+|-------|----------|-------------|
+| **Catppuccin** (default) | mocha, macchiato, frappe, latte | Best plugin support, soothing pastels |
+| **TokyoNight** | night, storm, moon, day | Clean dark theme by Folke |
+| **Kanagawa** | wave, dragon, lotus | Inspired by Hokusai painting |
+| **Rose Pine** | main, moon, dawn | Soho vibes |
+| **Nightfox** | nightfox, dayfox, dawnfox, duskfox, nordfox, terafox, carbonfox | Highly customizable |
+
+### Terminal Theme
 
 - Ghostty: `tokyonight` theme
-- Neovim: [tokyonight.nvim](https://github.com/folke/tokyonight.nvim)
 - Tmux: [tokyo-night-tmux](https://github.com/janoamaral/tokyo-night-tmux)
 - Yazi: Custom Tokyo Night
 - fzf/bat: Tokyo Night colors
+
+### Visual Enhancements
+
+| Feature | Plugin |
+|---------|--------|
+| Cursor trail animation | smear-cursor.nvim |
+| Mode-aware colors | reactive.nvim |
+| Smooth scrolling | snacks.nvim |
+| Popup cmdline | noice.nvim |
+| Golden ratio windows | focus.nvim |
+| Floating filenames | incline.nvim |
+| Breadcrumb bar | dropbar.nvim |
 
 ## Fonts
 
