@@ -64,8 +64,8 @@ font-family-bold-italic = "MonaspiceNe Nerd Font Mono"
 # ==============================================
 # Window
 # ==============================================
-window-padding-x = 8
-window-padding-y = 8
+window-padding-x = 0
+window-padding-y = 0
 window-decoration = true
 window-theme = ghostty
 macos-titlebar-style = tabs
