@@ -75,3 +75,27 @@ autocmd({ "BufRead", "BufNewFile" }, {
     vim.bo.filetype = "sh"
   end,
 })
+
+-- Transparent background overrides (runs after colorscheme loads)
+autocmd("ColorScheme", {
+  group = augroup("transparent_overrides", { clear = true }),
+  callback = function()
+    -- Transparent backgrounds
+    vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
+    vim.api.nvim_set_hl(0, "NormalNC", { bg = "NONE" })
+    vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
+    vim.api.nvim_set_hl(0, "FloatBorder", { bg = "NONE" })
+    vim.api.nvim_set_hl(0, "SignColumn", { bg = "NONE" })
+    vim.api.nvim_set_hl(0, "EndOfBuffer", { bg = "NONE" })
+    -- Transparent cursorline (no bg, just highlight line number)
+    vim.api.nvim_set_hl(0, "CursorLine", { bg = "NONE" })
+    vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#7aa2f7", bold = true, bg = "NONE" })
+    -- Transparent statusline
+    vim.api.nvim_set_hl(0, "StatusLine", { bg = "NONE" })
+    vim.api.nvim_set_hl(0, "StatusLineNC", { bg = "NONE" })
+    -- Transparent tabline
+    vim.api.nvim_set_hl(0, "TabLine", { bg = "NONE" })
+    vim.api.nvim_set_hl(0, "TabLineFill", { bg = "NONE" })
+    vim.api.nvim_set_hl(0, "TabLineSel", { bg = "NONE" })
+  end,
+})
