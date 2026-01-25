@@ -179,8 +179,6 @@ repo_root_format = '[$before_root_path]($before_repo_root_style)[$repo_root]($re
 format = "[ $branch(:$remote_branch)]($style)"
 symbol = ""
 style = "#9ece6a"
-truncation_symbol = "…"
-truncation_length = 11
 ignore_branches = ["main", "master"]
 only_attached = true
 
