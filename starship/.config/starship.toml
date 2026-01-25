@@ -1,13 +1,13 @@
 # version: 1.0.0
-# One Dark Pro Color Theme
+# Tokyo Night Color Theme
 
 add_newline = true
 continuation_prompt = "[▸▹ ](dimmed white)"
 
-# One Dark Pro Palette Reference:
-# Red: #e06c75 | Green: #98c379 | Yellow: #e5c07b
-# Blue: #61afef | Magenta: #c678dd | Cyan: #56b6c2
-# Foreground: #abb2bf | Comment: #5c6370
+# Tokyo Night Palette Reference:
+# Red: #f7768e | Green: #9ece6a | Yellow: #e0af68
+# Blue: #7aa2f7 | Magenta: #bb9af7 | Cyan: #7dcfff
+# Foreground: #c0caf5 | Comment: #565f89
 
 format = """($nix_shell$container$fill$git_metrics\n)$cmd_duration\
 $hostname\
@@ -101,9 +101,9 @@ symbol = ' '
 
 [character]
 format = "$symbol "
-success_symbol = "[◎](bold italic #98c379)"
-error_symbol = "[○](italic #e06c75)"
-vimcmd_symbol = "[■](italic #61afef)"
+success_symbol = "[◎](bold italic #9ece6a)"
+error_symbol = "[○](italic #f7768e)"
+vimcmd_symbol = "[■](italic #7aa2f7)"
 # not supported in zsh
 vimcmd_replace_one_symbol = "◌"
 vimcmd_replace_symbol = "□"
@@ -132,10 +132,10 @@ truncation_length = 2
 truncation_symbol = "□ "
 read_only = " ◈"
 use_os_path_sep = true
-style = "italic #61afef"
+style = "italic #7aa2f7"
 format = '[$path]($style)[$read_only]($read_only_style)'
-repo_root_style = 'bold #61afef'
-repo_root_format = '[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) [△](bold #61afef)'
+repo_root_style = 'bold #7aa2f7'
+repo_root_format = '[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) [△](bold #7aa2f7)'
 
 [cmd_duration]
 format = "[◄ $duration ](italic white)"
@@ -179,8 +179,8 @@ style = "italic dimmed yellow"
 
 [git_branch]
 format = " [$branch(:$remote_branch)]($style)"
-symbol = "[△](bold italic #61afef)"
-style = "italic #61afef"
+symbol = "[△](bold italic #7aa2f7)"
+style = "italic #7aa2f7"
 truncation_symbol = "⋯"
 truncation_length = 11
 ignore_branches = ["main", "master"]
@@ -188,24 +188,24 @@ only_attached = true
 
 [git_metrics]
 format = '([▴$added]($added_style))([▿$deleted]($deleted_style))'
-added_style = 'italic dimmed #98c379'
-deleted_style = 'italic dimmed #e06c75'
+added_style = 'italic dimmed #9ece6a'
+deleted_style = 'italic dimmed #f7768e'
 ignore_submodules = true
 disabled = false
 
 [git_status]
-style = "bold italic #61afef"
+style = "bold italic #7aa2f7"
 format = "([⎪$ahead_behind$staged$modified$untracked$renamed$deleted$conflicted$stashed⎥]($style))"
-conflicted = "[◪◦](italic #c678dd)"
-ahead = "[▴│[${count}](bold white)│](italic #98c379)"
-behind = "[▿│[${count}](bold white)│](italic #e06c75)"
-diverged = "[◇ ▴┤[${ahead_count}](regular white)│▿┤[${behind_count}](regular white)│](italic #c678dd)"
-untracked = "[◌◦](italic #e5c07b)"
+conflicted = "[◪◦](italic #bb9af7)"
+ahead = "[▴│[${count}](bold white)│](italic #9ece6a)"
+behind = "[▿│[${count}](bold white)│](italic #f7768e)"
+diverged = "[◇ ▴┤[${ahead_count}](regular white)│▿┤[${behind_count}](regular white)│](italic #bb9af7)"
+untracked = "[◌◦](italic #e0af68)"
 stashed = "[◃◈](italic white)"
-modified = "[●◦](italic #e5c07b)"
-staged = "[▪┤[$count](bold white)│](italic #56b6c2)"
-renamed = "[◎◦](italic #61afef)"
-deleted = "[✕](italic #e06c75)"
+modified = "[●◦](italic #e0af68)"
+staged = "[▪┤[$count](bold white)│](italic #7dcfff)"
+renamed = "[◎◦](italic #7aa2f7)"
+deleted = "[✕](italic #f7768e)"
 
 [deno]
 format = " [deno](italic) [∫ $version](green bold)"
@@ -218,7 +218,7 @@ symbol = "⨀ "
 style = "bold bright-yellow"
 
 [nodejs]
-format = " [node](italic) [◫ ($version)](bold #98c379)"
+format = " [node](italic) [◫ ($version)](bold #9ece6a)"
 version_format = "${raw}"
 detect_files = ["package-lock.json", "yarn.lock"]
 detect_folders = ["node_modules"]
@@ -226,21 +226,21 @@ detect_extensions = []
 
 [python]
 format = " [py](italic) [${symbol}${version}]($style)"
-symbol = "[⌉](bold #61afef)⌊ "
+symbol = "[⌉](bold #7aa2f7)⌊ "
 version_format = "${raw}"
-style = "bold #e5c07b"
+style = "bold #e0af68"
 
 [ruby]
 format = " [rb](italic) [${symbol}${version}]($style)"
 symbol = "◆ "
 version_format = "${raw}"
-style = "bold #e06c75"
+style = "bold #f7768e"
 
 [rust]
 format = " [rs](italic) [$symbol$version]($style)"
 symbol = "⊃ "
 version_format = "${raw}"
-style = "bold #e06c75"
+style = "bold #f7768e"
 
 [package]
 format = " [pkg](italic dimmed) [$symbol$version]($style)"
@@ -299,7 +299,7 @@ format = " elm [$symbol($version )]($style)"
 [golang]
 symbol = "∩ "
 format = " go [$symbol($version )]($style)"
-style = "bold #56b6c2"
+style = "bold #7dcfff"
 
 [haskell]
 symbol = "❯λ "

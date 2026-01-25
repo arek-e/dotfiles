@@ -133,11 +133,11 @@ return {
     },
   },
 
-  -- Configure LazyVim colorscheme (default to onedark)
+  -- Configure LazyVim colorscheme (default to tokyonight)
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "onedark",
+      colorscheme = "tokyonight",
     },
   },
 

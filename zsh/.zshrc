@@ -92,13 +92,13 @@ if command -v fzf &> /dev/null; then
   [[ -f "$(brew --prefix)/opt/fzf/shell/key-bindings.zsh" ]] && source "$(brew --prefix)/opt/fzf/shell/key-bindings.zsh"
   [[ -f "$(brew --prefix)/opt/fzf/shell/completion.zsh"   ]] && source "$(brew --prefix)/opt/fzf/shell/completion.zsh"
 
-  # One Dark colors for fzf
+  # Tokyo Night colors for fzf
   export FZF_DEFAULT_OPTS='
     --color=dark
-    --color=fg:#abb2bf,bg:#282c34,hl:#61afef
-    --color=fg+:#abb2bf,bg+:#3e4452,hl+:#61afef
-    --color=info:#e5c07b,prompt:#61afef,pointer:#c678dd
-    --color=marker:#98c379,spinner:#c678dd,header:#98c379
+    --color=fg:#c0caf5,bg:#1a1b26,hl:#7aa2f7
+    --color=fg+:#c0caf5,bg+:#283457,hl+:#7aa2f7
+    --color=info:#e0af68,prompt:#7aa2f7,pointer:#bb9af7
+    --color=marker:#9ece6a,spinner:#bb9af7,header:#9ece6a
   '
 
   # Use fd with fzf

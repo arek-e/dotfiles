@@ -324,20 +324,20 @@ Switch themes in Neovim with `<leader>uC`:
 
 | Theme | Variants | Description |
 |-------|----------|-------------|
-| **One Dark Pro** (default) | onedark, onelight, onedark_vivid, onedark_dark | Atom's iconic theme, 50+ plugin integrations |
+| **TokyoNight** (default) | night, storm, moon, day | Clean dark theme by Folke |
+| **One Dark Pro** | onedark, onelight, onedark_vivid, onedark_dark | Atom's iconic theme, 50+ plugin integrations |
 | **Catppuccin** | mocha, macchiato, frappe, latte | Best plugin support, soothing pastels |
-| **TokyoNight** | night, storm, moon, day | Clean dark theme by Folke |
 | **Kanagawa** | wave, dragon, lotus | Inspired by Hokusai painting |
 | **Rose Pine** | main, moon, dawn | Soho vibes |
 | **Nightfox** | nightfox, dayfox, dawnfox, duskfox, nordfox, terafox, carbonfox | Highly customizable |
 
 ### Terminal Theme
 
-- Ghostty: `One Dark` theme
-- Tmux: [odedlaz/tmux-onedark-theme](https://github.com/odedlaz/tmux-onedark-theme)
-- Yazi: Custom One Dark Pro
-- fzf/bat: One Dark colors
-- Starship: One Dark Pro colors
+- Ghostty: Tokyo Night colors
+- Tmux: Tokyo Night (manual styling)
+- Yazi: Tokyo Night
+- fzf/bat: Tokyo Night colors
+- Starship: Tokyo Night colors
 
 ### Visual Enhancements
 
