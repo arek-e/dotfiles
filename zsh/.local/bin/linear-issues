@@ -1,0 +1,9 @@
+#!/bin/bash
+# Linear issues for wtfutil
+source ~/.secrets 2>/dev/null
+curl -s -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: $LINEAR_API_KEY" \
+    -d '{"query": "{ viewer { assignedIssues(first: 10, filter: { state: { type: { nin: [\"completed\", \"canceled\"] } } }) { nodes { identifier title state { name } } } } }"}' \
+    https://api.linear.app/graphql 2>/dev/null | \
+    jq -r '.data.viewer.assignedIssues.nodes[] | "[\(.state.name)] \(.identifier): \(.title)"' 2>/dev/null

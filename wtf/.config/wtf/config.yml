@@ -67,8 +67,8 @@ wtf:
         height: 1
         width: 2
       refreshInterval: 300
-      cmd: "npx"
-      args: ["@schpet/linear-cli", "list", "--limit", "10"]
+      cmd: "linear-issues"
+      args: []
 
     github_prs_review:
       title: " PRs to Review"

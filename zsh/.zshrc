@@ -1,6 +1,9 @@
 # Add local bin to PATH
 export PATH="$HOME/.local/bin:$PATH"
 
+# Load secrets (API keys, tokens - not tracked in git)
+[[ -f ~/.secrets ]] && source ~/.secrets
+
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME=""

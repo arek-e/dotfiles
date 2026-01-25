@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # =============================================================================
-# devfetch - Developer dashboard with style (full-width)
+# devfetch - Developer dashboard with style (two-column layout)
 # =============================================================================
 
-# Colors (Tokyo Night inspired) - using $'...' for proper escape interpretation
+# Colors (Tokyo Night inspired)
 RESET=$'\033[0m'
 BOLD=$'\033[1m'
 DIM=$'\033[2m'
@@ -37,16 +37,25 @@ REVIEW_ICON=""
 LINEAR_ICON=""
 CHECK_ICON=""
 USER_ICON=""
-COMMIT_ICON=""
 ARROW="›"
 DOT="•"
 CHECKMARK="✓"
 CROSS="✗"
 
-# Get terminal width
-WIDTH=$(tput cols 2>/dev/null || echo 80)
-[[ $WIDTH -gt 120 ]] && WIDTH=120
-[[ $WIDTH -lt 50 ]] && WIDTH=50
+# Terminal width and columns - try multiple methods
+if [[ -n "$COLUMNS" ]] && [[ "$COLUMNS" -gt 0 ]]; then
+    TERM_WIDTH=$COLUMNS
+elif command -v tput &>/dev/null && tput cols &>/dev/null; then
+    TERM_WIDTH=$(tput cols)
+elif command -v stty &>/dev/null; then
+    TERM_WIDTH=$(stty size 2>/dev/null | cut -d' ' -f2)
+fi
+TERM_WIDTH=${TERM_WIDTH:-120}
+[[ $TERM_WIDTH -lt 80 ]] && TERM_WIDTH=80
+
+GAP=3
+LEFT_WIDTH=$(( (TERM_WIDTH - GAP) / 2 ))
+RIGHT_WIDTH=$(( TERM_WIDTH - LEFT_WIDTH - GAP ))
 
 # Cache settings
 CACHE_DIR="$HOME/.cache/devfetch"
@@ -57,247 +66,310 @@ mkdir -p "$CACHE_DIR"
 # Helper functions
 # ─────────────────────────────────────────────────────────────
 
+strip_ansi() {
+    echo "$1" | sed $'s/\033\\[[0-9;]*m//g'
+}
+
 repeat_char() {
-    local char="$1"
-    local count="$2"
+    local char="$1" count="$2"
     printf "%${count}s" | tr ' ' "$char"
 }
 
-center_text() {
-    local text="$1"
-    local width="$2"
-    local text_len=${#text}
-    local pad=$(( (width - text_len) / 2 ))
-    printf "%${pad}s%s" "" "$text"
-}
-
-draw_top_border() {
-    local title="$1"
-    local icon="$2"
-    local color="$3"
-    local title_with_icon=" ${icon} ${title} "
+box_top() {
+    local title="$1" icon="$2" color="$3" width="$4"
+    local title_text=" ${icon} ${title} "
     local title_len=$((${#title} + 5))
-    local right_padding=$((WIDTH - title_len - 4))
-
-    printf "%s%s%s%s" "$color" "$TL" "$H$H" "$title_with_icon"
-    repeat_char "$H" $right_padding
-    printf "%s%s\n" "$TR" "$RESET"
+    local right_pad=$((width - title_len - 3))
+    printf "%s%s%s%s%s%s%s" "$color" "$TL" "$H" "$title_text" "$(repeat_char "$H" $right_pad)" "$TR" "$RESET"
 }
 
-draw_bottom_border() {
-    local color="$1"
-    printf "%s%s" "$color" "$BL"
-    repeat_char "$H" $((WIDTH - 2))
-    printf "%s%s\n" "$BR" "$RESET"
-}
-
-draw_separator() {
-    local color="$1"
-    printf "%s%s" "$color" "$L"
-    repeat_char "$H" $((WIDTH - 2))
-    printf "%s%s\n" "$R" "$RESET"
-}
-
-draw_empty_line() {
-    local color="$1"
-    printf "%s%s%s" "$color" "$V" "$RESET"
-    printf "%$((WIDTH - 2))s"
-    printf "%s%s%s\n" "$color" "$V" "$RESET"
-}
-
-draw_line() {
-    local color="$1"
-    shift
+box_line() {
+    local color="$1" width="$2"
+    shift 2
     local content="$*"
-
-    # Strip ANSI codes for length calculation
-    local stripped=$(echo "$content" | sed $'s/\033\\[[0-9;]*m//g')
+    local stripped=$(strip_ansi "$content")
     local visible_len=${#stripped}
-    local padding=$((WIDTH - visible_len - 4))
+    local padding=$((width - visible_len - 4))
+    [[ $padding -lt 0 ]] && padding=0
+    printf "%s%s%s  %s%${padding}s%s%s%s" "$color" "$V" "$RESET" "$content" "" "$color" "$V" "$RESET"
+}
 
-    printf "%s%s%s  %s" "$color" "$V" "$RESET" "$content"
-    [[ $padding -gt 0 ]] && printf "%${padding}s"
-    printf "%s%s%s\n" "$color" "$V" "$RESET"
+box_empty() {
+    local color="$1" width="$2"
+    printf "%s%s%s%$((width-2))s%s%s%s" "$color" "$V" "$RESET" "" "$color" "$V" "$RESET"
+}
+
+box_sep() {
+    local color="$1" width="$2"
+    printf "%s%s%s%s%s" "$color" "$L" "$(repeat_char "$H" $((width-2)))" "$R" "$RESET"
+}
+
+box_bottom() {
+    local color="$1" width="$2"
+    printf "%s%s%s%s%s" "$color" "$BL" "$(repeat_char "$H" $((width-2)))" "$BR" "$RESET"
 }
 
 get_cached() {
-    local name="$1"
-    local cmd="$2"
+    local name="$1" cmd="$2"
     local cache_file="$CACHE_DIR/$name"
-
     if [[ -f "$cache_file" ]]; then
         local age=$(($(date +%s) - $(stat -f%m "$cache_file" 2>/dev/null || echo 0)))
-        if [[ $age -lt $CACHE_TIMEOUT ]]; then
-            cat "$cache_file"
-            return
-        fi
+        [[ $age -lt $CACHE_TIMEOUT ]] && { cat "$cache_file"; return; }
     fi
-
     eval "$cmd" 2>/dev/null | tee "$cache_file"
 }
 
+# Check if cache is fresh
+cache_fresh() {
+    local name="$1"
+    local cache_file="$CACHE_DIR/$name"
+    [[ -f "$cache_file" ]] || return 1
+    local age=$(($(date +%s) - $(stat -f%m "$cache_file" 2>/dev/null || echo 0)))
+    [[ $age -lt $CACHE_TIMEOUT ]]
+}
+
+# Prefetch all data in parallel (runs API calls concurrently)
+prefetch_all() {
+    # Run all API calls in parallel (only if not cached)
+    # Combined prs_data query (gets count + list in one call, saves 1 API call)
+    (
+        cache_fresh "gh_user" || gh api user --jq '.login' > "$CACHE_DIR/gh_user" 2>/dev/null
+    ) &
+    (
+        # Combined: gets open PRs data for both count and list display
+        cache_fresh "prs_data" || gh search prs --author=@me --state=open --limit 100 --json repository,title > "$CACHE_DIR/prs_data" 2>/dev/null
+    ) &
+    (
+        # Get full merged data for per-repo breakdown (same format as prs_data)
+        cache_fresh "merged_data" || gh search prs --author=@me --merged --limit 100 --json repository,title > "$CACHE_DIR/merged_data" 2>/dev/null
+    ) &
+    (
+        cache_fresh "reviews" || gh search prs --review-requested=@me --state=open --limit 3 --json repository,title --jq '.[] | .repository.name + ": " + .title' > "$CACHE_DIR/reviews" 2>/dev/null
+    ) &
+    (
+        cache_fresh "issues" || gh search issues --assignee=@me --state=open --limit 3 --json repository,title --jq '.[] | .repository.name + ": " + .title' > "$CACHE_DIR/issues" 2>/dev/null
+    ) &
+    (
+        if [[ -n "$LINEAR_API_KEY" ]] && ! cache_fresh "linear"; then
+            curl -s -X POST \
+                -H "Content-Type: application/json" \
+                -H "Authorization: $LINEAR_API_KEY" \
+                -d '{"query": "{ viewer { assignedIssues(first: 15, filter: { state: { type: { nin: [\"completed\", \"canceled\"] } } }) { nodes { identifier title state { name } } } } }"}' \
+                https://api.linear.app/graphql > "$CACHE_DIR/linear" 2>/dev/null
+        fi
+    ) &
+
+    # Wait for all background jobs
+    wait
+}
+
+# Print two columns side by side
+print_columns() {
+    local left="$1" right="$2"
+    local -a left_lines right_lines
+    
+    while IFS= read -r line; do left_lines+=("$line"); done <<< "$left"
+    while IFS= read -r line; do right_lines+=("$line"); done <<< "$right"
+    
+    local max=${#left_lines[@]}
+    [[ ${#right_lines[@]} -gt $max ]] && max=${#right_lines[@]}
+    
+    for ((i=0; i<max; i++)); do
+        local l="${left_lines[$i]:-}"
+        local r="${right_lines[$i]:-}"
+        local l_stripped=$(strip_ansi "$l")
+        local l_pad=$((LEFT_WIDTH - ${#l_stripped}))
+        [[ $l_pad -lt 0 ]] && l_pad=0
+        printf "%s%${l_pad}s%${GAP}s%s\n" "$l" "" "" "$r"
+    done
+}
+
 # ─────────────────────────────────────────────────────────────
-# Header - Centered ASCII Art
+# Build Left Column
 # ─────────────────────────────────────────────────────────────
 
-echo ""
-
-printf "%s%s" "$PURPLE" "$BOLD"
-center_text "██████╗ ███████╗██╗   ██╗███████╗███████╗████████╗ ██████╗██╗  ██╗" "$WIDTH"; echo
-center_text "██╔══██╗██╔════╝██║   ██║██╔════╝██╔════╝╚══██╔══╝██╔════╝██║  ██║" "$WIDTH"; echo
-center_text "██║  ██║█████╗  ██║   ██║█████╗  █████╗     ██║   ██║     ███████║" "$WIDTH"; echo
-center_text "██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══╝  ██╔══╝     ██║   ██║     ██╔══██║" "$WIDTH"; echo
-center_text "██████╔╝███████╗ ╚████╔╝ ██║     ███████╗   ██║   ╚██████╗██║  ██║" "$WIDTH"; echo
-center_text "╚═════╝ ╚══════╝  ╚═══╝  ╚═╝     ╚══════╝   ╚═╝    ╚═════╝╚═╝  ╚═╝" "$WIDTH"; echo
-printf "%s" "$RESET"
-
-printf "%s%s" "$DIM" "$GRAY"
-center_text "developer dashboard" "$WIDTH"
-printf "%s\n\n" "$RESET"
-
-# ─────────────────────────────────────────────────────────────
-# User & Auth Section
-# ─────────────────────────────────────────────────────────────
-
-draw_top_border "Session" "$USER_ICON" "$GRAY"
-draw_empty_line "$GRAY"
-
-# GitHub Auth Status
-if command -v gh &> /dev/null; then
-    gh_user=$(gh api user --jq '.login' 2>/dev/null)
-    if [[ -n "$gh_user" ]]; then
-        gh_name=$(gh api user --jq '.name // .login' 2>/dev/null)
-        draw_line "$GRAY" "${GREEN}${CHECKMARK}${RESET} ${BOLD}GitHub${RESET}  ${DIM}logged in as${RESET} ${CYAN}@${gh_user}${RESET} ${DIM}(${gh_name})${RESET}"
-
-        # Get contribution stats
-        commits_today=$(get_cached "commits_today" "gh api graphql -f query='query { viewer { contributionsCollection { contributionCalendar { weeks { contributionDays { contributionCount date } } } } } }' --jq '[.data.viewer.contributionsCollection.contributionCalendar.weeks[-1].contributionDays[] | select(.date == \"'$(date +%Y-%m-%d)'\") | .contributionCount] | add // 0'" 2>/dev/null)
-        commits_week=$(get_cached "commits_week" "gh api graphql -f query='query { viewer { contributionsCollection { contributionCalendar { weeks { contributionDays { contributionCount } } } } } }' --jq '[.data.viewer.contributionsCollection.contributionCalendar.weeks[-1].contributionDays[].contributionCount] | add'" 2>/dev/null)
-
-        if [[ -n "$commits_today" && "$commits_today" != "null" ]]; then
-            draw_line "$GRAY" "  ${DIM}${COMMIT_ICON} Contributions:${RESET} ${GREEN}${commits_today}${RESET} ${DIM}today${RESET}  ${DOT}  ${CYAN}${commits_week:-0}${RESET} ${DIM}this week${RESET}"
+build_left_column() {
+    local W=$LEFT_WIDTH
+    
+    # Session Box
+    box_top "Session" "$USER_ICON" "$GRAY" "$W"; echo
+    box_empty "$GRAY" "$W"; echo
+    
+    if command -v gh &> /dev/null; then
+        gh_user=$([[ -f "$CACHE_DIR/gh_user" ]] && cat "$CACHE_DIR/gh_user" || echo "")
+        if [[ -n "$gh_user" ]]; then
+            box_line "$GRAY" "$W" "${GREEN}${CHECKMARK}${RESET} ${BOLD}GitHub${RESET}  ${DIM}@${gh_user}${RESET}"; echo
+        else
+            box_line "$GRAY" "$W" "${RED}${CROSS}${RESET} ${BOLD}GitHub${RESET}  ${DIM}not authenticated${RESET}"; echo
         fi
     else
-        draw_line "$GRAY" "${RED}${CROSS}${RESET} ${BOLD}GitHub${RESET}  ${DIM}not authenticated${RESET}  ${YELLOW}run: gh auth login${RESET}"
+        box_line "$GRAY" "$W" "${RED}${CROSS}${RESET} ${BOLD}GitHub CLI${RESET}  ${DIM}not installed${RESET}"; echo
     fi
-else
-    draw_line "$GRAY" "${RED}${CROSS}${RESET} ${BOLD}GitHub CLI${RESET}  ${DIM}not installed${RESET}  ${YELLOW}run: brew install gh${RESET}"
-fi
+    
+    if [[ -n "$LINEAR_API_KEY" ]]; then
+        box_line "$GRAY" "$W" "${GREEN}${CHECKMARK}${RESET} ${BOLD}Linear${RESET}  ${DIM}configured${RESET}"; echo
+    else
+        box_line "$GRAY" "$W" "${YELLOW}${DOT}${RESET} ${BOLD}Linear${RESET}  ${DIM}set LINEAR_API_KEY${RESET}"; echo
+    fi
+    
+    git_user=$(git config --global user.name 2>/dev/null)
+    [[ -n "$git_user" ]] && { box_line "$GRAY" "$W" "${GREEN}${CHECKMARK}${RESET} ${BOLD}Git${RESET}  ${DIM}${git_user}${RESET}"; echo; }
+    
+    box_empty "$GRAY" "$W"; echo
+    box_bottom "$GRAY" "$W"; echo
+    echo
+    
+    # GitHub Box - check cache instead of running slow auth status
+    if command -v gh &> /dev/null && [[ -f "$CACHE_DIR/gh_user" ]] && [[ -s "$CACHE_DIR/gh_user" ]]; then
+        # Read from combined prs_data cache (one API call serves both count and list)
+        prs_data=""
+        [[ -f "$CACHE_DIR/prs_data" ]] && prs_data=$(<"$CACHE_DIR/prs_data")
+        merged_data=""
+        [[ -f "$CACHE_DIR/merged_data" ]] && merged_data=$(<"$CACHE_DIR/merged_data")
 
-# Linear Auth Status
-if [[ -f "$HOME/.config/linear/config.json" ]]; then
-    draw_line "$GRAY" "${GREEN}${CHECKMARK}${RESET} ${BOLD}Linear${RESET}  ${DIM}configured${RESET}"
-else
-    draw_line "$GRAY" "${YELLOW}${DOT}${RESET} ${BOLD}Linear${RESET}  ${DIM}not configured (optional)${RESET}"
-fi
+        # Calculate totals
+        open_count=$(echo "$prs_data" | jq 'length' 2>/dev/null || echo 0)
+        merged_count=$(echo "$merged_data" | jq 'length' 2>/dev/null || echo 0)
 
-# Git user config
-git_user=$(git config --global user.name 2>/dev/null)
-git_email=$(git config --global user.email 2>/dev/null)
-if [[ -n "$git_user" ]]; then
-    draw_line "$GRAY" "${GREEN}${CHECKMARK}${RESET} ${BOLD}Git${RESET}  ${DIM}${git_user}${RESET} ${DIM}<${git_email}>${RESET}"
-else
-    draw_line "$GRAY" "${YELLOW}${DOT}${RESET} ${BOLD}Git${RESET}  ${DIM}user not configured${RESET}"
-fi
+        # Calculate per-repo breakdown (repo:count format, sorted by count desc)
+        open_by_repo=$(echo "$prs_data" | jq -r 'group_by(.repository.name) | map({repo: .[0].repository.name, count: length}) | sort_by(-.count) | .[:4] | .[] | "\(.repo):\(.count)"' 2>/dev/null | tr '\n' '  ' | sed 's/  $//')
+        merged_by_repo=$(echo "$merged_data" | jq -r 'group_by(.repository.name) | map({repo: .[0].repository.name, count: length}) | sort_by(-.count) | .[:4] | .[] | "\(.repo):\(.count)"' 2>/dev/null | tr '\n' '  ' | sed 's/  $//')
 
-draw_empty_line "$GRAY"
-draw_bottom_border "$GRAY"
+        box_top "GitHub" "$GITHUB_ICON" "$BLUE" "$W"; echo
+        box_empty "$BLUE" "$W"; echo
+
+        # PR Stats by repo
+        box_line "$BLUE" "$W" "${GREEN}${BOLD}Open${RESET} ${DIM}(${open_count})${RESET}  ${open_by_repo}"; echo
+        box_line "$BLUE" "$W" "${CYAN}${BOLD}Merged${RESET} ${DIM}(${merged_count})${RESET}  ${merged_by_repo}"; echo
+
+        box_empty "$BLUE" "$W"; echo
+        box_sep "$BLUE" "$W"; echo
+        box_empty "$BLUE" "$W"; echo
+
+        box_line "$BLUE" "$W" "${CYAN}${BOLD}${PR_ICON} My Open PRs${RESET}"; echo
+        prs=$(echo "$prs_data" | jq -r '.[:5] | .[] | .repository.name + ": " + .title' 2>/dev/null || echo "")
+        if [[ -n "$prs" ]]; then
+            while IFS= read -r pr; do
+                [[ ${#pr} -gt $((W-8)) ]] && pr="${pr:0:$((W-11))}..."
+                box_line "$BLUE" "$W" "  ${GREEN}${ARROW}${RESET} ${WHITE}${pr}${RESET}"; echo
+            done <<< "$prs"
+        else
+            box_line "$BLUE" "$W" "  ${DIM}No open PRs${RESET}"; echo
+        fi
+
+        box_empty "$BLUE" "$W"; echo
+        box_sep "$BLUE" "$W"; echo
+        box_empty "$BLUE" "$W"; echo
+
+        box_line "$BLUE" "$W" "${PURPLE}${BOLD}${REVIEW_ICON} Review Requests${RESET}"; echo
+        reviews=$([[ -f "$CACHE_DIR/reviews" ]] && cat "$CACHE_DIR/reviews" || echo "")
+        if [[ -n "$reviews" ]]; then
+            while IFS= read -r review; do
+                [[ ${#review} -gt $((W-8)) ]] && review="${review:0:$((W-11))}..."
+                box_line "$BLUE" "$W" "  ${PURPLE}${ARROW}${RESET} ${WHITE}${review}${RESET}"; echo
+            done <<< "$reviews"
+        else
+            box_line "$BLUE" "$W" "  ${DIM}No PRs to review${RESET}"; echo
+        fi
+
+        box_empty "$BLUE" "$W"; echo
+        box_sep "$BLUE" "$W"; echo
+        box_empty "$BLUE" "$W"; echo
+
+        box_line "$BLUE" "$W" "${YELLOW}${BOLD}${ISSUE_ICON} Assigned Issues${RESET}"; echo
+        issues=$([[ -f "$CACHE_DIR/issues" ]] && cat "$CACHE_DIR/issues" || echo "")
+        if [[ -n "$issues" ]]; then
+            while IFS= read -r issue; do
+                [[ ${#issue} -gt $((W-8)) ]] && issue="${issue:0:$((W-11))}..."
+                box_line "$BLUE" "$W" "  ${YELLOW}${ARROW}${RESET} ${WHITE}${issue}${RESET}"; echo
+            done <<< "$issues"
+        else
+            box_line "$BLUE" "$W" "  ${DIM}No assigned issues${RESET}"; echo
+        fi
+
+        box_empty "$BLUE" "$W"; echo
+        box_bottom "$BLUE" "$W"; echo
+    fi
+}
+
+# ─────────────────────────────────────────────────────────────
+# Build Right Column
+# ─────────────────────────────────────────────────────────────
+
+build_right_column() {
+    local W=$RIGHT_WIDTH
+
+    box_top "Linear Issues" "$LINEAR_ICON" "$PURPLE" "$W"; echo
+    box_empty "$PURPLE" "$W"; echo
+
+    if [[ -n "$LINEAR_API_KEY" ]]; then
+        # Read from cache (prefetch_all already populated it)
+        linear_response=""
+        [[ -f "$CACHE_DIR/linear" ]] && linear_response=$(cat "$CACHE_DIR/linear")
+
+        if [[ -n "$linear_response" ]] && echo "$linear_response" | jq -e '.data.viewer.assignedIssues.nodes[0]' &>/dev/null; then
+            # Use process substitution to avoid subshell
+            while IFS= read -r task; do
+                state=$(echo "$task" | sed 's/\[\([^]]*\)\].*/\1/')
+                id=$(echo "$task" | sed 's/.*\] \([^:]*\):.*/\1/')
+                title=$(echo "$task" | sed 's/.*: //')
+                
+                max_title=$((W - 22))
+                [[ ${#title} -gt $max_title ]] && title="${title:0:$((max_title-3))}..."
+                
+                case "$state" in
+                    "In Progress") sc="${YELLOW}"; ss="PROG" ;;
+                    "In Review")   sc="${PURPLE}"; ss="REVW" ;;
+                    "Todo")        sc="${BLUE}"; ss="TODO" ;;
+                    "Backlog")     sc="${CYAN}"; ss="BKLG" ;;
+                    *)             sc="${GRAY}"; ss="${state:0:4}" ;;
+                esac
+                
+                box_line "$PURPLE" "$W" "${sc}${ss}${RESET} ${DIM}${id}${RESET} ${WHITE}${title}${RESET}"; echo
+            done < <(echo "$linear_response" | jq -r '.data.viewer.assignedIssues.nodes[] | "[\(.state.name)] \(.identifier): \(.title)"' 2>/dev/null)
+        else
+            box_line "$PURPLE" "$W" "  ${DIM}No active issues${RESET}"; echo
+        fi
+    else
+        box_line "$PURPLE" "$W" "  ${DIM}Set LINEAR_API_KEY${RESET}"; echo
+    fi
+    
+    box_empty "$PURPLE" "$W"; echo
+    box_bottom "$PURPLE" "$W"; echo
+}
+
+# ─────────────────────────────────────────────────────────────
+# Main
+# ─────────────────────────────────────────────────────────────
+
+# Start API prefetch IMMEDIATELY (runs in background while header prints)
+prefetch_all &
+PREFETCH_PID=$!
+
 echo ""
 
-# ─────────────────────────────────────────────────────────────
-# GitHub Section
-# ─────────────────────────────────────────────────────────────
+# Header (prints while API calls run in background)
+printf "%s%s" "$PURPLE" "$BOLD"
+printf "%*s\n" $(( (TERM_WIDTH + 66) / 2 )) "██████╗ ███████╗██╗   ██╗███████╗███████╗████████╗ ██████╗██╗  ██╗"
+printf "%*s\n" $(( (TERM_WIDTH + 66) / 2 )) "██╔══██╗██╔════╝██║   ██║██╔════╝██╔════╝╚══██╔══╝██╔════╝██║  ██║"
+printf "%*s\n" $(( (TERM_WIDTH + 66) / 2 )) "██║  ██║█████╗  ██║   ██║█████╗  █████╗     ██║   ██║     ███████║"
+printf "%*s\n" $(( (TERM_WIDTH + 66) / 2 )) "██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══╝  ██╔══╝     ██║   ██║     ██╔══██║"
+printf "%*s\n" $(( (TERM_WIDTH + 66) / 2 )) "██████╔╝███████╗ ╚████╔╝ ██║     ███████╗   ██║   ╚██████╗██║  ██║"
+printf "%*s\n" $(( (TERM_WIDTH + 66) / 2 )) "╚═════╝ ╚══════╝  ╚═══╝  ╚═╝     ╚══════╝   ╚═╝    ╚═════╝╚═╝  ╚═╝"
+printf "%s" "$RESET"
+printf "%s%s%*s%s\n\n" "$DIM" "$GRAY" $(( (TERM_WIDTH + 19) / 2 )) "developer dashboard" "$RESET"
 
-if command -v gh &> /dev/null && gh auth status &>/dev/null; then
+# Wait for prefetch to complete before reading cache
+wait $PREFETCH_PID 2>/dev/null
 
-    draw_top_border "GitHub" "$GITHUB_ICON" "$BLUE"
-    draw_empty_line "$BLUE"
+# Build and print columns (reads from cache)
+left_content=$(build_left_column)
+right_content=$(build_right_column)
+print_columns "$left_content" "$right_content"
 
-    # My PRs
-    draw_line "$BLUE" "${CYAN}${BOLD}${PR_ICON} My Pull Requests${RESET}"
+echo ""
 
-    prs=$(get_cached "prs" "gh pr list --author @me --state open --limit 5 --json title,repository --jq '.[] | .repository.name + \": \" + .title'")
-    if [[ -n "$prs" ]]; then
-        while IFS= read -r pr; do
-            draw_line "$BLUE" "  ${GREEN}${ARROW}${RESET} ${WHITE}${pr}${RESET}"
-        done <<< "$prs"
-    else
-        draw_line "$BLUE" "  ${DIM}No open PRs${RESET}"
-    fi
-
-    draw_empty_line "$BLUE"
-    draw_separator "$BLUE"
-    draw_empty_line "$BLUE"
-
-    # Issues Assigned
-    draw_line "$BLUE" "${YELLOW}${BOLD}${ISSUE_ICON} Assigned Issues${RESET}"
-
-    issues=$(get_cached "issues" "gh issue list --assignee @me --state open --limit 5 --json title,repository --jq '.[] | .repository.name + \": \" + .title'")
-    if [[ -n "$issues" ]]; then
-        while IFS= read -r issue; do
-            draw_line "$BLUE" "  ${YELLOW}${ARROW}${RESET} ${WHITE}${issue}${RESET}"
-        done <<< "$issues"
-    else
-        draw_line "$BLUE" "  ${DIM}No assigned issues${RESET}"
-    fi
-
-    draw_empty_line "$BLUE"
-    draw_separator "$BLUE"
-    draw_empty_line "$BLUE"
-
-    # PRs to Review
-    draw_line "$BLUE" "${PURPLE}${BOLD}${REVIEW_ICON} Review Requests${RESET}"
-
-    reviews=$(get_cached "reviews" "gh pr list --search 'is:open review-requested:@me' --limit 5 --json title,repository --jq '.[] | .repository.name + \": \" + .title'")
-    if [[ -n "$reviews" ]]; then
-        while IFS= read -r review; do
-            draw_line "$BLUE" "  ${PURPLE}${ARROW}${RESET} ${WHITE}${review}${RESET}"
-        done <<< "$reviews"
-    else
-        draw_line "$BLUE" "  ${DIM}No PRs to review${RESET}"
-    fi
-
-    draw_empty_line "$BLUE"
-    draw_bottom_border "$BLUE"
-    echo ""
-fi
-
-# ─────────────────────────────────────────────────────────────
-# Linear Section
-# ─────────────────────────────────────────────────────────────
-
-if command -v npx &> /dev/null && [[ -f "$HOME/.config/linear/config.json" ]] 2>/dev/null; then
-
-    draw_top_border "Linear" "$LINEAR_ICON" "$PURPLE"
-    draw_empty_line "$PURPLE"
-
-    draw_line "$PURPLE" "${CYAN}${BOLD}${CHECK_ICON} My Issues${RESET}"
-
-    linear=$(get_cached "linear" "npx -y @schpet/linear-cli list --limit 5 2>/dev/null")
-    if [[ -n "$linear" ]]; then
-        while IFS= read -r task; do
-            draw_line "$PURPLE" "  ${CYAN}${ARROW}${RESET} ${WHITE}${task}${RESET}"
-        done <<< "$linear"
-    else
-        draw_line "$PURPLE" "  ${DIM}No Linear issues${RESET}"
-    fi
-
-    draw_empty_line "$PURPLE"
-    draw_bottom_border "$PURPLE"
-    echo ""
-fi
-
-# ─────────────────────────────────────────────────────────────
 # Footer
-# ─────────────────────────────────────────────────────────────
-
-printf "%s%s  " "$DIM" "$GRAY"
-repeat_char "─" $((WIDTH - 4))
-printf "%s\n" "$RESET"
-
-footer="${BOLD}db${RESET}${DIM}${GRAY} dashboard  ${DOT}  ${RESET}${BOLD}dotup${RESET}${DIM}${GRAY} sync  ${DOT}  ${RESET}${BOLD}reload${RESET}${DIM}${GRAY} shell"
-center_text "$footer" "$WIDTH"
-echo ""
-
-printf "%s%s  " "$DIM" "$GRAY"
-repeat_char "─" $((WIDTH - 4))
-printf "%s\n\n" "$RESET"
+printf "%s%s  %s%s\n" "$DIM" "$GRAY" "$(repeat_char "─" $((TERM_WIDTH-4)))" "$RESET"
+printf "%*s\n" $(( (TERM_WIDTH + 45) / 2 )) "${BOLD}db${RESET}${DIM}${GRAY} dashboard  ${DOT}  ${RESET}${BOLD}dotup${RESET}${DIM}${GRAY} sync  ${DOT}  ${RESET}${BOLD}reload${RESET}${DIM}${GRAY} shell"
+printf "%s%s  %s%s\n\n" "$DIM" "$GRAY" "$(repeat_char "─" $((TERM_WIDTH-4)))" "$RESET"

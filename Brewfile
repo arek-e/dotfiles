@@ -3,6 +3,11 @@
 # Ghostty + Tmux + LazyVim + Modern CLI Tools
 
 # ==============================================
+# Taps
+# ==============================================
+tap "schpet/tap"          # Linear CLI
+
+# ==============================================
 # Core Tools
 # ==============================================
 brew "git"
@@ -41,6 +46,7 @@ brew "gsed"               # GNU sed
 brew "jq"                 # JSON processor
 brew "gh"                 # GitHub CLI
 brew "glab"               # GitLab CLI
+brew "linear"             # Linear CLI
 brew "nowplaying-cli"     # Now playing widget
 
 # ==============================================
