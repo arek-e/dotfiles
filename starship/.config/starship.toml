@@ -23,7 +23,10 @@ $character"""
 right_format = """
 $singularity\
 $kubernetes\
+$docker_context\
+${custom.sep_infra}\
 $directory\
+${custom.sep_git}\
 $vcsh\
 $fossil_branch\
 $git_branch\
@@ -32,7 +35,7 @@ $git_state\
 $git_status\
 $hg_branch\
 $pijul_channel\
-$docker_context\
+${custom.sep_lang}\
 $package\
 $c\
 $cpp\
@@ -74,9 +77,7 @@ $rust\
 $scala\
 $solidity\
 $swift\
-$terraform\
 $vlang\
-$vagrant\
 $xmake\
 $zig\
 $buf\
@@ -84,15 +85,19 @@ $conda\
 $pixi\
 $meson\
 $spack\
-$memory_usage\
+${custom.sep_cloud}\
+$terraform\
+$vagrant\
 $aws\
 $gcloud\
 $openstack\
 $azure\
 $crystal\
+$memory_usage\
 $custom\
 $status\
 $os\
+${custom.sep_battery}\
 $battery"""
 
 [fill]
@@ -441,3 +446,41 @@ disabled = true
 format = "[󰏗 $environment]($style) "
 symbol = "󰏗"
 style = "#bb9af7"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SEPARATORS - Subtle dividers between status line sections
+# ═══════════════════════════════════════════════════════════════════════════════
+[custom.sep_infra]
+description = "Separator after infra (k8s/docker)"
+command = "echo │"
+when = "[ -f docker-compose.yml ] || [ -f Dockerfile ] || kubectl config current-context 2>/dev/null | grep -q ."
+style = "#3b4261"
+format = "[$output]($style) "
+
+[custom.sep_git]
+description = "Separator before git"
+command = "echo │"
+when = "git rev-parse --git-dir 2>/dev/null"
+style = "#3b4261"
+format = "[$output]($style) "
+
+[custom.sep_lang]
+description = "Separator before languages"
+command = "echo │"
+when = "[ -f package.json ] || [ -f Cargo.toml ] || [ -f go.mod ] || [ -f requirements.txt ] || [ -f pyproject.toml ] || [ -f Gemfile ] || [ -f *.lua ] 2>/dev/null || [ -f Package.swift ]"
+style = "#3b4261"
+format = "[$output]($style) "
+
+[custom.sep_cloud]
+description = "Separator before cloud/terraform"
+command = "echo │"
+when = "[ -f main.tf ] || [ -f *.tf ] 2>/dev/null || [ -f Vagrantfile ]"
+style = "#3b4261"
+format = "[$output]($style) "
+
+[custom.sep_battery]
+description = "Separator before battery"
+command = "echo │"
+when = "command -v pmset >/dev/null 2>&1"
+style = "#3b4261"
+format = "[$output]($style) "
