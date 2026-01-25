@@ -21,7 +21,7 @@ local sections = {
     icon = "󱡀",
     color = "#9ece6a",
     keys = {
-      { "<leader>a", "Add file" },
+      { "<leader>A", "Add file" },
       { "<leader>h", "Open menu" },
       { "<leader>1-5", "Jump to file" },
       { "[H / ]H", "Prev/next file" },

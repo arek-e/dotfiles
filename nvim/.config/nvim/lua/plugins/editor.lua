@@ -25,7 +25,7 @@ return {
       local harpoon = require("harpoon")
       return {
         {
-          "<leader>a",
+          "<leader>A",
           function()
             harpoon:list():add()
           end,

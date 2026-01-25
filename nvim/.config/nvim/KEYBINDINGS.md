@@ -18,7 +18,7 @@
 ### Harpoon (Quick File Switching)
 | Key | Action |
 |-----|--------|
-| `<leader>a` | Add file to Harpoon |
+| `<leader>A` | Add file to Harpoon |
 | `<leader>h` | Open Harpoon menu |
 | `<leader>1-5` | Jump to Harpoon file 1-5 |
 | `[H` | Previous Harpoon file |
