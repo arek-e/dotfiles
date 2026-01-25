@@ -10,6 +10,8 @@ map("i", "jk", "<ESC>", { desc = "Exit insert mode" })
 -- Exit terminal mode to normal mode
 map("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 map("t", "jk", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+-- Toggle Claude Code from terminal mode
+map("t", "<C-,>", "<C-\\><C-n><cmd>ClaudeCode<cr>", { desc = "Toggle Claude Code" })
 -- Window navigation from terminal mode
 map("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "Navigate left" })
 map("t", "<C-j>", "<C-\\><C-n><C-w>j", { desc = "Navigate down" })
