@@ -62,12 +62,12 @@ return {
             for i = 1, math.min(3, #decoded) do
               local pr = decoded[i]
               if pr and pr.repository and pr.title then
-                local repo = pr.repository.name or pr.repository.nameWithOwner or "unknown"
+                local repo = pr.repository.name or "repo"
                 local title = pr.title
-                if #title > 40 then
-                  title = title:sub(1, 37) .. "..."
+                if #title > 35 then
+                  title = title:sub(1, 32) .. "..."
                 end
-                table.insert(prs, repo .. ": " .. title)
+                table.insert(prs, { repo = repo, title = title })
               end
             end
           end
@@ -91,18 +91,10 @@ return {
                   local state = issue.state and issue.state.name or "?"
                   local id = issue.identifier or "?"
                   local title = issue.title or ""
-                  if #title > 35 then
-                    title = title:sub(1, 32) .. "..."
+                  if #title > 30 then
+                    title = title:sub(1, 27) .. "..."
                   end
-                  -- State abbreviations
-                  local state_abbr = {
-                    ["In Progress"] = "PROG",
-                    ["In Review"] = "REVW",
-                    ["Todo"] = "TODO",
-                    ["Backlog"] = "BKLG",
-                  }
-                  local short_state = state_abbr[state] or state:sub(1, 4):upper()
-                  table.insert(issues, string.format("[%s] %s: %s", short_state, id, title))
+                  table.insert(issues, { state = state, id = id, title = title })
                 end
               end
             end
@@ -118,10 +110,15 @@ return {
 
         if reviews and reviews ~= "" then
           for line in reviews:gmatch("[^\n]+") do
-            if #line > 45 then
-              line = line:sub(1, 42) .. "..."
+            if line ~= "" then
+              local repo, title = line:match("([^:]+): (.+)")
+              if repo and title then
+                if #title > 35 then
+                  title = title:sub(1, 32) .. "..."
+                end
+                table.insert(items, { repo = repo, title = title })
+              end
             end
-            table.insert(items, line)
           end
         end
 
@@ -142,60 +139,81 @@ return {
         config = {
           header = vim.split(logo, "\n"),
           center = {
-            { action = "Telescope find_files", desc = " Find File", icon = " ", key = "f" },
-            { action = "ene | startinsert", desc = " New File", icon = " ", key = "n" },
-            { action = "Telescope oldfiles", desc = " Recent Files", icon = " ", key = "r" },
-            { action = "Telescope live_grep", desc = " Find Text", icon = " ", key = "g" },
-            { action = "e $MYVIMRC", desc = " Config", icon = " ", key = "c" },
-            { action = "Lazy", desc = " Lazy", icon = "󰒲 ", key = "l" },
-            { action = "qa", desc = " Quit", icon = " ", key = "q" },
+            { action = "Telescope find_files", desc = " Find File    ", icon = "  ", key = "f", key_hl = "DashboardKey" },
+            { action = "ene | startinsert", desc = " New File     ", icon = "  ", key = "n", key_hl = "DashboardKey" },
+            { action = "Telescope oldfiles", desc = " Recent Files ", icon = "  ", key = "r", key_hl = "DashboardKey" },
+            { action = "Telescope live_grep", desc = " Find Text    ", icon = "  ", key = "g", key_hl = "DashboardKey" },
+            { action = "e $MYVIMRC", desc = " Config       ", icon = "  ", key = "c", key_hl = "DashboardKey" },
+            { action = "Lazy", desc = " Plugins      ", icon = " 󰒲 ", key = "l", key_hl = "DashboardKey" },
+            { action = "qa", desc = " Quit         ", icon = "  ", key = "q", key_hl = "DashboardKey" },
           },
           footer = function()
             local lines = {}
 
-            -- Divider
+            -- Spacer
             table.insert(lines, "")
-            table.insert(lines, "─────────────────────────────────────────────")
             table.insert(lines, "")
 
-            -- GitHub Stats
-            table.insert(lines, string.format("  GitHub: %d open PRs • %d merged", open_prs, merged_prs))
-            table.insert(lines, "")
+            -- GitHub Section Header
+            local gh_header = string.format("   GitHub    %d open  •  %d merged", open_prs, merged_prs)
+            table.insert(lines, gh_header)
+            table.insert(lines, "  ─────────────────────────────────────────")
 
             -- Open PRs
             if #prs > 0 then
-              table.insert(lines, "   My PRs:")
               for _, pr in ipairs(prs) do
-                table.insert(lines, "    › " .. pr)
+                table.insert(lines, string.format("    ● %s: %s", pr.repo, pr.title))
               end
-              table.insert(lines, "")
+            else
+              table.insert(lines, "    No open PRs")
             end
+
+            table.insert(lines, "")
 
             -- Review Requests
             if #reviews > 0 then
-              table.insert(lines, "   Review Requests:")
+              table.insert(lines, "   Review Requests")
+              table.insert(lines, "  ─────────────────────────────────────────")
               for _, review in ipairs(reviews) do
-                table.insert(lines, "    › " .. review)
+                table.insert(lines, string.format("    ◐ %s: %s", review.repo, review.title))
               end
               table.insert(lines, "")
             end
 
-            -- Linear Issues
+            -- Linear Section Header
             if #linear > 0 then
-              table.insert(lines, "   Linear:")
+              table.insert(lines, "   Linear Issues")
+              table.insert(lines, "  ─────────────────────────────────────────")
               for _, issue in ipairs(linear) do
-                table.insert(lines, "    " .. issue)
+                -- Status indicator with visual differentiation
+                local indicator = "○"
+                local state_display = issue.state:sub(1, 4):upper()
+                if issue.state == "In Progress" then
+                  indicator = "●"
+                  state_display = "PROG"
+                elseif issue.state == "In Review" then
+                  indicator = "◐"
+                  state_display = "REVW"
+                elseif issue.state == "Todo" then
+                  indicator = "○"
+                  state_display = "TODO"
+                elseif issue.state == "Backlog" then
+                  indicator = "◌"
+                  state_display = "BKLG"
+                end
+                table.insert(lines, string.format("    %s %s %s  %s", indicator, state_display, issue.id, issue.title))
               end
               table.insert(lines, "")
             end
 
-            table.insert(lines, "─────────────────────────────────────────────")
+            -- Footer divider
+            table.insert(lines, "  ═════════════════════════════════════════")
             table.insert(lines, "")
 
             -- Stats
             local stats = require("lazy").stats()
             local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
-            table.insert(lines, "⚡ Neovim loaded " .. stats.loaded .. "/" .. stats.count .. " plugins in " .. ms .. "ms")
+            table.insert(lines, string.format("  ⚡ %d/%d plugins in %sms", stats.loaded, stats.count, ms))
 
             return lines
           end,
