@@ -137,45 +137,106 @@ dash
 
 ## Key Bindings
 
+> All tools use consistent navigation: `Ctrl+h/j/k/l` moves between panes seamlessly across nvim and tmux.
+
 ### Tmux (Prefix: `Ctrl+Space`)
 
 | Key | Action |
 |-----|--------|
-| `Prefix + \|` | Split vertical |
-| `Prefix + -` | Split horizontal |
-| `Prefix + h/j/k/l` | Navigate panes |
-| `Shift + Left/Right` | Switch windows |
+| **Navigation** | |
+| `Ctrl+h/j/k/l` | Navigate panes (works in nvim too) |
+| `Prefix + h/j/k/l` | Navigate panes (manual) |
+| `Alt+Arrow` | Navigate panes (no prefix) |
+| `Shift+Left/Right` | Switch windows |
+| `Alt+H` / `Alt+L` | Switch windows |
+| **Splits** | |
+| `Prefix + \|` | Split vertical (at current path) |
+| `Prefix + -` | Split horizontal (at current path) |
+| **Copy Mode** (vi-style) | |
+| `Prefix + [` | Enter copy mode |
+| `v` | Begin selection |
+| `y` | Copy and exit |
+| **Other** | |
 | `Prefix + r` | Reload config |
+| `Prefix + e` | Edit config |
 
 ### Neovim (Leader: `Space`)
 
 | Key | Action |
 |-----|--------|
-| `Space + e` | Yazi file manager |
-| `Space + ff` | Find files |
-| `Space + fg` | Live grep |
-| `Space + gg` | LazyGit |
-| `s` | Flash jump |
+| **Navigation** | |
+| `Ctrl+h/j/k/l` | Navigate splits/tmux panes |
+| `-` | Oil file explorer (parent dir) |
+| `<leader>e` | Neo-tree sidebar toggle |
+| `<leader>o` | Oil file explorer |
+| **Files (Telescope)** | |
+| `<leader>ff` | Find files |
+| `<leader>fF` | Find files (current dir) |
+| `<leader>fg` | Live grep |
+| `<leader>fb` | Buffers |
+| `<leader>fr` | Recent files |
+| **Harpoon** | |
+| `<leader>a` | Add file to harpoon |
+| `<leader>h` | Harpoon menu |
+| `<leader>1-5` | Jump to harpoon file 1-5 |
+| `[H` / `]H` | Prev/next harpoon file |
+| **Git** | |
+| `<leader>gd` | Diffview (working tree) |
+| `<leader>gD` | Diffview (last commit) |
+| `<leader>gf` | File history (current) |
+| `<leader>gF` | File history (repo) |
+| `<leader>gq` | Close diffview |
+| `]h` / `[h` | Next/prev git hunk |
+| `<leader>ghp` | Preview hunk inline |
+| `<leader>ghs` | Stage hunk |
+| `<leader>ghr` | Reset hunk |
+| `<leader>ghb` | Blame line |
+| **Tmux from Nvim** | |
+| `<leader>tp` | New tmux pane (h-split) at file dir |
+| `<leader>tP` | New tmux pane (v-split) at file dir |
+| `<leader>tw` | New tmux window at file dir |
+| **Code/LSP** | |
+| `gd` | Go to definition |
+| `gr` | References |
+| `K` | Hover docs |
+| `<leader>ca` | Code action |
+| `<leader>cr` | Rename symbol |
+| `<leader>cf` | Format |
+| **Diagnostics** | |
+| `<leader>xx` | Trouble diagnostics |
+| `<leader>xX` | Buffer diagnostics |
+| `]d` / `[d` | Next/prev diagnostic |
+| **Editing** | |
+| `jk` | Exit insert mode |
+| `Ctrl+s` | Save file |
+| `Alt+j/k` | Move line down/up |
 | `gcc` | Toggle comment |
 
-### Shell
-
-| Command | Action |
-|---------|--------|
-| `y` | Yazi (cd on exit) |
-| `lg` | LazyGit |
-| `dash` | WTF dashboard |
-| `z <dir>` | Smart cd |
-| `Ctrl+R` | Atuin search |
-
-### Ghostty
+### Ghostty / Kitty (macOS)
 
 | Key | Action |
 |-----|--------|
-| `Cmd+D` | Split right |
-| `Cmd+Shift+D` | Split down |
-| `Cmd+T` | New tab |
-| `Cmd+W` | Close |
+| `Cmd+d` | Split right |
+| `Cmd+Shift+d` | Split down |
+| `Cmd+w` | Close pane |
+| `Cmd+t` | New tab |
+| `Cmd+Shift+[` / `]` | Prev/next tab |
+| `Cmd+Shift+Arrow` | Navigate splits |
+| `Cmd++` / `-` / `0` | Font size |
+| `Cmd+k` | Clear screen |
+
+### Shell (Zsh)
+
+| Key/Command | Action |
+|-------------|--------|
+| `Up/Down` | History substring search |
+| `Ctrl+r` | FZF history search |
+| `Ctrl+t` | FZF file finder |
+| `z <dir>` | Zoxide smart cd |
+| `v` / `vim` | Neovim |
+| `lg` | Lazygit |
+| `db` / `dash` | WTF dashboard |
+| `dev <name>` | Open project in tmux+nvim |
 
 ---
 
