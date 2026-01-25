@@ -75,6 +75,14 @@ return {
         floats = "transparent",
       },
       sidebars = { "qf", "help", "neo-tree", "terminal", "Trouble" },
+      on_highlights = function(hl, c)
+        -- Transparent cursorline (just underline current line number)
+        hl.CursorLine = { bg = "NONE" }
+        hl.CursorLineNr = { fg = c.blue, bold = true }
+        -- Transparent statusline
+        hl.StatusLine = { fg = c.fg, bg = "NONE" }
+        hl.StatusLineNC = { fg = c.comment, bg = "NONE" }
+      end,
     },
   },
 
@@ -305,6 +313,24 @@ return {
   {
     "nvim-lualine/lualine.nvim",
     opts = function(_, opts)
+      opts.options = vim.tbl_deep_extend("force", opts.options or {}, {
+        theme = {
+          normal = {
+            a = { fg = "#7aa2f7", bg = "NONE" },
+            b = { fg = "#c0caf5", bg = "NONE" },
+            c = { fg = "#565f89", bg = "NONE" },
+          },
+          insert = { a = { fg = "#9ece6a", bg = "NONE" } },
+          visual = { a = { fg = "#bb9af7", bg = "NONE" } },
+          replace = { a = { fg = "#f7768e", bg = "NONE" } },
+          command = { a = { fg = "#e0af68", bg = "NONE" } },
+          inactive = {
+            a = { fg = "#565f89", bg = "NONE" },
+            b = { fg = "#565f89", bg = "NONE" },
+            c = { fg = "#565f89", bg = "NONE" },
+          },
+        },
+      })
       opts.sections = vim.tbl_deep_extend("force", opts.sections or {}, {
         -- Remove filename since dropbar already shows full path
         lualine_c = {
