@@ -52,9 +52,10 @@ return {
     },
   },
 
-  -- Indent guides
+  -- Indent guides (v3 uses "ibl" module)
   {
     "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
     opts = {
       indent = {
         char = "│",

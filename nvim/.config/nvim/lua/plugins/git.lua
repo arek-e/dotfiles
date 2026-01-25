@@ -60,45 +60,48 @@ return {
       { "<leader>gF", "<cmd>DiffviewFileHistory<cr>", desc = "File History (repo)" },
       { "<leader>gq", "<cmd>DiffviewClose<cr>", desc = "Close Diff View" },
     },
-    opts = {
-      enhanced_diff_hl = true,
-      view = {
-        default = {
-          layout = "diff2_horizontal",
-        },
-        merge_tool = {
-          layout = "diff3_mixed",
-          disable_diagnostics = true,
-        },
-        file_history = {
-          layout = "diff2_horizontal",
-        },
-      },
-      file_panel = {
-        win_config = {
-          position = "left",
-          width = 35,
-        },
-      },
-      keymaps = {
+    config = function()
+      local actions = require("diffview.actions")
+      require("diffview").setup({
+        enhanced_diff_hl = true,
         view = {
-          ["<tab>"] = require("diffview.actions").select_next_entry,
-          ["<s-tab>"] = require("diffview.actions").select_prev_entry,
-          ["gf"] = require("diffview.actions").goto_file_edit,
-          ["<leader>e"] = require("diffview.actions").toggle_files,
+          default = {
+            layout = "diff2_horizontal",
+          },
+          merge_tool = {
+            layout = "diff3_mixed",
+            disable_diagnostics = true,
+          },
+          file_history = {
+            layout = "diff2_horizontal",
+          },
         },
         file_panel = {
-          ["j"] = require("diffview.actions").next_entry,
-          ["k"] = require("diffview.actions").prev_entry,
-          ["<cr>"] = require("diffview.actions").select_entry,
-          ["o"] = require("diffview.actions").select_entry,
-          ["s"] = require("diffview.actions").toggle_stage_entry,
-          ["-"] = require("diffview.actions").toggle_stage_entry,
-          ["R"] = require("diffview.actions").refresh_files,
-          ["<tab>"] = require("diffview.actions").select_next_entry,
-          ["<s-tab>"] = require("diffview.actions").select_prev_entry,
+          win_config = {
+            position = "left",
+            width = 35,
+          },
         },
-      },
-    },
+        keymaps = {
+          view = {
+            ["<tab>"] = actions.select_next_entry,
+            ["<s-tab>"] = actions.select_prev_entry,
+            ["gf"] = actions.goto_file_edit,
+            ["<leader>e"] = actions.toggle_files,
+          },
+          file_panel = {
+            ["j"] = actions.next_entry,
+            ["k"] = actions.prev_entry,
+            ["<cr>"] = actions.select_entry,
+            ["o"] = actions.select_entry,
+            ["s"] = actions.toggle_stage_entry,
+            ["-"] = actions.toggle_stage_entry,
+            ["R"] = actions.refresh_files,
+            ["<tab>"] = actions.select_next_entry,
+            ["<s-tab>"] = actions.select_prev_entry,
+          },
+        },
+      })
+    end,
   },
 }
