@@ -1,4 +1,16 @@
 return {
+  -- Telescope git branch - see all changed files on branch vs main
+  {
+    "mrloop/telescope-git-branch.nvim",
+    dependencies = { "nvim-telescope/telescope.nvim" },
+    keys = {
+      { "<leader>gB", function() require("git_branch").files() end, desc = "Branch files vs main" },
+    },
+    config = function()
+      require("telescope").load_extension("git_branch")
+    end,
+  },
+
   -- Gitsigns - inline git status (already included in LazyVim, just configuring)
   {
     "lewis6991/gitsigns.nvim",
@@ -56,6 +68,7 @@ return {
     keys = {
       { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Diff View (working tree)" },
       { "<leader>gD", "<cmd>DiffviewOpen HEAD~1<cr>", desc = "Diff View (last commit)" },
+      { "<leader>gm", "<cmd>DiffviewOpen origin/main...HEAD<cr>", desc = "Diff View (vs main)" },
       { "<leader>gf", "<cmd>DiffviewFileHistory %<cr>", desc = "File History (current)" },
       { "<leader>gF", "<cmd>DiffviewFileHistory<cr>", desc = "File History (repo)" },
       { "<leader>gq", "<cmd>DiffviewClose<cr>", desc = "Close Diff View" },
