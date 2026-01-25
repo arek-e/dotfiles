@@ -68,3 +68,49 @@ map("n", "-", "<cmd>Oil<cr>", { desc = "Open parent directory (Oil)" })
 
 -- Harpoon quick access (also configured in harpoon plugin)
 -- <leader>a to add, <leader>h to toggle menu, <leader>1-4 for quick access
+
+-- Theme switcher
+local themes = {
+  { name = "catppuccin", variants = { "mocha", "macchiato", "frappe", "latte" } },
+  { name = "tokyonight", variants = { "night", "storm", "moon", "day" } },
+  { name = "kanagawa", variants = { "wave", "dragon", "lotus" } },
+  { name = "rose-pine", variants = { "main", "moon", "dawn" } },
+  { name = "nightfox", variants = { "nightfox", "dayfox", "dawnfox", "duskfox", "nordfox", "terafox", "carbonfox" } },
+}
+
+map("n", "<leader>uC", function()
+  local items = {}
+  for _, theme in ipairs(themes) do
+    for _, variant in ipairs(theme.variants) do
+      local colorscheme = theme.name == "nightfox" and variant or theme.name
+      table.insert(items, {
+        name = theme.name .. " (" .. variant .. ")",
+        colorscheme = colorscheme,
+        theme = theme.name,
+        variant = variant,
+      })
+    end
+  end
+
+  vim.ui.select(items, {
+    prompt = "Select Theme:",
+    format_item = function(item)
+      return item.name
+    end,
+  }, function(choice)
+    if choice then
+      -- Set variant before colorscheme for themes that need it
+      if choice.theme == "catppuccin" then
+        require("catppuccin").setup({ flavour = choice.variant })
+      elseif choice.theme == "tokyonight" then
+        require("tokyonight").setup({ style = choice.variant })
+      elseif choice.theme == "kanagawa" then
+        require("kanagawa").setup({ theme = choice.variant })
+      elseif choice.theme == "rose-pine" then
+        require("rose-pine").setup({ variant = choice.variant })
+      end
+      vim.cmd.colorscheme(choice.colorscheme)
+      vim.notify("Theme: " .. choice.name, vim.log.levels.INFO)
+    end
+  end)
+end, { desc = "Change Colorscheme" })

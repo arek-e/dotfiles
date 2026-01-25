@@ -1,5 +1,45 @@
 return {
-  -- Tokyonight theme with customization
+  -- ============================================================================
+  -- THEMES (switch with <leader>uC)
+  -- ============================================================================
+
+  -- Catppuccin - best plugin integration, 4 flavors
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    lazy = false,
+    priority = 1000,
+    opts = {
+      flavour = "mocha", -- latte, frappe, macchiato, mocha
+      transparent_background = false,
+      term_colors = true,
+      styles = {
+        comments = { "italic" },
+        conditionals = { "italic" },
+        keywords = { "italic" },
+      },
+      integrations = {
+        blink_cmp = true,
+        dashboard = true,
+        dropbar = { enabled = true, color_mode = true },
+        gitsigns = true,
+        harpoon = true,
+        indent_blankline = { enabled = true, scope_color = "lavender" },
+        lsp_trouble = true,
+        mason = true,
+        mini = { enabled = true },
+        native_lsp = { enabled = true, underlines = { errors = { "undercurl" } } },
+        neotree = true,
+        noice = true,
+        notify = true,
+        telescope = { enabled = true },
+        treesitter = true,
+        which_key = true,
+      },
+    },
+  },
+
+  -- TokyoNight - clean dark theme by Folke
   {
     "folke/tokyonight.nvim",
     lazy = false,
@@ -11,83 +51,212 @@ return {
       styles = {
         comments = { italic = true },
         keywords = { italic = true },
-        functions = {},
-        variables = {},
         sidebars = "dark",
         floats = "dark",
       },
       sidebars = { "qf", "help", "neo-tree", "terminal", "Trouble" },
-      on_highlights = function(hl, c)
-        -- Make the cursor line more visible
-        hl.CursorLine = { bg = c.bg_highlight }
-        -- Better diff colors
-        hl.DiffAdd = { bg = "#1a3a1a" }
-        hl.DiffChange = { bg = "#1a2a3a" }
-        hl.DiffDelete = { bg = "#3a1a1a" }
-        -- Dashboard colors
-        hl.DashboardHeader = { fg = c.purple }
-        hl.DashboardCenter = { fg = c.cyan }
-        hl.DashboardFooter = { fg = c.comment }
-        hl.DashboardShortCut = { fg = c.orange }
-        hl.DashboardKey = { fg = c.green }
-        hl.DashboardDesc = { fg = c.blue }
-        hl.DashboardIcon = { fg = c.cyan }
-      end,
     },
   },
 
-  -- Configure LazyVim to use tokyonight
+  -- Kanagawa - inspired by Hokusai painting
+  {
+    "rebelot/kanagawa.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {
+      theme = "wave", -- wave, dragon, lotus
+      transparent = false,
+      terminalColors = true,
+      colors = { theme = { all = { ui = { bg_gutter = "none" } } } },
+    },
+  },
+
+  -- Rose Pine - soho vibes
+  {
+    "rose-pine/neovim",
+    name = "rose-pine",
+    lazy = false,
+    priority = 1000,
+    opts = {
+      variant = "main", -- main, moon, dawn
+      dark_variant = "main",
+      styles = { italic = true, transparency = false },
+    },
+  },
+
+  -- Nightfox - highly customizable
+  {
+    "EdenEast/nightfox.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {
+      options = {
+        styles = { comments = "italic", keywords = "italic" },
+      },
+    },
+  },
+
+  -- Configure LazyVim colorscheme (default to catppuccin)
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "tokyonight",
+      colorscheme = "catppuccin",
     },
   },
 
-  -- Better notifications
-  {
-    "rcarriga/nvim-notify",
-    opts = {
-      timeout = 3000,
-      max_height = function()
-        return math.floor(vim.o.lines * 0.75)
-      end,
-      max_width = function()
-        return math.floor(vim.o.columns * 0.75)
-      end,
-      render = "compact",
-      stages = "fade",
-    },
-  },
+  -- ============================================================================
+  -- SNACKS.NVIM - Folke's QoL collection (replaces notify, indent-blankline)
+  -- ============================================================================
 
-  -- Indent guides (v3 uses "ibl" module)
   {
-    "lukas-reineke/indent-blankline.nvim",
-    main = "ibl",
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
     opts = {
-      indent = {
-        char = "│",
-        tab_char = "│",
-      },
-      scope = {
+      -- Animations for UI elements
+      animate = { enabled = true },
+      -- Better vim.ui.input
+      input = { enabled = true },
+      -- Notifications (replaces nvim-notify)
+      notifier = {
         enabled = true,
-        show_start = false,
-        show_end = false,
+        timeout = 3000,
+        style = "compact",
       },
-      exclude = {
-        filetypes = {
-          "help",
-          "dashboard",
-          "neo-tree",
-          "Trouble",
-          "lazy",
-          "mason",
-          "notify",
-          "toggleterm",
+      -- Indent guides (replaces indent-blankline)
+      indent = {
+        enabled = true,
+        char = "│",
+        scope = { enabled = true },
+      },
+      -- Smooth scrolling
+      scroll = {
+        enabled = true,
+        animate = { duration = { step = 15, total = 150 } },
+      },
+      -- Scope dimming (focus on current scope)
+      dim = { enabled = true },
+      -- Zen mode
+      zen = { enabled = true },
+      -- Quick file loading
+      quickfile = { enabled = true },
+      -- Status column
+      statuscolumn = { enabled = true },
+      -- Words highlighting (LSP references)
+      words = { enabled = true },
+      -- Dashboard disabled (using custom dashboard-nvim)
+      dashboard = { enabled = false },
+    },
+    keys = {
+      { "<leader>z", function() Snacks.zen() end, desc = "Zen Mode" },
+      { "<leader>Z", function() Snacks.zen.zoom() end, desc = "Zen Zoom" },
+      { "<leader>un", function() Snacks.notifier.show_history() end, desc = "Notification History" },
+      { "<leader>uD", function() Snacks.dim() end, desc = "Toggle Dim" },
+    },
+  },
+
+  -- Disable nvim-notify (snacks.notifier replaces it)
+  { "rcarriga/nvim-notify", enabled = false },
+
+  -- Disable indent-blankline (snacks.indent replaces it)
+  { "lukas-reineke/indent-blankline.nvim", enabled = false },
+
+  -- ============================================================================
+  -- NOICE.NVIM - Cmdline, messages, popupmenu replacement
+  -- ============================================================================
+
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    dependencies = {
+      "MunifTanjim/nui.nvim",
+    },
+    opts = {
+      cmdline = {
+        enabled = true,
+        view = "cmdline_popup",
+        format = {
+          cmdline = { pattern = "^:", icon = "", lang = "vim" },
+          search_down = { kind = "search", pattern = "^/", icon = " ", lang = "regex" },
+          search_up = { kind = "search", pattern = "^%?", icon = " ", lang = "regex" },
+          filter = { pattern = "^:%s*!", icon = "$", lang = "bash" },
+          lua = { pattern = { "^:%s*lua%s+", "^:%s*lua%s*=%s*", "^:%s*=%s*" }, icon = "", lang = "lua" },
+          help = { pattern = "^:%s*he?l?p?%s+", icon = "󰋖" },
         },
       },
+      messages = { enabled = true, view = "notify" },
+      popupmenu = { enabled = true, backend = "nui" },
+      notify = { enabled = true },
+      lsp = {
+        progress = { enabled = true },
+        override = {
+          ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+          ["vim.lsp.util.stylize_markdown"] = true,
+          ["cmp.entry.get_documentation"] = true,
+        },
+        hover = { enabled = true },
+        signature = { enabled = true },
+      },
+      presets = {
+        bottom_search = false,
+        command_palette = true,
+        long_message_to_split = true,
+        inc_rename = true,
+        lsp_doc_border = true,
+      },
+      routes = {
+        -- Hide "written" messages
+        { filter = { event = "msg_show", kind = "", find = "written" }, opts = { skip = true } },
+        -- Hide search count messages
+        { filter = { event = "msg_show", kind = "search_count" }, opts = { skip = true } },
+      },
+    },
+    keys = {
+      { "<leader>sn", "", desc = "+noice" },
+      { "<S-Enter>", function() require("noice").redirect(vim.fn.getcmdline()) end, mode = "c", desc = "Redirect Cmdline" },
+      { "<leader>snl", function() require("noice").cmd("last") end, desc = "Noice Last Message" },
+      { "<leader>snh", function() require("noice").cmd("history") end, desc = "Noice History" },
+      { "<leader>sna", function() require("noice").cmd("all") end, desc = "Noice All" },
+      { "<leader>snd", function() require("noice").cmd("dismiss") end, desc = "Dismiss All" },
     },
   },
+
+  -- ============================================================================
+  -- ANIMATIONS
+  -- ============================================================================
+
+  -- Smear cursor - Neovide-like cursor trail
+  {
+    "sphamba/smear-cursor.nvim",
+    event = "VeryLazy",
+    opts = {
+      stiffness = 0.8,
+      trailing_stiffness = 0.5,
+      distance_stop_animating = 0.5,
+      smear_between_buffers = true,
+      smear_between_neighbor_lines = true,
+      smear_insert_mode = true,
+      scroll_buffer_space = true,
+      legacy_computing_symbols_support = false,
+    },
+  },
+
+  -- Reactive - mode-aware highlights
+  {
+    "rasulomaroff/reactive.nvim",
+    event = "VeryLazy",
+    opts = {
+      builtin = {
+        cursorline = true,
+        cursor = true,
+        modemsg = true,
+      },
+    },
+  },
+
+  -- ============================================================================
+  -- CORE UI
+  -- ============================================================================
 
   -- Better buffer line (tabs)
   {
@@ -151,6 +320,57 @@ return {
           }
         end,
       },
+    },
+  },
+
+  -- ============================================================================
+  -- FOCUS & WINDOW MANAGEMENT
+  -- ============================================================================
+
+  -- Focus.nvim - auto-resize active window (golden ratio)
+  {
+    "nvim-focus/focus.nvim",
+    event = "VeryLazy",
+    opts = {
+      enable = true,
+      commands = true,
+      autoresize = { enable = true },
+      ui = {
+        number = false,
+        relativenumber = false,
+        hybridnumber = false,
+        signcolumn = true,
+        cursorline = true,
+      },
+    },
+    keys = {
+      { "<leader>wf", "<cmd>FocusToggle<cr>", desc = "Toggle Focus Mode" },
+    },
+  },
+
+  -- Incline - floating statuslines per window
+  {
+    "b0o/incline.nvim",
+    event = "VeryLazy",
+    opts = {
+      hide = { cursorline = true },
+      window = {
+        padding = 0,
+        margin = { horizontal = 0 },
+      },
+      render = function(props)
+        local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
+        if filename == "" then
+          filename = "[No Name]"
+        end
+        local ft_icon, ft_color = require("nvim-web-devicons").get_icon_color(filename)
+        local modified = vim.bo[props.buf].modified and " ●" or ""
+
+        return {
+          { (ft_icon or "") .. " ", guifg = ft_color },
+          { filename .. modified, gui = vim.bo[props.buf].modified and "bold,italic" or "bold" },
+        }
+      end,
     },
   },
 }
