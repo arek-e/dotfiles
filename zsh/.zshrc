@@ -151,6 +151,13 @@ eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
 # ============================================
+# Atuin (magical shell history)
+# ============================================
+if command -v atuin &> /dev/null; then
+  eval "$(atuin init zsh)"
+fi
+
+# ============================================
 # Dashboard & Dotfiles
 # ============================================
 alias dashboard='wtfutil'
@@ -179,6 +186,9 @@ alias gp='git push'
 alias gl='git pull'
 alias glog='git log --oneline --graph --decorate'
 
+# pnpm / Nx
+alias n='pnpm nx'
+
 # Tmux + Neovim project opener
 function dev() {
   if [ -z "$1" ]; then
@@ -189,4 +199,14 @@ function dev() {
   tmux new-session -d -s "$1"
   tmux send-keys -t "$1" "cd ~/projects/$1 && nvim" C-m
   tmux attach -t "$1"
+}
+
+# Yazi file manager with shell integration (cd to dir on quit)
+function y() {
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
 }

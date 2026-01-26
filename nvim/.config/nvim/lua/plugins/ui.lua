@@ -332,8 +332,8 @@ return {
         },
       })
       opts.sections = vim.tbl_deep_extend("force", opts.sections or {}, {
-        -- Remove filename since dropbar already shows full path
         lualine_c = {
+          { "filename", path = 1, shorting_target = 40 }, -- relative path
           { "diagnostics" },
         },
         lualine_z = {
