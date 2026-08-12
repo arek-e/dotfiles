@@ -24,7 +24,14 @@ return {
           },
         },
         sections = {
-          lualine_a = { { "mode", fmt = function(m) return m:sub(1, 1) end } },
+          lualine_a = {
+            {
+              "mode",
+              fmt = function(m)
+                return m:sub(1, 1)
+              end,
+            },
+          },
           lualine_b = {
             { "branch", icon = "" },
             { "diff", symbols = { added = " ", modified = " ", removed = " " } },

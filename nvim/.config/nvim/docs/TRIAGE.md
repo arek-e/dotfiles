@@ -17,9 +17,8 @@ These are capabilities the baseline genuinely lacks, not conveniences.
 
 | # | Candidate | The gap it fills | Notes |
 |---|---|---|---|
-| 1 | `conform.nvim` | **Nothing formats code right now.** Only ESLint fix-all on save exists. | Your old `formatting.lua` had good biome-vs-prettier project autodetect. Port it. |
-| 2 | `gitsigns.nvim` | No inline hunks, no blame, no stage-hunk. | Your old config had 15 well-chosen mappings. Strongest single candidate. |
-| 3 | `mini.pairs` or similar | No autopairs. | `blink.cmp` already does `auto_brackets` for completions, so this is only for hand-typed pairs. |
+| 1 | `gitsigns.nvim` | No inline hunks, no blame, no stage-hunk. | Your old config had 15 well-chosen mappings. Strongest single candidate. |
+| 2 | `mini.pairs` or similar | No autopairs. | `blink.cmp` already does `auto_brackets` for completions, so this is only for hand-typed pairs. |
 
 ## Added back so far
 
@@ -35,6 +34,7 @@ These are capabilities the baseline genuinely lacks, not conveniences.
 | snacks `indent`, `notifier`, `input`, `words`, `scroll` | Already installed as part of snacks, so these were config flags rather than plugins. Between them they replace indent-blankline (5.0k stars), nvim-notify (3.6k), dressing (archived), and neoscroll (2.1k). |
 | `lualine.nvim` | Statusline. Icons come from mini.icons' nvim-web-devicons shim, so no second icon plugin. |
 | `render-markdown.nvim` | Renders markdown in the buffer. The one genuinely new capability of the batch, and the most actively maintained thing on the shortlist. |
+| `conform.nvim` + `stylua` | Formatting, the last real gap. oxfmt/biome/prettier chosen by `stop_after_first` over resolvable binaries; stylua finally enforces the `.stylua.toml` that had sat unused since the reset. |
 | `tiny-inline-diagnostic.nvim` | Replaces the built-in virtual_text, which appended whole messages to the line end and collided with code. `virtual_text = false` is set in lsp.lua so both do not draw at once. |
 
 ## Tier 2 — strong candidates
@@ -89,8 +89,6 @@ These are capabilities the baseline genuinely lacks, not conveniences.
 
 - Images require herdr's `experimental.kitty_graphics`, which is enabled in this
   repo's herdr config. herdr must be restarted, not just reloaded, for it.
-- `stylua` is not installed, so `.stylua.toml` is currently unenforced.
-  `brew install stylua`, or add it to mason and wire it into conform at item 1.
 - `~/.local/share/nvim/{lazy,mason}.reset-bak` and
   `~/.local/state/nvim/lazy.reset-bak` hold the pre-reset state. Delete once the
   new config has survived a few real days of work.

@@ -159,10 +159,8 @@ return {
           return
         end
 
-        local height = win_id and vim.api.nvim_win_is_valid(win_id) and vim.api.nvim_win_get_height(win_id)
-          or 20
-        local width = win_id and vim.api.nvim_win_is_valid(win_id) and vim.api.nvim_win_get_width(win_id)
-          or 40
+        local height = win_id and vim.api.nvim_win_is_valid(win_id) and vim.api.nvim_win_get_height(win_id) or 20
+        local width = win_id and vim.api.nvim_win_is_valid(win_id) and vim.api.nvim_win_get_width(win_id) or 40
 
         -- Clear the placeholder text and reserve blank rows to draw over
         local blank = {}

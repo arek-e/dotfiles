@@ -22,6 +22,7 @@ lua/
     colorscheme.lua
     completion.lua
     diagnostics.lua       tiny-inline-diagnostic
+    formatting.lua        conform: oxfmt / biome / prettier / stylua
     lualine.lua
     markdown.lua          render-markdown
     snacks.lua            Start page, images, indent, notifier, input,
@@ -64,7 +65,7 @@ Three conventions keep this navigable:
 
 ## Plugins
 
-Eighteen, of which fifteen are declared and three are dependencies.
+Nineteen, of which sixteen are declared and three are dependencies.
 
 | Plugin | Why |
 |---|---|
@@ -85,6 +86,7 @@ Eighteen, of which fifteen are declared and three are dependencies.
 | `lualine.nvim` | Statusline |
 | `render-markdown.nvim` | Renders markdown in the buffer |
 | `tiny-inline-diagnostic.nvim` | Diagnostic display, replaces `virtual_text` |
+| `conform.nvim` | Formatting, on save and on `<leader>cf` |
 | `which-key.nvim` | Keymap discovery |
 
 Telescope and mini.files split the work: telescope answers "where is X",
@@ -93,10 +95,36 @@ the listing as text (`=` to apply).
 
 ### Language servers
 
-`lua_ls`, `vtsls`, `html`, `cssls`, `tailwindcss`, `jsonls`, `eslint`.
+`lua_ls`, `vtsls`, `html`, `cssls`, `tailwindcss`, `jsonls`, `eslint`, `oxlint`.
+
+eslint and oxlint are both enabled and do not collide: each has
+`workspace_required` and a `root_dir` demanding its own config file, so only the
+one a project actually uses attaches. Both resolve `node_modules/.bin` first.
 
 Install or repair them with `:MasonInstallServers`, a small user command defined
 in `lua/plugins/lsp.lua` so that no extra plugin is needed for this.
+
+## Formatting
+
+`conform` picks the formatter by listing candidates in order with
+`stop_after_first`, skipping any whose binary it cannot resolve:
+
+| Repo | Formatter |
+|---|---|
+| oxc (`node_modules/.bin/oxfmt`) | `oxfmt` |
+| biome (`biome.json`) | `biome` |
+| anything else | `prettier` |
+| Lua | `stylua`, via `.stylua.toml` |
+
+All three resolve `node_modules/.bin` before PATH, so the project's pinned
+version wins and none of them needs a global install. `<leader>cf` formats
+manually; `:FormatDisable[!]` and `:FormatEnable` toggle format-on-save per
+buffer or globally.
+
+Lint autofix is `<leader>cl`, not a save hook, and runs whichever of
+`LspEslintFixAll` / `LspOxlintFixAll` the attached server provides. It used to
+run on `BufWritePre`, which was wrong once conform existed: `--fix` and a
+formatter both rewriting the buffer on every write fight over it.
 
 ## Gotchas worth knowing
 

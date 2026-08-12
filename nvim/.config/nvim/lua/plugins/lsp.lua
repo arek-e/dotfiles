@@ -10,6 +10,11 @@
 -- To add a server: create after/lsp/<name>.lua (or nothing at all if the
 -- defaults suffice) and append its name to the `servers` list below.
 
+-- Both eslint and oxlint are listed, and they will not collide: each has
+-- workspace_required = true and a root_dir that demands its own config file
+-- (.eslintrc*/eslint.config.* versus .oxlintrc.json/oxlint.config.ts), so only
+-- the one a project actually uses attaches. Both resolve node_modules/.bin
+-- first, so neither needs a global install.
 local servers = {
   "lua_ls",
   "vtsls", -- TypeScript / JavaScript
@@ -18,6 +23,7 @@ local servers = {
   "tailwindcss",
   "jsonls",
   "eslint",
+  "oxlint", -- the oxc linter, used in place of eslint in some repos
 }
 
 return {
@@ -135,23 +141,25 @@ return {
         end,
       })
 
-      -- ESLint fix-all on save.
+      -- Lint autofix is a keymap, not a save hook.
       --
-      -- lspconfig's own on_attach is what defines the LspEslintFixAll buffer
-      -- command, and vim.lsp.config merges tables with `force`, so a bare
-      -- on_attach override would delete it. Capture the base and call it first.
-      -- Reading vim.lsp.config.eslint here resolves lspconfig's lsp/eslint.lua.
-      local base_on_attach = vim.lsp.config.eslint.on_attach
-      vim.lsp.config("eslint", {
-        on_attach = function(client, bufnr)
-          if base_on_attach then
-            base_on_attach(client, bufnr)
+      -- Both eslint and oxlint provide a fixAll command, and lspconfig's own
+      -- on_attach is what creates it (LspEslintFixAll / LspOxlintFixAll). It
+      -- used to run on BufWritePre here, which was a mistake once conform
+      -- arrived: --fix and a formatter both rewriting the buffer on every write
+      -- fight over it, and eslint's stylistic fixes then get reformatted anyway.
+      -- So conform owns save, and this runs the linter's fixes on demand.
+      vim.api.nvim_create_autocmd("LspAttach", {
+        group = vim.api.nvim_create_augroup("user_lint_fixall", { clear = true }),
+        callback = function(event)
+          for _, cmd in ipairs({ "LspEslintFixAll", "LspOxlintFixAll" }) do
+            if vim.fn.exists(":" .. cmd) == 2 then
+              vim.keymap.set("n", "<leader>cl", "<cmd>" .. cmd .. "<cr>", {
+                buffer = event.buf,
+                desc = "LSP: lint fix all (" .. cmd:gsub("^Lsp", ""):gsub("FixAll$", "") .. ")",
+              })
+            end
           end
-          vim.api.nvim_create_autocmd("BufWritePre", {
-            buffer = bufnr,
-            command = "LspEslintFixAll",
-            desc = "ESLint fix all on save",
-          })
         end,
       })
 
