@@ -36,7 +36,7 @@ local graphics = require("util.graphics")
 
 local LOGO_PNG = vim.fn.stdpath("config") .. "/assets/legora-mark-light.png"
 local LOGO_HEIGHT = 12
-local LOGO_WIDTH = 24
+local LOGO_WIDTH = 16
 
 -- Padded to equal width because each line is centred on its own.
 local LOGO_ASCII = {
@@ -77,7 +77,9 @@ local function logo_section()
   -- virt_lines sized to the image (9 of them at this width). Reserving a block
   -- as well stacked 12 blank lines on top of those, so the mark sat far above a
   -- menu pushed 20-odd rows down. The single line is just an anchor.
-  return { text = string.rep(" ", LOGO_WIDTH), align = "center", padding = 1 }
+  -- padding = 0 so the mark sits directly on top of the first menu item; the
+  -- image's own virt_lines already provide its height.
+  return { text = string.rep(" ", LOGO_WIDTH), align = "center", padding = 0 }
 end
 
 ---Write the ASCII mark into the reserved block, for when the image cannot be
