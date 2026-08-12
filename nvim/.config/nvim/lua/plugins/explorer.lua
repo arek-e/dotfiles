@@ -99,6 +99,22 @@ return {
           vim.keymap.set("n", "q", function()
             require("mini.files").close()
           end, { buffer = args.data.buf_id, desc = "Close explorer" })
+
+          -- Arrow navigation alongside h/l. mini.files' own `mappings` table
+          -- takes one key per action, so the second binding is set here.
+          -- Up and Down need no mapping: they are ordinary cursor movement.
+          vim.keymap.set("n", "<Right>", function()
+            require("mini.files").go_in({ close_on_file = true })
+          end, { buffer = args.data.buf_id, desc = "Go in (open file and close)" })
+
+          vim.keymap.set("n", "<Left>", function()
+            require("mini.files").go_out()
+          end, { buffer = args.data.buf_id, desc = "Go out" })
+
+          -- Enter opens, which is what most people try first
+          vim.keymap.set("n", "<CR>", function()
+            require("mini.files").go_in({ close_on_file = true })
+          end, { buffer = args.data.buf_id, desc = "Open" })
         end,
       })
 
