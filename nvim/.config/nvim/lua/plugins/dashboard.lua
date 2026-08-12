@@ -3,13 +3,14 @@
 -- The header is the Legora mark, rendered one of two ways:
 --
 --   1. image - the real PNG, drawn by Snacks.image over the Kitty graphics
---              protocol. Plain Ghostty or Kitty windows only.
+--              protocol. Ghostty or Kitty, including inside herdr when
+--              experimental.kitty_graphics is enabled there.
 --   2. ascii - the mark generated from its own geometry. Works anywhere, and is
---              what you get inside herdr, tmux or any other multiplexer.
+--              the fallback wherever graphics cannot be carried.
 --
--- See lua/util/graphics.lua for why a multiplexer rules the image out even when
--- snacks reports the terminal as capable. Short version: herdr relays the
--- terminal version query but not the image data, so the capability check lies.
+-- See lua/util/graphics.lua for how capability is decided: a multiplexer only
+-- counts as capable if it actually carries graphics. herdr does, but only with
+-- experimental.kitty_graphics = true in its config, so that flag is read.
 --
 -- Two further things here are load-bearing:
 --
@@ -70,12 +71,13 @@ local function logo_section()
     -- tables rather than plain strings.
     return { section = "header", padding = 1 }
   end
-  -- Reserve a blank block for the image to be drawn over.
-  local blank = {}
-  for _ = 1, LOGO_HEIGHT do
-    table.insert(blank, string.rep(" ", LOGO_WIDTH))
-  end
-  return { text = table.concat(blank, "\n"), align = "center", padding = 1 }
+  -- ONE line, not LOGO_HEIGHT of them.
+  --
+  -- Snacks.image makes its own vertical space: the placement extmark carries
+  -- virt_lines sized to the image (9 of them at this width). Reserving a block
+  -- as well stacked 12 blank lines on top of those, so the mark sat far above a
+  -- menu pushed 20-odd rows down. The single line is just an anchor.
+  return { text = string.rep(" ", LOGO_WIDTH), align = "center", padding = 1 }
 end
 
 ---Write the ASCII mark into the reserved block, for when the image cannot be
@@ -88,12 +90,11 @@ local function fill_with_ascii(buf, width)
   for _, l in ipairs(LOGO_ASCII) do
     table.insert(lines, string.rep(" ", pad) .. l)
   end
-  while #lines < LOGO_HEIGHT do
-    table.insert(lines, "")
-  end
   local modifiable = vim.bo[buf].modifiable
   vim.bo[buf].modifiable = true
-  pcall(vim.api.nvim_buf_set_lines, buf, 0, LOGO_HEIGHT, false, lines)
+  -- Replaces the single anchor line, so the rest of the page shifts down by the
+  -- height of the mark rather than overwriting the menu.
+  pcall(vim.api.nvim_buf_set_lines, buf, 0, 1, false, lines)
   vim.bo[buf].modifiable = modifiable
   vim.bo[buf].modified = false
 end
@@ -134,6 +135,8 @@ local function place_when_ready(attempt)
     if
       vim.api.nvim_buf_is_valid(buf)
       and vim.bo[buf].filetype == "snacks_dashboard"
+      -- LOGO_HEIGHT is used purely as a "has snacks written the page yet"
+      -- threshold; the rendered dashboard is far taller than this.
       and vim.api.nvim_buf_line_count(buf) > LOGO_HEIGHT
     then
       place_logo(buf)
@@ -214,10 +217,11 @@ return {
       vim.api.nvim_create_user_command("DashboardLogoTier", function()
         vim.notify(
           table.concat({
-            "layout            = " .. logo_tier(),
-            "in_multiplexer    = " .. tostring(graphics.in_multiplexer()),
-            "terminal_capable  = " .. tostring(graphics.terminal_looks_capable()),
-            "images_usable     = " .. tostring(graphics.supported()),
+            "layout               = " .. logo_tier(),
+            "blocks_graphics      = " .. tostring(graphics.blocks_graphics()),
+            "herdr_kitty_graphics = " .. tostring(graphics.herdr_kitty_graphics()),
+            "terminal_capable     = " .. tostring(graphics.terminal_looks_capable()),
+            "images_usable        = " .. tostring(graphics.supported()),
           }, "\n"),
           vim.log.levels.INFO
         )

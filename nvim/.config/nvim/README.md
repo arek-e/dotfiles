@@ -98,22 +98,25 @@ in `lua/plugins/lsp.lua` so that no extra plugin is needed for this.
   with `force`, so it would replace nvim-lspconfig's own `on_attach` and destroy
   the `LspEslintFixAll` command. The wrapper in `lua/plugins/lsp.lua` captures
   the base function and calls it first.
-- **Images only work outside a multiplexer.** herdr does not forward Kitty
-  graphics written into the pty by a child process — verified with raw
-  `chafa --format kitty` in a herdr pane, which draws nothing while the same
-  command in a plain Ghostty tab works. Critically, herdr *does* relay the
-  terminal version query, so `Snacks.image.supports_terminal()` returns true
-  there and cannot be used as the gate on its own. `lua/util/graphics.lua` is
-  the single predicate; everything else defers to it.
+- **Images need `experimental.kitty_graphics` in herdr.** herdr does implement
+  the Kitty graphics protocol, but it is off by default; without it herdr
+  refuses with "pane graphics require experimental.kitty_graphics". It is
+  enabled in `herdr/.config/herdr/config.toml` in this repo. A
+  `herdr server reload-config` is **not** enough — the painting is client-side,
+  so herdr has to be restarted for the flag to take effect.
 
-  Practical effect: in a herdr pane you get the generated ASCII mark and
-  mini.files shows `-Non-text-file----` for images. In a plain Ghostty or Kitty
-  window you get the real PNG on the start page and in the preview pane.
-  `:DashboardLogoTier` explains which and why. `vim.g.images_enabled = false`
-  turns images off everywhere.
+  `lua/util/graphics.lua` reads that flag rather than assuming either way, and
+  is the single source of truth. Do not gate on
+  `Snacks.image.supports_terminal()` alone: herdr relays the terminal *version
+  query* to Ghostty, so that check returns true even when the graphics data is
+  being dropped, which reserves space and draws nothing.
 - **chafa in a dashboard `terminal` section can never work**, even where
   graphics do: a terminal section runs inside nvim's own terminal emulator, and
   libvterm swallows graphics escapes instead of forwarding them.
+- **Snacks.image supplies its own vertical space** via `virt_lines` on the
+  placement extmark. Reserving a block of blank lines *as well* stacks the two
+  and leaves the mark stranded far above the menu; the image section is one
+  anchor line only.
 - **netrw is deliberately left enabled** in `config/lazy.lua`, as a fallback
   path for browsing a directory that does not depend on mini.files loading.
 - **`json-lsp`, `html-lsp`, `css-lsp` and `eslint-lsp` are not installed via

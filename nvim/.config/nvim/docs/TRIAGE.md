@@ -78,8 +78,8 @@ These are capabilities the baseline genuinely lacks, not conveniences.
 
 ## Housekeeping
 
-- mini.files' preview pane shows images as text. Rendering images in the preview
-  would mean hooking `MiniFilesBufferUpdate` and placing them by hand; not done.
+- Images require herdr's `experimental.kitty_graphics`, which is enabled in this
+  repo's herdr config. herdr must be restarted, not just reloaded, for it.
 - `stylua` is not installed, so `.stylua.toml` is currently unenforced.
   `brew install stylua`, or add it to mason and wire it into conform at item 1.
 - `~/.local/share/nvim/{lazy,mason}.reset-bak` and

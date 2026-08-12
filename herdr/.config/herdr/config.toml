@@ -79,3 +79,13 @@ resume_agents_on_restore = true
 
 [advanced]
 scrollback_limit_bytes = 10000000
+
+[experimental]
+# Pass the Kitty graphics protocol through to the outer terminal. Off by
+# default; herdr refuses pane graphics with "pane graphics require
+# experimental.kitty_graphics" without it.
+#
+# This is what lets programs inside a pane draw real images: nvim's start page
+# logo and its image previews, and plain `chafa --format kitty`. Needs an outer
+# terminal that speaks the protocol, which Ghostty does.
+kitty_graphics = true

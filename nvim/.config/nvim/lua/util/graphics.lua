@@ -1,23 +1,29 @@
 -- Can this environment actually display images?
 --
 -- `Snacks.image.supports_terminal()` is necessary but NOT sufficient, and
--- trusting it alone is what produced blank image areas here.
+-- trusting it alone is what produced blank image areas here. herdr relays the
+-- terminal version query out to Ghostty, so snacks asks "what terminal are
+-- you?", gets "ghostty", and concludes graphics are available — regardless of
+-- whether herdr will actually carry the image data.
 --
--- herdr relays the terminal version query out to Ghostty, so snacks asks "what
--- terminal are you?", gets "ghostty", and concludes graphics are available. But
--- herdr does not forward the graphics data written into the pty by a child
--- process. Verified from a herdr pane with no nvim in the path:
+-- herdr does carry it, but only with an experimental opt-in that is off by
+-- default. Its own words, from the binary:
 --
---     chafa --format kitty --size 30x15 some.png    -> blank
+--     pane graphics require experimental.kitty_graphics
 --
--- The same command in a plain Ghostty tab draws the image. So relaying a query
--- is not the same as relaying image data, and a multiplexer check has to come
--- first. herdr's `pane.graphics.set` API is presumably the supported route for
--- images, which is not something a terminal program can use.
+-- So in ~/.config/herdr/config.toml:
 --
--- tmux can be made to work with allow-passthrough, but is treated as incapable
--- here for the same reason: nothing in this config depends on images, so the
--- conservative answer costs nothing and a wrong guess looks broken.
+--     [experimental]
+--     kitty_graphics = true
+--
+-- and then restart herdr. A `herdr server reload-config` is not enough, because
+-- the painting is client-side (src/kitty_graphics.rs, paint_local_pane_graphics)
+-- and the attached client keeps the value it started with.
+--
+-- Rather than assume either way, this reads that flag and mirrors herdr's own
+-- gate. tmux and zellij are treated as incapable: tmux can be made to work with
+-- allow-passthrough, but nothing here depends on images, so the conservative
+-- answer costs nothing while a wrong guess looks broken.
 
 local M = {}
 
@@ -32,21 +38,54 @@ local function has_env_prefix(prefix)
   return false
 end
 
----Inside a terminal multiplexer that will not carry graphics through?
+---Is `experimental.kitty_graphics` turned on in the herdr config?
 ---
----Multiplexers announce themselves with prefixed variables (HERDR_PANE_ID,
----CMUX_TAB_ID, ...) rather than a bare name, so checking the bare name finds
----nothing.
+---Deliberately a plain line scan rather than a TOML parse: the only key that
+---matters is a single boolean, and pulling in a TOML library for it would be
+---absurd. Comment lines are skipped, which matters because the config comments
+---mention the key by name.
 ---@return boolean
-function M.in_multiplexer()
+function M.herdr_kitty_graphics()
+  local path = vim.env.HERDR_CONFIG_PATH
+  if not path or path == "" then
+    path = vim.fn.expand("~/.config/herdr/config.toml")
+  end
+  local fd = io.open(path, "r")
+  if not fd then
+    return false
+  end
+  local enabled = false
+  for line in fd:lines() do
+    local trimmed = line:gsub("^%s+", "")
+    if not trimmed:match("^#") then
+      local value = trimmed:match("^kitty_graphics%s*=%s*(%a+)")
+      if value then
+        enabled = value == "true"
+      end
+    end
+  end
+  fd:close()
+  return enabled
+end
+
+---Are we inside something that will swallow graphics escapes?
+---@return boolean
+function M.blocks_graphics()
   if vim.env.TMUX or vim.env.ZELLIJ or vim.env.STY or vim.env.TERM_PROGRAM == "tmux" then
     return true
   end
-  return has_env_prefix("HERDR_") or has_env_prefix("CMUX_")
+  if has_env_prefix("CMUX_") then
+    return true
+  end
+  -- herdr carries graphics only with the experimental flag on.
+  if has_env_prefix("HERDR_") then
+    return not M.herdr_kitty_graphics()
+  end
+  return false
 end
 
 ---Is the outer terminal one that speaks the Kitty graphics protocol?
----Env-only, so it is safe to call before there is a tty to query.
+---Env-only, so safe to call before there is a tty to query.
 ---@return boolean
 function M.terminal_looks_capable()
   local prog = (vim.env.TERM_PROGRAM or ""):lower()
@@ -58,14 +97,14 @@ function M.terminal_looks_capable()
     or vim.env.KITTY_WINDOW_ID ~= nil
 end
 
----Best guess available without a tty. Used to decide layout and whether to
----enable snacks.image at all.
+---Best guess available without a tty. Decides layout, and whether to enable
+---snacks.image at all.
 ---@return boolean
 function M.likely()
   if vim.g.images_enabled == false then
     return false
   end
-  return not M.in_multiplexer() and M.terminal_looks_capable()
+  return not M.blocks_graphics() and M.terminal_looks_capable()
 end
 
 ---Authoritative: everything in `likely()`, plus snacks' own terminal query,
