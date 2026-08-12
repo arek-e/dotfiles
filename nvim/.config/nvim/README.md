@@ -19,6 +19,8 @@ lua/
   plugins/                One file per concern; every file is imported
     colorscheme.lua
     completion.lua
+    dashboard.lua         Start page; the mark is generated braille art
+    explorer.lua
     lsp.lua
     telescope.lua
     treesitter.lua
@@ -65,7 +67,14 @@ Twelve, of which ten are declared and two are dependencies.
 | `telescope.nvim` | Fuzzy finder |
 | `telescope-fzf-native.nvim` | Compiled sorter for telescope |
 | `plenary.nvim` | Telescope dependency |
+| `mini.files` | File explorer, Miller columns |
+| `mini.icons` | Icons for the explorer (dependency) |
+| `dashboard-nvim` | Start page |
 | `which-key.nvim` | Keymap discovery |
+
+Telescope and mini.files split the work: telescope answers "where is X",
+mini.files answers "what is around here" and lets you restructure it by editing
+the listing as text (`=` to apply).
 
 ### Language servers
 

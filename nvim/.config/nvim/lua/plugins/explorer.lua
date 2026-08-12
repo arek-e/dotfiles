@@ -1,0 +1,138 @@
+-- File explorer.
+--
+-- mini.files rather than neo-tree or nvim-tree: it is a column browser you
+-- navigate with the same keys you already use to move around a buffer, and the
+-- directory listing is itself editable, so renaming, creating and deleting are
+-- ordinary text edits confirmed in one go.
+--
+-- Installed as the standalone module, not the whole mini.nvim suite.
+-- It pairs with telescope: telescope answers "where is X", mini.files answers
+-- "what is around here, and let me restructure it".
+
+return {
+  {
+    "echasnovski/mini.files",
+    version = false,
+    dependencies = { "echasnovski/mini.icons" },
+    keys = {
+      {
+        "<leader>fe",
+        function()
+          local files = require("mini.files")
+          -- Reveal the current file rather than opening at the cwd, unless the
+          -- buffer has no file on disk yet.
+          local path = vim.api.nvim_buf_get_name(0)
+          if path ~= "" and vim.uv.fs_stat(path) then
+            files.open(path, true)
+          else
+            files.open(vim.uv.cwd(), true)
+          end
+        end,
+        desc = "Explorer (current file)",
+      },
+      {
+        "<leader>fE",
+        function()
+          require("mini.files").open(vim.uv.cwd(), true)
+        end,
+        desc = "Explorer (cwd)",
+      },
+    },
+    opts = {
+      -- Miller columns: going into a directory adds a column on the right and
+      -- keeps the parents visible, so the whole branch stays on screen.
+      --
+      -- mini.files always keeps the full branch in memory; how much of it you
+      -- can see is purely a function of these widths against your terminal
+      -- width. These are deliberately narrow so five or six levels fit at once
+      -- rather than two fat ones. `<` and `>` trim the branch left and right if
+      -- it ever does outgrow the screen.
+      windows = {
+        preview = true,
+        width_focus = 28, -- the column your cursor is in
+        width_nofocus = 16, -- parent columns, just wide enough to read names
+        width_preview = 34, -- rightmost lookahead pane
+      },
+      options = {
+        -- Deletions go to a trash dir instead of being unrecoverable
+        permanent_delete = false,
+        use_as_default_explorer = true,
+      },
+      mappings = {
+        go_in = "l",
+        go_in_plus = "L", -- open the file and close the explorer
+        go_out = "h",
+        go_out_plus = "H",
+        synchronize = "=", -- apply the edits you made to the listing
+        reset = "<BS>",
+        show_help = "g?",
+      },
+    },
+    config = function(_, opts)
+      require("mini.icons").setup()
+      require("mini.files").setup(opts)
+
+      local group = vim.api.nvim_create_augroup("user_mini_files", { clear = true })
+
+      -- Show dotfiles, and let g. toggle them. Your old neo-tree config had
+      -- them visible, since .env files matter in this stack.
+      local show_dotfiles = true
+      local function filter_show()
+        return true
+      end
+      local function filter_hide(entry)
+        return not vim.startswith(entry.name, ".")
+      end
+
+      vim.api.nvim_create_autocmd("User", {
+        group = group,
+        pattern = "MiniFilesBufferCreate",
+        callback = function(args)
+          vim.keymap.set("n", "g.", function()
+            show_dotfiles = not show_dotfiles
+            require("mini.files").refresh({
+              content = { filter = show_dotfiles and filter_show or filter_hide },
+            })
+          end, { buffer = args.data.buf_id, desc = "Toggle dotfiles" })
+
+          -- q closes, matching every other transient window in this config
+          vim.keymap.set("n", "q", function()
+            require("mini.files").close()
+          end, { buffer = args.data.buf_id, desc = "Close explorer" })
+        end,
+      })
+
+      -- Keep LSP informed when files are renamed through the explorer, so
+      -- imports get updated instead of silently breaking.
+      vim.api.nvim_create_autocmd("User", {
+        group = group,
+        pattern = "MiniFilesActionRename",
+        callback = function(args)
+          local ok, snacks = pcall(require, "snacks")
+          if ok then
+            snacks.rename.on_rename_file(args.data.from, args.data.to)
+            return
+          end
+          -- No snacks in this config, so notify the servers directly.
+          local clients = vim.lsp.get_clients()
+          for _, client in ipairs(clients) do
+            if client:supports_method("workspace/willRenameFiles") then
+              client:request("workspace/willRenameFiles", {
+                files = {
+                  {
+                    oldUri = vim.uri_from_fname(args.data.from),
+                    newUri = vim.uri_from_fname(args.data.to),
+                  },
+                },
+              }, function(_, result)
+                if result then
+                  vim.lsp.util.apply_workspace_edit(result, client.offset_encoding)
+                end
+              end)
+            end
+          end
+        end,
+      })
+    end,
+  },
+}
