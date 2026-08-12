@@ -1,9 +1,19 @@
 -- Treesitter: syntax highlighting, indentation, incremental selection.
 --
 -- IMPORTANT: `branch = "master"` is load-bearing. nvim-treesitter's default
--- branch is now `main`, a full rewrite that requires Neovim 0.12 nightly. We
--- are on 0.11.x, where `master` is the supported branch. Without this pin,
--- lazy.nvim installs `main` and highlighting silently stops working.
+-- branch is `main`, a full incompatible rewrite. Without this pin, lazy.nvim
+-- installs `main` and this spec's options mean nothing, so highlighting
+-- silently stops working.
+--
+-- Status as of Neovim 0.12.4: `main` is now installable (it needs 0.12+, which
+-- we have) and is the actively developed branch. `master` is locked but still
+-- functional, and is verified working here on 0.12.4. Migrating to `main` is a
+-- rewrite of this file, not a branch flip: no ensure_installed, no
+-- highlight.enable; parsers come from require("nvim-treesitter").install{} and
+-- highlighting from vim.treesitter.start() in an ftplugin or FileType autocmd.
+-- It also needs the tree-sitter CLI (brew install tree-sitter-cli; the
+-- `tree-sitter` formula is the library only). Its indent support is still
+-- marked experimental.
 
 return {
   {

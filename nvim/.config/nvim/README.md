@@ -3,8 +3,8 @@
 A hand-rolled config on plain lazy.nvim. No distro. Targets TypeScript and web
 work, plus Lua for editing this config.
 
-Requires **Neovim 0.11+** (it uses the native `vim.lsp.config` / `vim.lsp.enable`
-API and `vim.hl`).
+Requires **Neovim 0.11+**, running on **0.12.4**. It uses the native
+`vim.lsp.config` / `vim.lsp.enable` API and `vim.hl`.
 
 ## Structure
 
@@ -91,9 +91,11 @@ in `lua/plugins/lsp.lua` so that no extra plugin is needed for this.
 
 ## Gotchas worth knowing
 
-- **nvim-treesitter is pinned to `branch = "master"`.** Its default branch is now
-  `main`, a rewrite that needs Neovim 0.12 nightly. Removing the pin silently
-  breaks highlighting on 0.11.
+- **nvim-treesitter is pinned to `branch = "master"`.** Its default branch is
+  `main`, an incompatible rewrite. Removing the pin makes this spec's options
+  inert and silently breaks highlighting. `master` is locked upstream but
+  verified working on 0.12.4; see the comment in `lua/plugins/treesitter.lua`
+  for what migrating to `main` would involve.
 - **Do not define `on_attach` in `after/lsp/eslint.lua`.** Config tables merge
   with `force`, so it would replace nvim-lspconfig's own `on_attach` and destroy
   the `LspEslintFixAll` command. The wrapper in `lua/plugins/lsp.lua` captures
