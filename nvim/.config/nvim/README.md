@@ -19,12 +19,16 @@ lua/
   plugins/                One file per concern; every file is imported
     colorscheme.lua
     completion.lua
-    dashboard.lua         Start page; the mark is generated braille art
+    dashboard.lua         Start page; renders the mark as a real image
+                          where the terminal allows it, ASCII otherwise
     explorer.lua
     lsp.lua
     telescope.lua
     treesitter.lua
     which-key.lua
+assets/
+  legora-mark.png         The mark, rasterised from its geometry
+  legora-mark-light.png   Same, lifted for dark backgrounds
 after/
   lsp/                    Per-server LSP overrides, merged over nvim-lspconfig
     lua_ls.lua
@@ -52,7 +56,7 @@ Three conventions keep this navigable:
 
 ## Plugins
 
-Twelve, of which ten are declared and two are dependencies.
+Fifteen, of which twelve are declared and three are dependencies.
 
 | Plugin | Why |
 |---|---|
@@ -69,7 +73,7 @@ Twelve, of which ten are declared and two are dependencies.
 | `plenary.nvim` | Telescope dependency |
 | `mini.files` | File explorer, Miller columns |
 | `mini.icons` | Icons for the explorer (dependency) |
-| `dashboard-nvim` | Start page |
+| `snacks.nvim` | Start page, plus image support. Only `dashboard` and `image` are enabled; the rest of the bundle stays off. |
 | `which-key.nvim` | Keymap discovery |
 
 Telescope and mini.files split the work: telescope answers "where is X",
@@ -92,17 +96,27 @@ in `lua/plugins/lsp.lua` so that no extra plugin is needed for this.
   with `force`, so it would replace nvim-lspconfig's own `on_attach` and destroy
   the `LspEslintFixAll` command. The wrapper in `lua/plugins/lsp.lua` captures
   the base function and calls it first.
-- **netrw is deliberately left enabled** in `config/lazy.lua`. There is no file
-  explorer plugin, so netrw is the only way to browse a directory.
-- **`json-lsp`, `html-lsp`, `css-lsp` and `eslint-lsp` are the same npm package**
-  (`vscode-langservers-extracted`), so mason installs ~93 MB four times. Fixable
-  by installing it once globally instead.
+- **The start page picks a logo tier at startup.** A real image over the Kitty
+  graphics protocol where the terminal supports it, otherwise generated ASCII.
+  Any detected multiplexer forces ASCII, because a multiplexer that does not
+  pass graphics escapes through renders them as garbage. `:DashboardLogoTier`
+  says which was chosen; `vim.g.dashboard_logo` overrides it. The image tier
+  needs `chafa` (`brew install chafa`).
+- **netrw is deliberately left enabled** in `config/lazy.lua`, as a fallback
+  path for browsing a directory that does not depend on mini.files loading.
+- **`json-lsp`, `html-lsp`, `css-lsp` and `eslint-lsp` are not installed via
+  mason.** All four are the same npm package (`vscode-langservers-extracted`),
+  which mason would install ~93 MB at a time. It is one global npm install
+  instead, so those four resolve from `$VOLTA_HOME/bin` and depend on it being
+  on PATH. `lua_ls`, `vtsls` and `tailwindcss` still come from mason.
 
 ## First launch
 
 ```sh
-nvim                      # lazy.nvim bootstraps and installs everything
-:MasonInstallServers      # then fetch the language servers
+brew install chafa                      # optional, for the image logo tier
+npm i -g vscode-langservers-extracted   # json, html, css and eslint servers
+nvim                                    # lazy.nvim bootstraps and installs
+:MasonInstallServers                    # lua_ls, vtsls, tailwindcss
 :checkhealth
 ```
 
