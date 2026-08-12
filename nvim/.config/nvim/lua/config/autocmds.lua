@@ -1,114 +1,127 @@
--- Autocmds are automatically loaded on the VeryLazy event
--- Default autocmds that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/autocmds.lua
+-- Autocommands. Plugin-specific autocmds belong in that plugin's spec.
 
 local autocmd = vim.api.nvim_create_autocmd
-local augroup = vim.api.nvim_create_augroup
+local augroup = function(name)
+  return vim.api.nvim_create_augroup("user_" .. name, { clear = true })
+end
 
--- Highlight on yank
+-- Briefly highlight the yanked text.
+-- vim.hl replaced the deprecated vim.highlight in 0.11.
 autocmd("TextYankPost", {
-  group = augroup("highlight_yank", { clear = true }),
+  group = augroup("highlight_yank"),
   callback = function()
-    vim.highlight.on_yank({ higroup = "IncSearch", timeout = 200 })
+    vim.hl.on_yank({ higroup = "IncSearch", timeout = 200 })
   end,
 })
 
--- Resize splits when window is resized
+-- Keep splits proportional when the terminal is resized
 autocmd("VimResized", {
-  group = augroup("resize_splits", { clear = true }),
+  group = augroup("resize_splits"),
   callback = function()
+    local current = vim.fn.tabpagenr()
     vim.cmd("tabdo wincmd =")
+    vim.cmd("tabnext " .. current)
   end,
 })
 
--- Go to last location when opening a buffer
+-- Reopen a file where you left it
 autocmd("BufReadPost", {
-  group = augroup("last_loc", { clear = true }),
-  callback = function()
-    local mark = vim.api.nvim_buf_get_mark(0, '"')
-    local lcount = vim.api.nvim_buf_line_count(0)
+  group = augroup("last_loc"),
+  callback = function(event)
+    local exclude = { "gitcommit", "gitrebase" }
+    if vim.tbl_contains(exclude, vim.bo[event.buf].filetype) then
+      return
+    end
+    local mark = vim.api.nvim_buf_get_mark(event.buf, '"')
+    local lcount = vim.api.nvim_buf_line_count(event.buf)
     if mark[1] > 0 and mark[1] <= lcount then
       pcall(vim.api.nvim_win_set_cursor, 0, mark)
     end
   end,
 })
 
--- Close some filetypes with <q>
+-- q closes throwaway windows, and they stay out of the buffer list
 autocmd("FileType", {
-  group = augroup("close_with_q", { clear = true }),
+  group = augroup("close_with_q"),
   pattern = {
+    "checkhealth",
     "help",
     "lspinfo",
     "man",
-    "notify",
     "qf",
     "query",
-    "spectre_panel",
     "startuptime",
-    "tsplayground",
-    "checkhealth",
-    "fugitive",
-    "git",
   },
   callback = function(event)
     vim.bo[event.buf].buflisted = false
-    vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = event.buf, silent = true })
+    vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = event.buf, silent = true, desc = "Close window" })
   end,
 })
 
--- Auto create directory when saving a file
+-- Create missing parent directories on save
 autocmd("BufWritePre", {
-  group = augroup("auto_create_dir", { clear = true }),
+  group = augroup("auto_create_dir"),
   callback = function(event)
+    -- Skip URL-style buffer names such as oil:// or fugitive://
     if event.match:match("^%w%w+://") then
       return
     end
-    local file = vim.loop.fs_realpath(event.match) or event.match
+    local file = vim.uv.fs_realpath(event.match) or event.match
     vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
   end,
 })
 
--- Set filetype for common config files
+-- Treat dotenv files as shell so they get highlighting
 autocmd({ "BufRead", "BufNewFile" }, {
-  group = augroup("filetype_detect", { clear = true }),
-  pattern = { ".env*", "*.env" },
+  group = augroup("dotenv_filetype"),
+  pattern = { ".env", ".env.*", "*.env" },
   callback = function()
     vim.bo.filetype = "sh"
   end,
 })
 
--- Terminal buffer settings (for Claude Code, etc.)
+-- Terminal buffers: no line numbers, unlisted, q to close
 autocmd("TermOpen", {
-  group = augroup("terminal_settings", { clear = true }),
+  group = augroup("terminal_settings"),
   callback = function(event)
-    -- q in normal mode closes the terminal window
-    vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = event.buf, silent = true, desc = "Close terminal" })
-    -- Don't show in buffer list
+    vim.opt_local.number = false
+    vim.opt_local.relativenumber = false
+    vim.opt_local.signcolumn = "no"
     vim.bo[event.buf].buflisted = false
+    vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = event.buf, silent = true, desc = "Close terminal" })
   end,
 })
 
--- Transparent background overrides (gated behind vim.g.transparent)
--- Set vim.g.transparent = true in options.lua to enable
-vim.g.transparent = vim.g.transparent == nil and true or vim.g.transparent
+-- Transparency, so the terminal background shows through.
+-- Set vim.g.transparent = false before startup to keep the theme's own
+-- background. The colours below are gruvbox-dark values.
+if vim.g.transparent == nil then
+  vim.g.transparent = true
+end
 
 autocmd("ColorScheme", {
-  group = augroup("transparent_overrides", { clear = true }),
+  group = augroup("transparent_overrides"),
   callback = function()
     if not vim.g.transparent then
       return
     end
-    vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
-    vim.api.nvim_set_hl(0, "NormalNC", { bg = "NONE" })
-    vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
-    vim.api.nvim_set_hl(0, "FloatBorder", { bg = "NONE" })
-    vim.api.nvim_set_hl(0, "SignColumn", { bg = "NONE" })
-    vim.api.nvim_set_hl(0, "EndOfBuffer", { bg = "NONE" })
-    vim.api.nvim_set_hl(0, "CursorLine", { bg = "#1f1f28" })
-    vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#7aa2f7", bold = true, bg = "#1f1f28" })
-    vim.api.nvim_set_hl(0, "StatusLine", { bg = "NONE" })
-    vim.api.nvim_set_hl(0, "StatusLineNC", { bg = "NONE" })
-    vim.api.nvim_set_hl(0, "TabLine", { bg = "NONE" })
-    vim.api.nvim_set_hl(0, "TabLineFill", { bg = "NONE" })
-    vim.api.nvim_set_hl(0, "TabLineSel", { bg = "NONE" })
+    for _, group in ipairs({
+      "Normal",
+      "NormalNC",
+      "NormalFloat",
+      "FloatBorder",
+      "SignColumn",
+      "EndOfBuffer",
+      "StatusLine",
+      "StatusLineNC",
+      "TabLine",
+      "TabLineFill",
+      "TabLineSel",
+    }) do
+      vim.api.nvim_set_hl(0, group, { bg = "NONE" })
+    end
+    -- Keep the cursorline faintly visible against a transparent background
+    vim.api.nvim_set_hl(0, "CursorLine", { bg = "#3c3836" })
+    vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#fabd2f", bold = true, bg = "NONE" })
   end,
 })

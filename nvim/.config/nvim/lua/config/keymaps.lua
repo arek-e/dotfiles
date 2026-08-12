@@ -1,154 +1,67 @@
--- Keymaps are automatically loaded on the VeryLazy event
--- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
+-- Keymaps that do not depend on any plugin.
+-- Plugin keymaps belong in that plugin's own spec, under the `keys` field, so
+-- lazy.nvim can use them as load triggers.
 
 local map = vim.keymap.set
 
--- Quick escape from insert mode
-map("i", "jk", "<ESC>", { desc = "Exit insert mode" })
+-- Clear search highlight
+map("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search highlight" })
 
--- Terminal mode keybindings (skip for Claude Code buffers)
-local function is_claude_buf()
-  local bufname = vim.api.nvim_buf_get_name(0)
-  return bufname:match("claude") ~= nil
-end
+-- Save from any mode
+map({ "n", "i", "v", "s" }, "<C-s>", "<cmd>write<cr><esc>", { desc = "Write buffer" })
 
-map("t", "<Esc><Esc>", function()
-  if is_claude_buf() then return "<Esc><Esc>" end
-  return "<C-\\><C-n>"
-end, { expr = true, desc = "Exit terminal mode" })
+-- Window navigation
+map("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
+map("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
+map("n", "<C-k>", "<C-w>k", { desc = "Go to upper window" })
+map("n", "<C-l>", "<C-w>l", { desc = "Go to right window" })
 
-map("t", "jk", function()
-  if is_claude_buf() then return "jk" end
-  return "<C-\\><C-n>"
-end, { expr = true, desc = "Exit terminal mode" })
+-- Window splits and resize
+map("n", "<leader>-", "<cmd>split<cr>", { desc = "Split below" })
+map("n", "<leader>\\", "<cmd>vsplit<cr>", { desc = "Split right" })
+map("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Taller window" })
+map("n", "<C-Down>", "<cmd>resize -2<cr>", { desc = "Shorter window" })
+map("n", "<C-Left>", "<cmd>vertical resize -2<cr>", { desc = "Narrower window" })
+map("n", "<C-Right>", "<cmd>vertical resize +2<cr>", { desc = "Wider window" })
 
--- Close terminal window (Ctrl+q) -- works everywhere including Claude
-map("t", "<C-q>", "<C-\\><C-n><cmd>close<cr>", { desc = "Close terminal" })
--- Window navigation from terminal mode
-map("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "Navigate left" })
-map("t", "<C-j>", "<C-\\><C-n><C-w>j", { desc = "Navigate down" })
-map("t", "<C-k>", "<C-\\><C-n><C-w>k", { desc = "Navigate up" })
-map("t", "<C-l>", "<C-\\><C-n><C-w>l", { desc = "Navigate right" })
+-- Buffers
+map("n", "[b", "<cmd>bprevious<cr>", { desc = "Previous buffer" })
+map("n", "]b", "<cmd>bnext<cr>", { desc = "Next buffer" })
+map("n", "<leader>bd", "<cmd>bdelete<cr>", { desc = "Delete buffer" })
 
--- Better up/down (handles wrapped lines)
+-- Wrapped lines: j/k move by screen line unless a count is given
 map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 
--- Window navigation is handled by vim-tmux-navigator
--- Ctrl+h/j/k/l will seamlessly navigate nvim splits AND tmux panes
+-- Keep the cursor centred while moving through the file
+map("n", "<C-d>", "<C-d>zz", { desc = "Half page down, centred" })
+map("n", "<C-u>", "<C-u>zz", { desc = "Half page up, centred" })
+map("n", "n", "nzzzv", { desc = "Next match, centred" })
+map("n", "N", "Nzzzv", { desc = "Previous match, centred" })
+map("n", "J", "mzJ`z", { desc = "Join lines, keep cursor" })
 
--- Open tmux pane at current file's directory
-map("n", "<leader>tp", function()
-  local dir = vim.fn.expand("%:p:h")
-  if dir == "" then
-    dir = vim.fn.getcwd()
-  end
-  -- Open a new tmux pane (horizontal split) at the file's directory
-  vim.fn.system(string.format("tmux split-window -h -c %s", vim.fn.shellescape(dir)))
-end, { desc = "Tmux pane at file dir" })
-
-map("n", "<leader>tP", function()
-  local dir = vim.fn.expand("%:p:h")
-  if dir == "" then
-    dir = vim.fn.getcwd()
-  end
-  -- Open a new tmux pane (vertical split) at the file's directory
-  vim.fn.system(string.format("tmux split-window -v -c %s", vim.fn.shellescape(dir)))
-end, { desc = "Tmux pane (vertical) at file dir" })
-
-map("n", "<leader>tw", function()
-  local dir = vim.fn.expand("%:p:h")
-  if dir == "" then
-    dir = vim.fn.getcwd()
-  end
-  -- Open a new tmux window at the file's directory
-  vim.fn.system(string.format("tmux new-window -c %s", vim.fn.shellescape(dir)))
-end, { desc = "Tmux window at file dir" })
-
--- Show current working directory
-map("n", "<leader>pw", function() vim.notify(vim.fn.getcwd(), vim.log.levels.INFO) end, { desc = "Show cwd" })
-
--- Quick save
-map({ "n", "i", "v", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
-
--- Clear search highlighting
-map("n", "<Esc>", "<cmd>noh<cr><Esc>", { desc = "Clear search highlight" })
-
--- Better indenting (stay in visual mode)
-map("v", "<", "<gv")
-map("v", ">", ">gv")
-
--- Move lines up/down
+-- Move lines and selections, reindenting as they go
 map("n", "<A-j>", "<cmd>m .+1<cr>==", { desc = "Move line down" })
 map("n", "<A-k>", "<cmd>m .-2<cr>==", { desc = "Move line up" })
 map("v", "<A-j>", ":m '>+1<cr>gv=gv", { desc = "Move selection down" })
 map("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move selection up" })
 
--- Centered scrolling
-map("n", "<C-d>", "<C-d>zz")
-map("n", "<C-u>", "<C-u>zz")
-map("n", "n", "nzzzv")
-map("n", "N", "Nzzzv")
+-- Indent without dropping the selection
+map("v", "<", "<gv", { desc = "Outdent" })
+map("v", ">", ">gv", { desc = "Indent" })
 
+-- Paste over a selection without clobbering the register
+map("v", "p", '"_dP', { desc = "Paste, keep register" })
 
--- Harpoon quick access (also configured in harpoon plugin)
--- <leader>a to add, <leader>h to toggle menu, <leader>1-4 for quick access
+-- Terminal mode: get back to normal mode
+map("t", "<C-\\><C-n>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+map("t", "<C-q>", "<C-\\><C-n><cmd>close<cr>", { desc = "Close terminal" })
 
--- Theme switcher
-local themes = {
-  { name = "onedark", variants = { "onedark", "onelight", "onedark_vivid", "onedark_dark" } },
-  { name = "catppuccin", variants = { "mocha", "macchiato", "frappe", "latte" } },
-  { name = "tokyonight", variants = { "night", "storm", "moon", "day" } },
-  { name = "kanagawa", variants = { "wave", "dragon", "lotus" } },
-  { name = "rose-pine", variants = { "main", "moon", "dawn" } },
-  { name = "nightfox", variants = { "nightfox", "dayfox", "dawnfox", "duskfox", "nordfox", "terafox", "carbonfox" } },
-}
+-- Diagnostics. ]d and [d are built in on 0.11, so only the extras go here.
+map("n", "<leader>xe", vim.diagnostic.open_float, { desc = "Line diagnostics" })
+map("n", "<leader>xq", vim.diagnostic.setloclist, { desc = "Diagnostics to loclist" })
 
-map("n", "<leader>uC", function()
-  local items = {}
-  for _, theme in ipairs(themes) do
-    for _, variant in ipairs(theme.variants) do
-      local colorscheme = theme.name == "nightfox" and variant or theme.name
-      table.insert(items, {
-        name = theme.name .. " (" .. variant .. ")",
-        colorscheme = colorscheme,
-        theme = theme.name,
-        variant = variant,
-      })
-    end
-  end
-
-  vim.ui.select(items, {
-    prompt = "Select Theme:",
-    format_item = function(item)
-      return item.name
-    end,
-  }, function(choice)
-    if choice then
-      -- Set variant before colorscheme for themes that need it
-      if choice.theme == "onedark" then
-        vim.cmd.colorscheme(choice.variant)
-      elseif choice.theme == "catppuccin" then
-        require("catppuccin").setup({ flavour = choice.variant })
-        vim.cmd.colorscheme(choice.colorscheme)
-      elseif choice.theme == "tokyonight" then
-        require("tokyonight").setup({ style = choice.variant })
-        vim.cmd.colorscheme(choice.colorscheme)
-      elseif choice.theme == "kanagawa" then
-        require("kanagawa").setup({ theme = choice.variant })
-        vim.cmd.colorscheme(choice.colorscheme)
-      elseif choice.theme == "rose-pine" then
-        require("rose-pine").setup({ variant = choice.variant })
-        vim.cmd.colorscheme(choice.colorscheme)
-      else
-        vim.cmd.colorscheme(choice.colorscheme)
-      end
-      vim.notify("Theme: " .. choice.name, vim.log.levels.INFO)
-    end
-  end)
-end, { desc = "Change Colorscheme" })
-
--- Cheatsheet
-map("n", "<leader>?", function()
-  require("config.cheatsheet").open()
-end, { desc = "Keybindings Cheatsheet" })
+-- Show the cwd
+map("n", "<leader>pw", function()
+  vim.notify(vim.fn.getcwd(), vim.log.levels.INFO)
+end, { desc = "Show cwd" })

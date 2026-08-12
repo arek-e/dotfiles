@@ -1,63 +1,109 @@
-# Neovim Configuration
+# Neovim configuration
 
-LazyVim-based config optimized for TypeScript fullstack development with tmux integration.
+A hand-rolled config on plain lazy.nvim. No distro. Targets TypeScript and web
+work, plus Lua for editing this config.
 
-## Features
-
-- **LazyVim** base with TypeScript, JSON, Tailwind, ESLint, Prettier extras
-- **Telescope** + fzf-native for fuzzy finding
-- **Harpoon 2** for quick file navigation
-- **Oil.nvim** + Neo-tree for file exploration
-- **Diffview** + Gitsigns for git workflow
-- **vim-tmux-navigator** for seamless pane navigation
-- **Tokyo Night** theme
+Requires **Neovim 0.11+** (it uses the native `vim.lsp.config` / `vim.lsp.enable`
+API and `vim.hl`).
 
 ## Structure
 
 ```
-nvim/.config/nvim/
-├── init.lua                    # Bootstrap lazy.nvim
-├── lua/
-│   ├── config/
-│   │   ├── lazy.lua            # LazyVim + extras
-│   │   ├── options.lua         # Editor options
-│   │   ├── keymaps.lua         # Custom keybindings
-│   │   └── autocmds.lua        # Autocommands
-│   └── plugins/
-│       ├── git.lua             # gitsigns + diffview
-│       ├── editor.lua          # harpoon + oil + telescope
-│       ├── tmux.lua            # vim-tmux-navigator
-│       ├── ui.lua              # theme + bufferline + lualine
-│       └── lang.lua            # treesitter + autotag
+init.lua                  Leader keys, then four requires. Nothing else.
+lua/
+  config/
+    lazy.lua              lazy.nvim bootstrap and setup
+    options.lua           Editor options. References no plugin.
+    keymaps.lua           Plugin-independent keymaps only.
+    autocmds.lua          Autocommands, incl. transparency
+  plugins/                One file per concern; every file is imported
+    colorscheme.lua
+    completion.lua
+    lsp.lua
+    telescope.lua
+    treesitter.lua
+    which-key.lua
+after/
+  lsp/                    Per-server LSP overrides, merged over nvim-lspconfig
+    lua_ls.lua
+    vtsls.lua
+    jsonls.lua
+    eslint.lua
+    tailwindcss.lua
+docs/
+  INVENTORY-pre-reset.md  What was installed before the reset, and why each
+                          plugin was kept or dropped
+  TRIAGE.md               The add-back queue
 ```
 
-## Key Bindings
+Three conventions keep this navigable:
 
-Leader: `Space`
+1. **Plugin keymaps live in the plugin's own spec**, under `keys`, so lazy.nvim
+   can use them as load triggers. `config/keymaps.lua` is only for mappings that
+   work without any plugin.
+2. **LSP server settings live in `after/lsp/<name>.lua`**, never in a giant
+   table inside `lsp.lua`. Adding a server is: create that file, append the name
+   to the `servers` list.
+3. **Lazy by default.** `config/lazy.lua` sets `defaults = { lazy = true }`, so
+   anything eager has to say `lazy = false` and is easy to audit. Currently only
+   the colorscheme and treesitter are eager.
 
-| Key | Action |
-|-----|--------|
-| `Ctrl+h/j/k/l` | Navigate splits/tmux panes |
-| `-` | Oil (parent directory) |
-| `<leader>a` | Harpoon add |
-| `<leader>h` | Harpoon menu |
-| `<leader>1-5` | Harpoon file 1-5 |
-| `<leader>gd` | Diffview open |
-| `<leader>gf` | File history |
-| `<leader>tp` | Tmux pane at file dir |
-| `<leader>tw` | Tmux window at file dir |
+## Plugins
 
-## First Launch
+Twelve, of which ten are declared and two are dependencies.
 
-```bash
-# Clear old cache (if migrating from NvChad)
-rm -rf ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
+| Plugin | Why |
+|---|---|
+| `lazy.nvim` | Plugin manager |
+| `gruvbox.nvim` | Colorscheme, matches the Ghostty/herdr theme |
+| `nvim-treesitter` | Highlighting, indent, incremental selection |
+| `nvim-lspconfig` | Server definitions, consumed by the native 0.11 API |
+| `mason.nvim` | Installs the language servers |
+| `lazydev.nvim` | Neovim Lua API awareness when editing this config |
+| `blink.cmp` | Completion |
+| `friendly-snippets` | Snippet corpus (dependency) |
+| `telescope.nvim` | Fuzzy finder |
+| `telescope-fzf-native.nvim` | Compiled sorter for telescope |
+| `plenary.nvim` | Telescope dependency |
+| `which-key.nvim` | Keymap discovery |
 
-# Launch - plugins auto-install
-nvim
+### Language servers
+
+`lua_ls`, `vtsls`, `html`, `cssls`, `tailwindcss`, `jsonls`, `eslint`.
+
+Install or repair them with `:MasonInstallServers`, a small user command defined
+in `lua/plugins/lsp.lua` so that no extra plugin is needed for this.
+
+## Gotchas worth knowing
+
+- **nvim-treesitter is pinned to `branch = "master"`.** Its default branch is now
+  `main`, a rewrite that needs Neovim 0.12 nightly. Removing the pin silently
+  breaks highlighting on 0.11.
+- **Do not define `on_attach` in `after/lsp/eslint.lua`.** Config tables merge
+  with `force`, so it would replace nvim-lspconfig's own `on_attach` and destroy
+  the `LspEslintFixAll` command. The wrapper in `lua/plugins/lsp.lua` captures
+  the base function and calls it first.
+- **netrw is deliberately left enabled** in `config/lazy.lua`. There is no file
+  explorer plugin, so netrw is the only way to browse a directory.
+- **`json-lsp`, `html-lsp`, `css-lsp` and `eslint-lsp` are the same npm package**
+  (`vscode-langservers-extracted`), so mason installs ~93 MB four times. Fixable
+  by installing it once globally instead.
+
+## First launch
+
+```sh
+nvim                      # lazy.nvim bootstraps and installs everything
+:MasonInstallServers      # then fetch the language servers
+:checkhealth
 ```
 
-## Credits
+## Keymaps
 
-- [LazyVim](https://www.lazyvim.org/)
-- [Folke's plugins](https://github.com/folke)
+Leader is `Space`. `<leader>?` shows what is bound in the current buffer, and
+`<leader>sk` searches all keymaps — both are more trustworthy than a table in a
+README, which is why there is no exhaustive list here.
+
+The 0.11 native LSP defaults are in play: `grn` rename, `gra` code action,
+`grr` references, `gri` implementation, `gO` document symbols, `]d` / `[d`
+diagnostics. `lua/plugins/lsp.lua` adds `gd`, `gD`, `gy`, `K`, `<leader>cr`,
+`<leader>ca` and `<leader>ch`.

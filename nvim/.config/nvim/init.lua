@@ -1,19 +1,12 @@
--- Bootstrap lazy.nvim
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-  if vim.v.shell_error ~= 0 then
-    vim.api.nvim_echo({
-      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out, "WarningMsg" },
-      { "\nPress any key to exit..." },
-    }, true, {})
-    vim.fn.getchar()
-    os.exit(1)
-  end
-end
-vim.opt.rtp:prepend(lazypath)
+-- Entry point.
+--
+-- Kept deliberately thin: leader keys must be set before lazy.nvim loads any
+-- spec that defines a `<leader>` mapping, so they go here rather than in
+-- options.lua.
+vim.g.mapleader = " "
+vim.g.maplocalleader = "\\"
 
--- Load lazy.nvim with LazyVim
+require("config.options")
 require("config.lazy")
+require("config.keymaps")
+require("config.autocmds")
