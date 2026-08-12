@@ -101,17 +101,17 @@ in `lua/plugins/lsp.lua` so that no extra plugin is needed for this.
   `:DashboardLogoTier` says which was chosen and `vim.g.dashboard_logo`
   ("kitty" or "ascii") overrides it. The image tier needs `chafa`.
 
-  In practice, with Ghostty: the **first** window runs herdr via
-  `initial-command`, and any detected multiplexer forces the ASCII tier, so nvim
-  there gets ASCII. New tabs and splits get a plain shell, so nvim there gets
-  the real image. That asymmetry is deliberate — a multiplexer that does not
-  pass graphics escapes through paints them on screen as litter.
+  herdr counts as image-capable. herdr 0.7.5 implements the Kitty graphics
+  protocol itself: its API exposes `pane.graphics.set` / `clear` / `info` and
+  `PaneGraphicsSetParams` (`image_width`, `data_base64`, `placement`), and its
+  renderer handles `kitty_virtual_placeholder`. tmux, zellij and cmux are
+  treated as blind and forced to ASCII.
 
-  Detection note: herdr and cmux set *prefixed* variables (`HERDR_PANE_ID`,
-  `CMUX_TAB_ID`, …), never a bare `HERDR` or `CMUX`, so the check scans for the
-  prefix. `TERM_PROGRAM=ghostty` survives into a herdr pane while `TERM` becomes
-  `xterm-256color`, which means terminal sniffing alone would wrongly conclude
-  the image tier is safe there.
+  Detection note: multiplexers announce themselves with *prefixed* variables
+  (`HERDR_PANE_ID`, `CMUX_TAB_ID`, …), never a bare `HERDR` or `CMUX`, so the
+  check scans for the prefix. This matters because `TERM_PROGRAM=ghostty`
+  survives into a herdr pane while `TERM` degrades to `xterm-256color`, so
+  terminal sniffing alone reaches the wrong conclusion inside a pane.
 - **netrw is deliberately left enabled** in `config/lazy.lua`, as a fallback
   path for browsing a directory that does not depend on mini.files loading.
 - **`json-lsp`, `html-lsp`, `css-lsp` and `eslint-lsp` are not installed via

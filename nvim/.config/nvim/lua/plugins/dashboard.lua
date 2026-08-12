@@ -40,23 +40,36 @@ local LOGO_ASCII = {
   "        ▀▀        ",
 }
 
----Are we running inside a terminal multiplexer?
----
----herdr and cmux do not set a bare HERDR or CMUX variable; they set prefixed
----ones (HERDR_CONFIG_PATH, CMUX_TAB_ID, CMUX_SURFACE_ID and so on). Checking
----the bare names finds nothing, which would let the kitty tier through inside a
----pane and risk painting escape codes on screen. So scan for the prefix.
+---Is there an env var with this prefix? Multiplexers announce themselves with
+---prefixed variables (HERDR_PANE_ID, CMUX_TAB_ID, ...) rather than a bare name,
+---so checking the bare name finds nothing.
+---@param prefix string
 ---@return boolean
-local function in_multiplexer()
-  if vim.env.TMUX or vim.env.ZELLIJ or vim.env.STY or vim.env.TERM_PROGRAM == "tmux" then
-    return true
-  end
+local function has_env_prefix(prefix)
   for name in pairs(vim.fn.environ()) do
-    if name:match("^HERDR_") or name:match("^CMUX_") then
+    if name:find(prefix, 1, true) == 1 then
       return true
     end
   end
   return false
+end
+
+---Are we inside a multiplexer that will *not* carry graphics escapes through?
+---
+---herdr is deliberately absent from this list. herdr 0.7.5 implements the Kitty
+---graphics protocol: its API exposes pane.graphics.set / clear / info and
+---PaneGraphicsSetParams (image_width, image_height, data_base64, placement),
+---and its renderer handles kitty_virtual_placeholder. So graphics are expected
+---to survive a herdr pane, and it gets the image tier.
+---
+---If that turns out to be wrong in practice, the symptom is escape-code litter
+---on the start page; set vim.g.dashboard_logo = "ascii" to pin the fallback.
+---@return boolean
+local function in_blind_multiplexer()
+  if vim.env.TMUX or vim.env.ZELLIJ or vim.env.STY or vim.env.TERM_PROGRAM == "tmux" then
+    return true
+  end
+  return has_env_prefix("CMUX_")
 end
 
 ---Which rendering tier this environment can actually manage.
@@ -72,10 +85,15 @@ local function logo_tier()
     return "ascii"
   end
 
-  -- Graphics escapes need explicit passthrough in a multiplexer, and a
-  -- multiplexer that does not pass them through renders the escape as garbage.
-  if in_multiplexer() then
+  -- A multiplexer that does not carry graphics escapes renders them as litter.
+  if in_blind_multiplexer() then
     return "ascii"
+  end
+
+  -- herdr speaks the Kitty graphics protocol itself, so a herdr pane counts as
+  -- capable even though TERM inside one degrades to xterm-256color.
+  if has_env_prefix("HERDR_") then
+    return "kitty"
   end
 
   local prog = (vim.env.TERM_PROGRAM or ""):lower()

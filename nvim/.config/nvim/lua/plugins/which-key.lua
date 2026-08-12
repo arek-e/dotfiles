@@ -7,7 +7,10 @@ return {
     event = "VeryLazy",
     opts = {
       preset = "helix",
-      delay = 300, -- matches timeoutlen
+      -- Open immediately on <leader> rather than waiting out timeoutlen. The
+      -- point of which-key here is discovery, and a 300ms pause is long enough
+      -- that you start typing before it appears and never see it.
+      delay = 0,
       spec = {
         { "<leader>b", group = "buffer" },
         { "<leader>c", group = "code" },
