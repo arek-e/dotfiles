@@ -36,7 +36,7 @@ local graphics = require("util.graphics")
 
 local LOGO_PNG = vim.fn.stdpath("config") .. "/assets/legora-mark-light.png"
 local LOGO_HEIGHT = 12
-local LOGO_WIDTH = 16
+local LOGO_WIDTH = 12
 
 -- Padded to equal width because each line is centred on its own.
 local LOGO_ASCII = {
