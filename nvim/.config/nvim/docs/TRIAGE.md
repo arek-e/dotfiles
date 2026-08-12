@@ -11,13 +11,12 @@ Old config for reference: `git show ac32b8c:nvim/.config/nvim/lua/plugins/<file>
 
 ---
 
-## Tier 1 — real gaps in the baseline
+## Tier 1 — cleared
 
-These are capabilities the baseline genuinely lacks, not conveniences.
+Every capability the baseline genuinely lacked has now been added: formatting
+(conform), git signs and blame (gitsigns), autopairs (mini.pairs), a file
+explorer (mini.files). What remains below is preference, not gaps.
 
-| # | Candidate | The gap it fills | Notes |
-|---|---|---|---|
-| 1 | `gitsigns.nvim` | No inline hunks, no blame, no stage-hunk. | Your old config had 15 well-chosen mappings. Strongest single candidate. |
 
 ## Added back so far
 
@@ -33,6 +32,7 @@ These are capabilities the baseline genuinely lacks, not conveniences.
 | snacks `indent`, `notifier`, `input`, `words`, `scroll` | Already installed as part of snacks, so these were config flags rather than plugins. Between them they replace indent-blankline (5.0k stars), nvim-notify (3.6k), dressing (archived), and neoscroll (2.1k). |
 | `lualine.nvim` | Statusline. Icons come from mini.icons' nvim-web-devicons shim, so no second icon plugin. |
 | `render-markdown.nvim` | Renders markdown in the buffer. The one genuinely new capability of the batch, and the most actively maintained thing on the shortlist. |
+| `gitsigns.nvim` | Signs, hunk navigation and IntelliJ-style inline blame. Chosen over mini.diff despite the config leaning on mini, because mini.diff has no blame at all and blame was the requirement; one plugin here versus two for the mini route. Staging left unmapped, since lazygit handles that. |
 | `mini.pairs` | Autopairs, chosen over nvim-autopairs (4.1k stars) to stay in the mini ecosystem already used for the explorer and icons. Opening characters do not pair immediately before a word, which is the usual complaint about autopairs. Off in prompt buffers. |
 | `conform.nvim` + `stylua` | Formatting, the last real gap. oxfmt/biome/prettier chosen by `stop_after_first` over resolvable binaries; stylua finally enforces the `.stylua.toml` that had sat unused since the reset. |
 | `tiny-inline-diagnostic.nvim` | Replaces the built-in virtual_text, which appended whole messages to the line end and collided with code. `virtual_text = false` is set in lsp.lua so both do not draw at once. |

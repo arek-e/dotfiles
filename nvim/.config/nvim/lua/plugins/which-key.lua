@@ -15,6 +15,8 @@ return {
         { "<leader>b", group = "buffer" },
         { "<leader>c", group = "code" },
         { "<leader>f", group = "file/find" },
+        { "<leader>g", group = "git" },
+        { "<leader>gh", group = "hunk" },
         { "<leader>s", group = "search" },
         { "<leader>x", group = "diagnostics" },
         { "<leader>p", group = "project" },

@@ -24,6 +24,7 @@ lua/
     diagnostics.lua       tiny-inline-diagnostic
     formatting.lua        conform: oxfmt / biome / prettier / stylua
     lualine.lua
+    git.lua               gitsigns: signs, hunks, inline blame
     markdown.lua          render-markdown
     pairs.lua             mini.pairs
     snacks.lua            Start page, images, indent, notifier, input,
@@ -66,7 +67,7 @@ Three conventions keep this navigable:
 
 ## Plugins
 
-Twenty, of which seventeen are declared and three are dependencies.
+Twenty-one, of which eighteen are declared and three are dependencies.
 
 | Plugin | Why |
 |---|---|
@@ -89,6 +90,7 @@ Twenty, of which seventeen are declared and three are dependencies.
 | `tiny-inline-diagnostic.nvim` | Diagnostic display, replaces `virtual_text` |
 | `conform.nvim` | Formatting, on save and on `<leader>cf` |
 | `mini.pairs` | Autopairs for hand-typed brackets and quotes |
+| `gitsigns.nvim` | Git signs, hunk navigation, inline blame |
 | `which-key.nvim` | Keymap discovery |
 
 Telescope and mini.files split the work: telescope answers "where is X",
@@ -127,6 +129,15 @@ Lint autofix is `<leader>cl`, not a save hook, and runs whichever of
 `LspEslintFixAll` / `LspOxlintFixAll` the attached server provides. It used to
 run on `BufWritePre`, which was wrong once conform existed: `--fix` and a
 formatter both rewriting the buffer on every write fight over it.
+
+## Git
+
+Inline blame is on by default, IntelliJ style: author, relative time and commit
+subject as virtual text at the end of the cursor's line, after a 300 ms delay.
+`<leader>ght` toggles it, `<leader>ghb` opens the full blame for the line.
+
+Staging is deliberately not mapped — lazygit is bound to `prefix+alt+g` in herdr
+and that is where staging happens. `gitsigns.stage_hunk` exists if that changes.
 
 ## Gotchas worth knowing
 
