@@ -21,13 +21,19 @@ lua/
   plugins/                One file per concern; every file is imported
     colorscheme.lua
     completion.lua
-    dashboard.lua         Start page; renders the mark as a real image
-                          where the terminal allows it, ASCII otherwise
+    diagnostics.lua       tiny-inline-diagnostic
+    lualine.lua
+    markdown.lua          render-markdown
+    snacks.lua            Start page, images, indent, notifier, input,
+                          words, scroll
     explorer.lua
     lsp.lua
     telescope.lua
     treesitter.lua
     which-key.lua
+after/
+  ftplugin/
+    markdown.lua          conceallevel etc. for render-markdown
 assets/
   legora-mark.png         The mark, rasterised from its geometry
   legora-mark-light.png   Same, lifted for dark backgrounds
@@ -58,7 +64,7 @@ Three conventions keep this navigable:
 
 ## Plugins
 
-Fifteen, of which twelve are declared and three are dependencies.
+Eighteen, of which fifteen are declared and three are dependencies.
 
 | Plugin | Why |
 |---|---|
@@ -73,9 +79,12 @@ Fifteen, of which twelve are declared and three are dependencies.
 | `telescope.nvim` | Fuzzy finder |
 | `telescope-fzf-native.nvim` | Compiled sorter for telescope |
 | `plenary.nvim` | Telescope dependency |
-| `mini.files` | File explorer, Miller columns |
-| `mini.icons` | Icons for the explorer (dependency) |
-| `snacks.nvim` | Start page and inline image rendering. Only `dashboard` and `image` are enabled; the rest of the bundle stays off. |
+| `mini.files` | File explorer, Miller columns. Org is `nvim-mini`, not `echasnovski`. |
+| `mini.icons` | Icons, and stands in for nvim-web-devicons via its shim |
+| `snacks.nvim` | Start page, inline images, indent guides, notifications, `vim.ui.input`, LSP reference highlight, smooth scroll. Seven of its ~34 modules; the rest stay off. |
+| `lualine.nvim` | Statusline |
+| `render-markdown.nvim` | Renders markdown in the buffer |
+| `tiny-inline-diagnostic.nvim` | Diagnostic display, replaces `virtual_text` |
 | `which-key.nvim` | Keymap discovery |
 
 Telescope and mini.files split the work: telescope answers "where is X",

@@ -5,15 +5,17 @@
 -- directory listing is itself editable, so renaming, creating and deleting are
 -- ordinary text edits confirmed in one go.
 --
--- Installed as the standalone module, not the whole mini.nvim suite.
+-- Installed as the standalone module, not the whole mini.nvim suite. The org is
+-- nvim-mini, not echasnovski: mini moved, and the old path only works because
+-- GitHub still redirects it.
 -- It pairs with telescope: telescope answers "where is X", mini.files answers
 -- "what is around here, and let me restructure it".
 
 return {
   {
-    "echasnovski/mini.files",
+    "nvim-mini/mini.files",
     version = false,
-    dependencies = { "echasnovski/mini.icons" },
+    dependencies = { "nvim-mini/mini.icons" },
     keys = {
       {
         "<leader>fe",
@@ -70,6 +72,9 @@ return {
     },
     config = function(_, opts)
       require("mini.icons").setup()
+      -- lualine and friends look for nvim-web-devicons. mini.icons can answer
+      -- for it, which saves installing a second icon plugin.
+      MiniIcons.mock_nvim_web_devicons()
       require("mini.files").setup(opts)
 
       local group = vim.api.nvim_create_augroup("user_mini_files", { clear = true })

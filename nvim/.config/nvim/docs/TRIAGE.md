@@ -28,6 +28,15 @@ These are capabilities the baseline genuinely lacks, not conveniences.
 | `mini.files` + `mini.icons` | 2026-08-12 | File explorer. Miller columns, so each level you descend adds a column on the right and the parents stay visible. Column widths are deliberately narrow (16/28/34) so five or six levels fit at once. Editing the listing renames/creates/deletes, and renames are forwarded to the LSP so imports follow. |
 | `snacks.nvim` (dashboard + image) | 2026-08-12 | Start page. Replaced dashboard-nvim, which cannot render images. Shows the mark as a real image via Snacks.image over the Kitty graphics protocol, falling back to generated ASCII where the terminal cannot. chafa was tried first and abandoned: its `symbols` mode reads as a diamond at 24x12, and its `kitty` mode cannot work at all from a dashboard `terminal` section because nvim's libvterm swallows graphics escapes. Only `dashboard` and `image` are enabled out of the bundle. |
 
+## Added 2026-08-12, second pass
+
+| Plugin | Why |
+|---|---|
+| snacks `indent`, `notifier`, `input`, `words`, `scroll` | Already installed as part of snacks, so these were config flags rather than plugins. Between them they replace indent-blankline (5.0k stars), nvim-notify (3.6k), dressing (archived), and neoscroll (2.1k). |
+| `lualine.nvim` | Statusline. Icons come from mini.icons' nvim-web-devicons shim, so no second icon plugin. |
+| `render-markdown.nvim` | Renders markdown in the buffer. The one genuinely new capability of the batch, and the most actively maintained thing on the shortlist. |
+| `tiny-inline-diagnostic.nvim` | Replaces the built-in virtual_text, which appended whole messages to the line end and collided with code. `virtual_text = false` is set in lsp.lua so both do not draw at once. |
+
 ## Tier 2 — strong candidates
 
 | # | Candidate | Buys you | Watch out for |

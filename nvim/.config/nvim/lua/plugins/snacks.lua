@@ -1,4 +1,19 @@
--- Start page.
+-- snacks.nvim: the start page, plus the QoL modules we actually want.
+--
+-- snacks is a bundle of ~34 modules, all opt-in. Enabled here:
+--
+--   dashboard - start page (most of this file is its logo handling)
+--   image     - inline image rendering
+--   indent    - indent guides and scope           (vs indent-blankline)
+--   notifier  - notifications, replaces vim.notify (vs nvim-notify)
+--   input     - better vim.ui.input               (vs dressing, now archived)
+--   words     - highlight LSP references under the cursor
+--   scroll    - smooth scrolling                  (vs neoscroll)
+--
+-- Everything else stays off: picker (telescope does that), explorer
+-- (mini.files), terminal, zen, dim, statuscolumn, animate, scratch, profiler.
+--
+-- START PAGE
 --
 -- The header is the Legora mark, rendered one of two ways:
 --
@@ -157,12 +172,41 @@ return {
     lazy = false,
     opts = function()
       return {
-        -- Only these two out of the bundle; see docs/TRIAGE.md.
-        --
         -- image is switched off entirely where graphics cannot work. Left on, it
         -- would clear an image file's buffer and render nothing, which looks
         -- broken; off, the file simply is not treated as an image.
         image = { enabled = graphics.likely() },
+
+        -- Indent guides, plus a brighter line for the current scope.
+        indent = {
+          enabled = true,
+          indent = { char = "│" },
+          scope = { enabled = true, char = "│" },
+          -- The animation on scope change is distracting while editing
+          animate = { enabled = false },
+        },
+
+        -- Takes over vim.notify. Compact style so LSP chatter stays small.
+        notifier = {
+          enabled = true,
+          timeout = 3000,
+          style = "compact",
+          top_down = false, -- notifications rise from the bottom right
+        },
+
+        -- Replaces the single-line prompt for vim.ui.input, which is what
+        -- mini.files' rename and grug-far style prompts use.
+        input = { enabled = true },
+
+        -- Underline the other references to the symbol under the cursor.
+        words = { enabled = true, debounce = 200 },
+
+        -- Smooth scrolling. Short duration: long ones feel laggy rather than
+        -- smooth once you are moving quickly.
+        scroll = {
+          enabled = true,
+          animate = { duration = { step = 10, total = 120 }, easing = "linear" },
+        },
         dashboard = {
           enabled = true,
           preset = {

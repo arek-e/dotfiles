@@ -86,11 +86,10 @@ return {
       vim.diagnostic.config({
         severity_sort = true,
         underline = { severity = vim.diagnostic.severity.ERROR },
-        virtual_text = {
-          spacing = 4,
-          source = "if_many",
-          prefix = "●",
-        },
+        -- Off on purpose: tiny-inline-diagnostic renders these instead, wrapped
+        -- and boxed and only for the cursor's line. Leaving this on draws both
+        -- at once, one over the other. See lua/plugins/diagnostics.lua.
+        virtual_text = false,
         float = {
           border = "rounded",
           source = "if_many",
