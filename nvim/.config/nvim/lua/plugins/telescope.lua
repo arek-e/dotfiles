@@ -6,9 +6,9 @@
 --
 -- LOOK
 --
--- Borderless: the border characters are spaces, and each pane gets its own
--- background, so the prompt, results and preview read as stacked blocks rather
--- than three boxes drawn in line-art. Titles are coloured pills.
+-- Rounded borders in gruvbox orange (#fe8019, the palette's accent), with each
+-- pane on its own background so the prompt, results and preview still read as
+-- distinct blocks. Titles are coloured pills.
 --
 -- These panes are deliberately opaque even though the colorscheme runs in
 -- transparent mode. A floating finder over a transparent background is hard to
@@ -92,11 +92,11 @@ return {
             preview_cutoff = 20,
           },
 
-          -- Spaces, not line-art: the panes are separated by their backgrounds.
+          -- Order is { top, right, bottom, left, tl, tr, br, bl }.
           borderchars = {
-            prompt = { " ", " ", " ", " ", " ", " ", " ", " " },
-            results = { " ", " ", " ", " ", " ", " ", " ", " " },
-            preview = { " ", " ", " ", " ", " ", " ", " ", " " },
+            prompt = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+            results = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+            preview = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
           },
 
           results_title = false, -- the results pane needs no label
@@ -154,7 +154,7 @@ return {
 
         -- Prompt: lifted a step out of the results so it reads as an input.
         set("TelescopePromptNormal", { bg = bg1, fg = fg })
-        set("TelescopePromptBorder", { bg = bg1, fg = bg1 })
+        set("TelescopePromptBorder", { bg = bg1, fg = orange })
         set("TelescopePromptTitle", { bg = orange, fg = dark, bold = true })
         set("TelescopePromptPrefix", { bg = bg1, fg = orange })
         set("TelescopePromptCounter", { bg = bg1, fg = grey })
@@ -162,15 +162,15 @@ return {
         -- Results
         set("TelescopeNormal", { bg = bg0, fg = fg })
         set("TelescopeResultsNormal", { bg = bg0, fg = fg })
-        set("TelescopeResultsBorder", { bg = bg0, fg = bg0 })
-        set("TelescopeResultsTitle", { bg = bg0, fg = bg0 })
+        set("TelescopeResultsBorder", { bg = bg0, fg = orange })
+        set("TelescopeResultsTitle", { bg = bg0, fg = orange })
         set("TelescopeSelection", { bg = bg2, fg = fg, bold = true })
         set("TelescopeSelectionCaret", { bg = bg2, fg = orange, bold = true })
         set("TelescopeMultiSelection", { bg = bg2, fg = green })
 
         -- Preview: darkest pane, so the eye reads it as "behind" the list.
         set("TelescopePreviewNormal", { bg = dark })
-        set("TelescopePreviewBorder", { bg = dark, fg = dark })
+        set("TelescopePreviewBorder", { bg = dark, fg = orange })
         set("TelescopePreviewTitle", { bg = green, fg = dark, bold = true })
 
         -- The matched characters in each entry

@@ -24,7 +24,9 @@ lua/
     diagnostics.lua       tiny-inline-diagnostic
     formatting.lua        conform: oxfmt / biome / prettier / stylua
     lualine.lua
+    edgy.lua              split windows pinned to screen edges
     git.lua               gitsigns: signs, hunks, inline blame
+    icons.lua             mini.icons, eager (telescope/lualine need it early)
     markdown.lua          render-markdown
     pairs.lua             mini.pairs
     snacks.lua            Start page, images, indent, notifier, input,
@@ -67,7 +69,7 @@ Three conventions keep this navigable:
 
 ## Plugins
 
-Twenty-one, of which eighteen are declared and three are dependencies.
+Twenty-two, of which nineteen are declared and three are dependencies.
 
 | Plugin | Why |
 |---|---|
@@ -91,6 +93,8 @@ Twenty-one, of which eighteen are declared and three are dependencies.
 | `conform.nvim` | Formatting, on save and on `<leader>cf` |
 | `mini.pairs` | Autopairs for hand-typed brackets and quotes |
 | `gitsigns.nvim` | Git signs, hunk navigation, inline blame |
+| `edgy.nvim` | Pins quickfix, help and terminal splits to screen edges |
+| `mini.icons` | Icons, and stands in for nvim-web-devicons via its shim |
 | `which-key.nvim` | Keymap discovery |
 
 Telescope and mini.files split the work: telescope answers "where is X",
