@@ -18,7 +18,6 @@ These are capabilities the baseline genuinely lacks, not conveniences.
 | # | Candidate | The gap it fills | Notes |
 |---|---|---|---|
 | 1 | `gitsigns.nvim` | No inline hunks, no blame, no stage-hunk. | Your old config had 15 well-chosen mappings. Strongest single candidate. |
-| 2 | `mini.pairs` or similar | No autopairs. | `blink.cmp` already does `auto_brackets` for completions, so this is only for hand-typed pairs. |
 
 ## Added back so far
 
@@ -34,6 +33,7 @@ These are capabilities the baseline genuinely lacks, not conveniences.
 | snacks `indent`, `notifier`, `input`, `words`, `scroll` | Already installed as part of snacks, so these were config flags rather than plugins. Between them they replace indent-blankline (5.0k stars), nvim-notify (3.6k), dressing (archived), and neoscroll (2.1k). |
 | `lualine.nvim` | Statusline. Icons come from mini.icons' nvim-web-devicons shim, so no second icon plugin. |
 | `render-markdown.nvim` | Renders markdown in the buffer. The one genuinely new capability of the batch, and the most actively maintained thing on the shortlist. |
+| `mini.pairs` | Autopairs, chosen over nvim-autopairs (4.1k stars) to stay in the mini ecosystem already used for the explorer and icons. Opening characters do not pair immediately before a word, which is the usual complaint about autopairs. Off in prompt buffers. |
 | `conform.nvim` + `stylua` | Formatting, the last real gap. oxfmt/biome/prettier chosen by `stop_after_first` over resolvable binaries; stylua finally enforces the `.stylua.toml` that had sat unused since the reset. |
 | `tiny-inline-diagnostic.nvim` | Replaces the built-in virtual_text, which appended whole messages to the line end and collided with code. `virtual_text = false` is set in lsp.lua so both do not draw at once. |
 

@@ -25,6 +25,7 @@ lua/
     formatting.lua        conform: oxfmt / biome / prettier / stylua
     lualine.lua
     markdown.lua          render-markdown
+    pairs.lua             mini.pairs
     snacks.lua            Start page, images, indent, notifier, input,
                           words, scroll
     explorer.lua
@@ -65,7 +66,7 @@ Three conventions keep this navigable:
 
 ## Plugins
 
-Nineteen, of which sixteen are declared and three are dependencies.
+Twenty, of which seventeen are declared and three are dependencies.
 
 | Plugin | Why |
 |---|---|
@@ -87,6 +88,7 @@ Nineteen, of which sixteen are declared and three are dependencies.
 | `render-markdown.nvim` | Renders markdown in the buffer |
 | `tiny-inline-diagnostic.nvim` | Diagnostic display, replaces `virtual_text` |
 | `conform.nvim` | Formatting, on save and on `<leader>cf` |
+| `mini.pairs` | Autopairs for hand-typed brackets and quotes |
 | `which-key.nvim` | Keymap discovery |
 
 Telescope and mini.files split the work: telescope answers "where is X",
