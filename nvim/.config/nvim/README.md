@@ -141,11 +141,21 @@ and that is where staging happens. `gitsigns.stage_hunk` exists if that changes.
 
 ## Gotchas worth knowing
 
-- **nvim-treesitter is pinned to `branch = "master"`.** Its default branch is
-  `main`, an incompatible rewrite. Removing the pin makes this spec's options
-  inert and silently breaks highlighting. `master` is locked upstream but
-  verified working on 0.12.4; see the comment in `lua/plugins/treesitter.lua`
-  for what migrating to `main` would involve.
+- **nvim-treesitter is on `branch = "main"`, and must be on 0.12.** The old
+  `master` branch is locked upstream for 0.11 and genuinely breaks on 0.12: its
+  query directives assume `match[capture_id]` is a single node, while 0.12
+  changed matches to hold lists. Every markdown injection throws
+  "attempt to call method 'range' (a nil value)".
+- **Parsers live in `~/.local/share/nvim/site`, and `parser-info/` is the
+  source of truth.** Deleting `parser/` without also deleting `parser-info/`
+  makes a reinstall a silent no-op: install reports success against the recorded
+  revisions while no `.so` exists. Use `install({...}, { force = true })`, or
+  remove both directories.
+- **0.12 bundles some parsers** (`c`, `lua`, `markdown`, `markdown_inline`,
+  `query`, `vim`, `vimdoc`) in `lib/nvim/parser/`, so those never appear in the
+  site directory.
+- **`jsonc` is not a parser on `main`**; it maps to `json`. Listing it logs
+  "skipping unsupported language".
 - **Do not define `on_attach` in `after/lsp/eslint.lua`.** Config tables merge
   with `force`, so it would replace nvim-lspconfig's own `on_attach` and destroy
   the `LspEslintFixAll` command. The wrapper in `lua/plugins/lsp.lua` captures

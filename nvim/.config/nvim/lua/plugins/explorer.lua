@@ -7,7 +7,8 @@
 --
 -- Installed as the standalone module, not the whole mini.nvim suite. The org is
 -- nvim-mini, not echasnovski: mini moved, and the old path only works because
--- GitHub still redirects it.
+-- GitHub still redirects it. Icons are set up eagerly in plugins/icons.lua, not
+-- here, so that telescope and lualine have them before the explorer is opened.
 -- It pairs with telescope: telescope answers "where is X", mini.files answers
 -- "what is around here, and let me restructure it".
 
@@ -71,10 +72,6 @@ return {
       },
     },
     config = function(_, opts)
-      require("mini.icons").setup()
-      -- lualine and friends look for nvim-web-devicons. mini.icons can answer
-      -- for it, which saves installing a second icon plugin.
-      MiniIcons.mock_nvim_web_devicons()
       require("mini.files").setup(opts)
 
       local group = vim.api.nvim_create_augroup("user_mini_files", { clear = true })
