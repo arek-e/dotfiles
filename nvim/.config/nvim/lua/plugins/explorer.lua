@@ -121,17 +121,23 @@ return {
       -- Render images in the preview pane.
       --
       -- mini.files previews a file by reading it as text, so anything binary
-      -- shows as "-Non-text-file----". For image formats, replace that with the
-      -- actual image drawn by Snacks.image over the Kitty graphics protocol.
+      -- shows as "-Non-text-file----". Where images can actually be drawn,
+      -- replace that with the real image.
       --
       -- MiniFilesBufferUpdate is the documented hook for this ("can be used for
       -- integrations to set useful extmarks") and fires whenever a path buffer
       -- gets new content, which includes each preview change.
+      --
+      -- The gate is util.graphics, NOT Snacks.image.supports_terminal(). Inside
+      -- herdr that check returns true while graphics do not actually arrive, so
+      -- using it alone replaced the placeholder with a blank pane.
+      local graphics = require("util.graphics")
+
       local function preview_image(buf_id, win_id)
         if not buf_id or not vim.api.nvim_buf_is_valid(buf_id) then
           return
         end
-        if not _G.Snacks or not Snacks.image then
+        if not graphics.supported() then
           return
         end
 
@@ -140,7 +146,7 @@ return {
         if not path or path == "" then
           return
         end
-        if not Snacks.image.supports_file(path) or not Snacks.image.supports_terminal() then
+        if not Snacks.image.supports_file(path) then
           return
         end
         local stat = vim.uv.fs_stat(path)
