@@ -20,8 +20,11 @@ return {
       },
     },
     keys = {
-      -- Files and buffers
-      { "<leader><space>", "<cmd>Telescope find_files<cr>", desc = "Find files" },
+      -- Files and buffers.
+      -- Leader is Space, so <leader><leader> is the two-space chord. Written
+      -- this way rather than <leader><space> because they are the same
+      -- keystroke and this is how it is actually typed.
+      { "<leader><leader>", "<cmd>Telescope find_files<cr>", desc = "Find files" },
       { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find files" },
       {
         "<leader>fF",
