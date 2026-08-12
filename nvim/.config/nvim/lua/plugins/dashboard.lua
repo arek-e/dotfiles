@@ -40,6 +40,25 @@ local LOGO_ASCII = {
   "        ▀▀        ",
 }
 
+---Are we running inside a terminal multiplexer?
+---
+---herdr and cmux do not set a bare HERDR or CMUX variable; they set prefixed
+---ones (HERDR_CONFIG_PATH, CMUX_TAB_ID, CMUX_SURFACE_ID and so on). Checking
+---the bare names finds nothing, which would let the kitty tier through inside a
+---pane and risk painting escape codes on screen. So scan for the prefix.
+---@return boolean
+local function in_multiplexer()
+  if vim.env.TMUX or vim.env.ZELLIJ or vim.env.STY or vim.env.TERM_PROGRAM == "tmux" then
+    return true
+  end
+  for name in pairs(vim.fn.environ()) do
+    if name:match("^HERDR_") or name:match("^CMUX_") then
+      return true
+    end
+  end
+  return false
+end
+
 ---Which rendering tier this environment can actually manage.
 ---@return "kitty"|"ascii"
 local function logo_tier()
@@ -55,7 +74,7 @@ local function logo_tier()
 
   -- Graphics escapes need explicit passthrough in a multiplexer, and a
   -- multiplexer that does not pass them through renders the escape as garbage.
-  if vim.env.TMUX or vim.env.ZELLIJ or vim.env.HERDR or vim.env.CMUX then
+  if in_multiplexer() then
     return "ascii"
   end
 
