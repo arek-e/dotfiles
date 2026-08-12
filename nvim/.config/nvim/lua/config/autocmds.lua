@@ -87,24 +87,26 @@ autocmd("TermOpen", {
   end,
 })
 
--- Transparent background overrides (runs after colorscheme loads)
+-- Transparent background overrides (gated behind vim.g.transparent)
+-- Set vim.g.transparent = true in options.lua to enable
+vim.g.transparent = vim.g.transparent == nil and true or vim.g.transparent
+
 autocmd("ColorScheme", {
   group = augroup("transparent_overrides", { clear = true }),
   callback = function()
-    -- Transparent backgrounds
+    if not vim.g.transparent then
+      return
+    end
     vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "NormalNC", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "FloatBorder", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "SignColumn", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "EndOfBuffer", { bg = "NONE" })
-    -- Semi-transparent cursorline (subtle dark bg that blends with transparency)
     vim.api.nvim_set_hl(0, "CursorLine", { bg = "#1f1f28" })
     vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#7aa2f7", bold = true, bg = "#1f1f28" })
-    -- Transparent statusline
     vim.api.nvim_set_hl(0, "StatusLine", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "StatusLineNC", { bg = "NONE" })
-    -- Transparent tabline
     vim.api.nvim_set_hl(0, "TabLine", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "TabLineFill", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "TabLineSel", { bg = "NONE" })

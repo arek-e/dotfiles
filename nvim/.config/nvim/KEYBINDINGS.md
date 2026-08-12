@@ -113,7 +113,43 @@
 | `zM` | Close all folds |
 | `zr` | Open folds except kinds |
 | `zm` | Close folds with level |
-| `K` | Peek fold or LSP hover |
+
+---
+
+## LSP (Lspsaga)
+
+### Navigation
+| Key | Action |
+|-----|--------|
+| `gd` | Go to definition |
+| `gD` | Go to type definition |
+| `gp` | Peek definition |
+| `gP` | Peek type definition |
+| `gf` | LSP finder (refs, defs, implementations) |
+
+### Actions
+| Key | Action |
+|-----|--------|
+| `K` | Hover doc |
+| `<leader>ca` | Code action |
+| `<leader>cr` | Rename |
+| `<leader>cR` | Rename (project-wide) |
+| `<leader>cs` | Symbol outline |
+| `<leader>ci` | Incoming calls |
+| `<leader>co` | Outgoing calls |
+| `<leader>cf` | Format |
+
+### Diagnostics
+| Key | Action |
+|-----|--------|
+| `<leader>xx` | Workspace diagnostics |
+| `<leader>xX` | Buffer diagnostics |
+| `<leader>xl` | Line diagnostics |
+| `<leader>xc` | Cursor diagnostics |
+| `]d` | Next diagnostic |
+| `[d` | Previous diagnostic |
+| `]t` | Next TODO |
+| `[t` | Previous TODO |
 
 ---
 
@@ -153,30 +189,21 @@
 
 ---
 
-## Diagnostics & Trouble
+## AI (Avante via ACP)
 
 | Key | Action |
 |-----|--------|
-| `<leader>xx` | Diagnostics (Trouble) |
-| `<leader>xX` | Buffer diagnostics (Trouble) |
-| `<leader>cs` | Symbols (Trouble) |
-| `<leader>xL` | Location list (Trouble) |
-| `<leader>xQ` | Quickfix list (Trouble) |
-| `<leader>xt` | Todo (Trouble) |
-| `<leader>xT` | Todo/Fix/Fixme (Trouble) |
-| `]t` | Next TODO |
-| `[t` | Previous TODO |
-
----
-
-## AI (Claude Code)
-
-| Key | Action |
-|-----|--------|
-| `<C-,>` | Toggle Claude Code |
-| `<leader>ac` | Open Claude Code |
-| `<leader>aC` | Claude Continue |
-| `<leader>aR` | Claude Resume |
+| `<leader>aa` | Ask Avante |
+| `<leader>ac` | Chat with Avante |
+| `<leader>ae` | Edit with Avante |
+| `<leader>at` | Toggle Avante |
+| `<leader>af` | Focus Avante |
+| `<leader>ah` | Avante history |
+| `<leader>am` | Select model |
+| `<leader>an` | New chat |
+| `<leader>ap` | Switch provider (claude-code / cursor) |
+| `<leader>ar` | Refresh Avante |
+| `<leader>as` | Stop Avante |
 
 ---
 
@@ -243,24 +270,6 @@
 | `<A-j>` | Move line down |
 | `<A-k>` | Move line up |
 | `q` | Close help/qf/man windows |
-
----
-
-## LSP (LazyVim Defaults)
-
-| Key | Action |
-|-----|--------|
-| `gd` | Go to definition |
-| `gD` | Go to declaration |
-| `gr` | Go to references |
-| `gI` | Go to implementation |
-| `gy` | Go to type definition |
-| `K` | Hover (or peek fold) |
-| `<leader>ca` | Code action |
-| `<leader>cr` | Rename |
-| `<leader>cf` | Format |
-| `]d` | Next diagnostic |
-| `[d` | Previous diagnostic |
 
 ---
 

@@ -1,4 +1,22 @@
 return {
+  -- Show dotfiles (.env, .env.local, etc.) in neo-tree
+  {
+    "nvim-neo-tree/neo-tree.nvim",
+    opts = {
+      filesystem = {
+        filtered_items = {
+          visible = true,
+          hide_dotfiles = false,
+          hide_gitignored = false,
+          never_show = {
+            ".DS_Store",
+            "thumbs.db",
+          },
+        },
+      },
+    },
+  },
+
   -- Session management
   {
     "folke/persistence.nvim",
@@ -115,6 +133,14 @@ return {
         end,
         desc = "Find Files (current dir)",
       },
+      -- Git status (modified files)
+      {
+        "<leader>gs",
+        function()
+          require("telescope.builtin").git_status()
+        end,
+        desc = "Git Status (modified files)",
+      },
       -- Grep in current file's directory
       {
         "<leader>sG",
@@ -127,6 +153,16 @@ return {
     opts = function(_, opts)
       local actions = require("telescope.actions")
       opts.defaults = vim.tbl_deep_extend("force", opts.defaults or {}, {
+        layout_strategy = "horizontal",
+        layout_config = {
+          horizontal = {
+            prompt_position = "top",
+            preview_width = 0.55,
+          },
+          width = 0.87,
+          height = 0.80,
+        },
+        sorting_strategy = "ascending",
         mappings = {
           i = {
             ["<C-j>"] = actions.move_selection_next,
@@ -141,26 +177,24 @@ return {
           "build/",
           ".next/",
           ".turbo/",
+          ".vercel/",
+          ".svelte%-kit/",
+          ".cache/",
+          "coverage/",
+          ".output/",
+          "*.min.js",
+          "*.min.css",
+          "package%-lock.json",
+          "yarn.lock",
+          "pnpm%-lock.yaml",
         },
       })
       return opts
     end,
   },
 
-  -- Better quickfix
-  {
-    "folke/trouble.nvim",
-    opts = {
-      focus = true,
-    },
-    keys = {
-      { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
-      { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics (Trouble)" },
-      { "<leader>cs", "<cmd>Trouble symbols toggle<cr>", desc = "Symbols (Trouble)" },
-      { "<leader>xL", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
-      { "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
-    },
-  },
+  -- Disable Trouble (replaced by lspsaga)
+  { "folke/trouble.nvim", enabled = false },
 
   -- Better quickfix window with preview
   {
@@ -289,8 +323,6 @@ return {
     keys = {
       { "]t", function() require("todo-comments").jump_next() end, desc = "Next Todo" },
       { "[t", function() require("todo-comments").jump_prev() end, desc = "Prev Todo" },
-      { "<leader>xt", "<cmd>Trouble todo toggle<cr>", desc = "Todo (Trouble)" },
-      { "<leader>xT", "<cmd>Trouble todo toggle filter = {tag = {TODO,FIX,FIXME}}<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
       { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Search Todos" },
     },
   },
@@ -345,12 +377,6 @@ return {
       { "zM", function() require("ufo").closeAllFolds() end, desc = "Close all folds" },
       { "zr", function() require("ufo").openFoldsExceptKinds() end, desc = "Open folds except kinds" },
       { "zm", function() require("ufo").closeFoldsWith() end, desc = "Close folds with" },
-      { "K", function()
-        local winid = require("ufo").peekFoldedLinesUnderCursor()
-        if not winid then
-          vim.lsp.buf.hover()
-        end
-      end, desc = "Peek Fold or Hover" },
     },
   },
 

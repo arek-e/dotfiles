@@ -66,7 +66,7 @@ local sections = {
       { "<leader>j", "Split/join" },
       { "C-a / C-x", "Inc/decrement" },
       { "zR / zM", "Open/close folds" },
-      { "K", "Hover/peek fold" },
+      { "K", "Hover doc" },
     },
   },
   {
@@ -83,15 +83,17 @@ local sections = {
     },
   },
   {
-    title = "LSP",
+    title = "LSP (Saga)",
     icon = "",
     color = "#7aa2f7",
     keys = {
-      { "gd", "Definition" },
-      { "gr", "References" },
-      { "gI", "Implementation" },
+      { "gd", "Go to definition" },
+      { "gp / gP", "Peek def/type def" },
+      { "gf", "LSP finder" },
       { "<leader>ca", "Code action" },
       { "<leader>cr", "Rename" },
+      { "<leader>cs", "Symbol outline" },
+      { "<leader>ci/co", "In/out calls" },
     },
   },
   {
@@ -99,8 +101,9 @@ local sections = {
     icon = "",
     color = "#f7768e",
     keys = {
-      { "<leader>xx", "Diagnostics" },
-      { "<leader>xt", "TODOs" },
+      { "<leader>xx", "Workspace diags" },
+      { "<leader>xX", "Buffer diags" },
+      { "<leader>xl", "Line diags" },
       { "]d / [d", "Next/prev diag" },
       { "]t / [t", "Next/prev TODO" },
     },
@@ -111,8 +114,9 @@ local sections = {
     color = "#bb9af7",
     keys = {
       { "C-,", "Toggle Claude" },
-      { "<leader>ac", "Claude Code" },
-      { "<leader>aC", "Continue" },
+      { "<leader>aa", "Claude Code" },
+      { "<leader>ac", "Continue" },
+      { "<leader>ar", "Resume session" },
     },
   },
   {

@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Secrets are sourced from ~/.secrets, which is never tracked here
+.secrets
+*.pem
+*.key
+
+# tmux plugins are installed by tpm, not vendored
+tmux/.config/tmux/plugins/

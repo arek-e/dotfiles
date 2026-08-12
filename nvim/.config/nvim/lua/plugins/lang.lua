@@ -4,7 +4,6 @@ return {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
       vim.list_extend(opts.ensure_installed or {}, {
-        -- Web
         "typescript",
         "tsx",
         "javascript",
@@ -14,15 +13,12 @@ return {
         "jsonc",
         "yaml",
         "toml",
-        -- Backend
         "go",
         "rust",
         "python",
-        -- Config/IaC
-        "hcl", -- Terraform/Pulumi
+        "hcl",
         "dockerfile",
         "bash",
-        -- Misc
         "lua",
         "vim",
         "vimdoc",

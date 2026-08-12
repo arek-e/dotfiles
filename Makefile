@@ -10,7 +10,7 @@ help:
 cleanup:
 	@echo "Removing conflicting config files..."
 	@rm -f ~/.zshrc ~/.ripgreprc
-	@rm -rf ~/.config/starship.toml ~/.config/ghostty ~/.config/nvim
+	@rm -rf ~/.config/starship.toml ~/.config/ghostty ~/.config/herdr/config.toml ~/.config/nvim
 	@rm -rf ~/.config/tmux ~/.config/yazi ~/.config/atuin
 	@rm -rf ~/.config/neofetch ~/.config/raycast ~/.config/wtf
 	@echo "✓ Cleanup done. Run 'make install' now."

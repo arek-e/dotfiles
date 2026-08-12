@@ -17,7 +17,6 @@ plugins=(
   you-should-use
   zsh-bat                 # change to 'bat' if OMZ complains; see note below
   zsh-history-substring-search
-  tmux
   vi-mode
   zsh-autosuggestions
   zsh-syntax-highlighting
@@ -45,15 +44,10 @@ export EDITOR='nvim'
 export VISUAL='nvim'
 
 # ============================================
-# Tmux Configuration
+# cmux Configuration
 # ============================================
-# Tmux aliases
-alias ta='tmux attach -t'
-alias tad='tmux attach -d -t'
-alias ts='tmux new-session -s'
-alias tl='tmux list-sessions'
-alias tksv='tmux kill-server'
-alias tkss='tmux kill-session -t'
+export PATH="/Applications/cmux.app/Contents/Resources/bin:$PATH"
+alias wpr='worktree-pr'
 
 # ============================================
 # Neovim Aliases
@@ -164,10 +158,8 @@ alias dashboard='wtfutil'
 alias db='wtfutil'
 alias dotup='~/dotfiles/update.sh'
 
-# Developer dashboard on startup (shows GitHub/Linear summary)
-if command -v devfetch &> /dev/null; then
-  devfetch
-fi
+# Developer dashboard (run manually with 'devfetch')
+
 
 # ============================================
 # Custom Functions & Shortcuts
@@ -189,16 +181,18 @@ alias glog='git log --oneline --graph --decorate'
 # pnpm / Nx
 alias n='pnpm nx'
 
-# Tmux + Neovim project opener
+# Project opener (cmux workspace + nvim)
 function dev() {
   if [ -z "$1" ]; then
     echo "Usage: dev <project-name>"
     return 1
   fi
-
-  tmux new-session -d -s "$1"
-  tmux send-keys -t "$1" "cd ~/projects/$1 && nvim" C-m
-  tmux attach -t "$1"
+  local cmux="/Applications/cmux.app/Contents/Resources/bin/cmux"
+  local ws_id
+  ws_id=$($cmux new-workspace --command "cd ~/projects/$1 && exec zsh" 2>&1 | grep -oE '[0-9A-F-]{36}')
+  if [[ -n "$ws_id" ]]; then
+    $cmux rename-workspace --workspace "$ws_id" "$1"
+  fi
 }
 
 # Yazi file manager with shell integration (cd to dir on quit)
@@ -210,3 +204,30 @@ function y() {
   fi
   rm -f -- "$tmp"
 }
+
+source /Users/alex/.daytona.completion_script.zsh
+
+# opencode
+export PATH=/Users/alex/.opencode/bin:$PATH
+export PATH="$HOME/bin:$PATH"
+eval "$(MAIN_REPO="/Users/alex/code/leya" "/Users/alex/code/leya/bin/worktree" init)"
+
+# qlty completions
+[ -s "/opt/homebrew/share/zsh/site-functions/_qlty" ] && source "/opt/homebrew/share/zsh/site-functions/_qlty"
+
+# qlty
+export QLTY_INSTALL="$HOME/.qlty"
+export PATH="$QLTY_INSTALL/bin:$PATH"
+
+# Volta
+export VOLTA_HOME="$HOME/code/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
+
+# pnpm
+export PNPM_HOME="/Users/alex/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+eval "$(direnv hook zsh)"

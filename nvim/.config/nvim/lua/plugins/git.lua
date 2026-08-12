@@ -11,6 +11,39 @@ return {
     end,
   },
 
+  -- Git worktree management
+  {
+    "polarmutex/git-worktree.nvim",
+    version = "^2",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-telescope/telescope.nvim",
+    },
+    config = function()
+      require("telescope").load_extension("git_worktree")
+      local Hooks = require("git-worktree.hooks")
+      local update_on_switch = Hooks.builtins.update_current_buffer_on_switch
+      Hooks.register(Hooks.type.SWITCH, function(path, prev_path)
+        vim.notify("Worktree: " .. path)
+        update_on_switch(path, prev_path)
+      end)
+    end,
+    keys = {
+      { "<leader>gw", function() require("telescope").extensions.git_worktree.git_worktree() end, desc = "Switch Worktree" },
+      {
+        "<leader>gW",
+        function()
+          local branch = vim.fn.input("Branch: ")
+          if branch == "" then return end
+          local path = vim.fn.input("Path (default: ../" .. branch .. "): ")
+          if path == "" then path = "../" .. branch end
+          require("git-worktree").create_worktree(path, branch, "origin")
+        end,
+        desc = "Create Worktree",
+      },
+    },
+  },
+
   -- Gitsigns - inline git status (already included in LazyVim, just configuring)
   {
     "lewis6991/gitsigns.nvim",
@@ -50,6 +83,12 @@ return {
         map("n", "<leader>ghb", function()
           gs.blame_line({ full = true })
         end, "Blame Line")
+        map("n", "<leader>gB", function()
+          gs.blame()
+        end, "Blame File")
+        map("n", "<leader>ght", function()
+          gs.toggle_current_line_blame()
+        end, "Toggle Inline Blame")
         map("n", "<leader>ghd", gs.diffthis, "Diff This")
         map("n", "<leader>ghD", function()
           gs.diffthis("~")

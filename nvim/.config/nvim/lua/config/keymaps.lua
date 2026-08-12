@@ -6,11 +6,23 @@ local map = vim.keymap.set
 -- Quick escape from insert mode
 map("i", "jk", "<ESC>", { desc = "Exit insert mode" })
 
--- Terminal mode keybindings (for Claude Code, etc.)
--- Exit terminal mode to normal mode
-map("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
-map("t", "jk", "<C-\\><C-n>", { desc = "Exit terminal mode" })
--- Close terminal window (Ctrl+q)
+-- Terminal mode keybindings (skip for Claude Code buffers)
+local function is_claude_buf()
+  local bufname = vim.api.nvim_buf_get_name(0)
+  return bufname:match("claude") ~= nil
+end
+
+map("t", "<Esc><Esc>", function()
+  if is_claude_buf() then return "<Esc><Esc>" end
+  return "<C-\\><C-n>"
+end, { expr = true, desc = "Exit terminal mode" })
+
+map("t", "jk", function()
+  if is_claude_buf() then return "jk" end
+  return "<C-\\><C-n>"
+end, { expr = true, desc = "Exit terminal mode" })
+
+-- Close terminal window (Ctrl+q) -- works everywhere including Claude
 map("t", "<C-q>", "<C-\\><C-n><cmd>close<cr>", { desc = "Close terminal" })
 -- Window navigation from terminal mode
 map("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "Navigate left" })
@@ -52,6 +64,9 @@ map("n", "<leader>tw", function()
   -- Open a new tmux window at the file's directory
   vim.fn.system(string.format("tmux new-window -c %s", vim.fn.shellescape(dir)))
 end, { desc = "Tmux window at file dir" })
+
+-- Show current working directory
+map("n", "<leader>pw", function() vim.notify(vim.fn.getcwd(), vim.log.levels.INFO) end, { desc = "Show cwd" })
 
 -- Quick save
 map({ "n", "i", "v", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })

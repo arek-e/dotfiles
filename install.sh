@@ -150,6 +150,7 @@ mkdir -p ~/.config
 stow_dirs=(
     "atuin"
     "ghostty"
+    "herdr"
     "neofetch"
     "nvim"
     "raycast"

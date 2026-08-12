@@ -1,0 +1,81 @@
+# Herdr — mirrored from ~/.config/tmux/tmux.conf
+
+onboarding = false
+
+[theme]
+name = "gruvbox"
+
+[terminal]
+new_cwd = "follow"
+
+[keys]
+prefix = "ctrl+space"
+
+detach = "prefix+d"
+reload_config = "prefix+r"
+resize_mode = "prefix+shift+r"
+
+new_tab = "prefix+c"
+previous_tab = ["prefix+p", "shift+left", "alt+h"]
+next_tab = ["prefix+n", "shift+right", "alt+l"]
+switch_tab = "prefix+1..9"
+close_tab = "prefix+&"
+rename_tab = "prefix+,"
+
+focus_pane_left = ["prefix+h", "alt+left"]
+focus_pane_down = ["prefix+j", "alt+down"]
+focus_pane_up = ["prefix+k", "alt+up"]
+focus_pane_right = ["prefix+l", "alt+right"]
+last_pane = "prefix+;"
+rename_pane = "prefix+$"
+
+split_vertical = ["prefix+|", "prefix+%"]
+split_horizontal = ["prefix+minus", "prefix+\""]
+close_pane = "prefix+x"
+zoom = "prefix+z"
+copy_mode = "prefix+["
+
+workspace_picker = "prefix+w"
+goto = "prefix+g"
+new_workspace = "prefix+shift+n"
+rename_workspace = "prefix+shift+w"
+close_workspace = "prefix+shift+d"
+new_worktree = "prefix+shift+g"
+toggle_sidebar = "prefix+b"
+
+[[keys.command]]
+key = "prefix+shift+p"
+type = "shell"
+command = "/Users/alex/.local/bin/wt-park"
+
+[[keys.command]]
+key = "prefix+shift+x"
+type = "shell"
+command = "/Users/alex/.local/bin/wt-cleanup --force"
+
+[[keys.command]]
+key = "prefix+alt+g"
+type = "popup"
+command = "lazygit"
+width = "80%"
+height = "80%"
+
+[ui]
+mouse_capture = true
+copy_on_select = true
+prompt_new_tab_name = false
+pane_borders = true
+sidebar_start_collapsed = true
+agent_panel_sort = "spaces"
+
+[ui.toast]
+delivery = "system"
+
+[ui.sound]
+enabled = false
+
+[session]
+resume_agents_on_restore = true
+
+[advanced]
+scrollback_limit_bytes = 10000000

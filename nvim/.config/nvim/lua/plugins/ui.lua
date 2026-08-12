@@ -175,6 +175,7 @@ return {
       words = { enabled = true },
       -- Dashboard disabled (using custom dashboard-nvim)
       dashboard = { enabled = false },
+      dashboard = { enabled = false },
     },
     keys = {
       { "<leader>z", function() Snacks.zen() end, desc = "Zen Mode" },
@@ -372,29 +373,4 @@ return {
     },
   },
 
-  -- Incline - floating statuslines per window
-  {
-    "b0o/incline.nvim",
-    event = "VeryLazy",
-    opts = {
-      hide = { cursorline = true },
-      window = {
-        padding = 0,
-        margin = { horizontal = 0 },
-      },
-      render = function(props)
-        local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
-        if filename == "" then
-          filename = "[No Name]"
-        end
-        local ft_icon, ft_color = require("nvim-web-devicons").get_icon_color(filename)
-        local modified = vim.bo[props.buf].modified and " ●" or ""
-
-        return {
-          { (ft_icon or "") .. " ", guifg = ft_color },
-          { filename .. modified, gui = vim.bo[props.buf].modified and "bold,italic" or "bold" },
-        }
-      end,
-    },
-  },
 }
