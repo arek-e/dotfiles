@@ -118,6 +118,67 @@ return {
         end,
       })
 
+      -- Render images in the preview pane.
+      --
+      -- mini.files previews a file by reading it as text, so anything binary
+      -- shows as "-Non-text-file----". For image formats, replace that with the
+      -- actual image drawn by Snacks.image over the Kitty graphics protocol.
+      --
+      -- MiniFilesBufferUpdate is the documented hook for this ("can be used for
+      -- integrations to set useful extmarks") and fires whenever a path buffer
+      -- gets new content, which includes each preview change.
+      local function preview_image(buf_id, win_id)
+        if not buf_id or not vim.api.nvim_buf_is_valid(buf_id) then
+          return
+        end
+        if not _G.Snacks or not Snacks.image then
+          return
+        end
+
+        -- mini.files names buffers minifiles://<buf_id>/<path>
+        local path = vim.api.nvim_buf_get_name(buf_id):match("^minifiles://%d+/(.*)$")
+        if not path or path == "" then
+          return
+        end
+        if not Snacks.image.supports_file(path) or not Snacks.image.supports_terminal() then
+          return
+        end
+        local stat = vim.uv.fs_stat(path)
+        if not stat or stat.type ~= "file" then
+          return
+        end
+
+        local height = win_id and vim.api.nvim_win_is_valid(win_id) and vim.api.nvim_win_get_height(win_id)
+          or 20
+        local width = win_id and vim.api.nvim_win_is_valid(win_id) and vim.api.nvim_win_get_width(win_id)
+          or 40
+
+        -- Clear the placeholder text and reserve blank rows to draw over
+        local blank = {}
+        for _ = 1, height do
+          table.insert(blank, "")
+        end
+        local modifiable = vim.bo[buf_id].modifiable
+        vim.bo[buf_id].modifiable = true
+        pcall(vim.api.nvim_buf_set_lines, buf_id, 0, -1, false, blank)
+        vim.bo[buf_id].modifiable = modifiable
+
+        Snacks.image.placement.clean(buf_id)
+        pcall(Snacks.image.placement.new, buf_id, path, {
+          pos = { 1, 0 },
+          width = width,
+          auto_resize = true,
+        })
+      end
+
+      vim.api.nvim_create_autocmd("User", {
+        group = group,
+        pattern = "MiniFilesBufferUpdate",
+        callback = function(args)
+          preview_image(args.data.buf_id, args.data.win_id)
+        end,
+      })
+
       -- Keep LSP informed when files are renamed through the explorer, so
       -- imports get updated instead of silently breaking.
       vim.api.nvim_create_autocmd("User", {

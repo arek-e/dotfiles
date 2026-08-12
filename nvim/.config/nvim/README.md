@@ -105,9 +105,10 @@ in `lua/plugins/lsp.lua` so that no extra plugin is needed for this.
   graphics escapes), capability cannot be checked at startup (snacks queries the
   terminal and needs a tty), and the buffer is found by polling because the
   dashboard's `FileType` event does not reach a handler registered from config.
-- **Opening an image file renders it inline** (`snacks.image`). mini.files'
-  preview pane does not — it shows the file as text. Press `l` / `<Right>` /
-  `<CR>` to open it properly and see the image.
+- **Images render inline**, both when opened directly and in mini.files' preview
+  pane (`snacks.image`). mini.files previews files by reading them as text, so
+  an image would otherwise show as `-Non-text-file----`; `explorer.lua` hooks
+  `MiniFilesBufferUpdate`, clears that placeholder and draws the real image.
 - **netrw is deliberately left enabled** in `config/lazy.lua`, as a fallback
   path for browsing a directory that does not depend on mini.files loading.
 - **`json-lsp`, `html-lsp`, `css-lsp` and `eslint-lsp` are not installed via
