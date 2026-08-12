@@ -73,7 +73,7 @@ Fifteen, of which twelve are declared and three are dependencies.
 | `plenary.nvim` | Telescope dependency |
 | `mini.files` | File explorer, Miller columns |
 | `mini.icons` | Icons for the explorer (dependency) |
-| `snacks.nvim` | Start page, plus image support. Only `dashboard` and `image` are enabled; the rest of the bundle stays off. |
+| `snacks.nvim` | Start page and inline image rendering. Only `dashboard` and `image` are enabled; the rest of the bundle stays off. |
 | `which-key.nvim` | Keymap discovery |
 
 Telescope and mini.files split the work: telescope answers "where is X",
@@ -96,22 +96,18 @@ in `lua/plugins/lsp.lua` so that no extra plugin is needed for this.
   with `force`, so it would replace nvim-lspconfig's own `on_attach` and destroy
   the `LspEslintFixAll` command. The wrapper in `lua/plugins/lsp.lua` captures
   the base function and calls it first.
-- **The start page picks a logo tier at startup.** A real image over the Kitty
-  graphics protocol where the terminal supports it, otherwise generated ASCII.
-  `:DashboardLogoTier` says which was chosen and `vim.g.dashboard_logo`
-  ("kitty" or "ascii") overrides it. The image tier needs `chafa`.
-
-  herdr counts as image-capable. herdr 0.7.5 implements the Kitty graphics
-  protocol itself: its API exposes `pane.graphics.set` / `clear` / `info` and
-  `PaneGraphicsSetParams` (`image_width`, `data_base64`, `placement`), and its
-  renderer handles `kitty_virtual_placeholder`. tmux, zellij and cmux are
-  treated as blind and forced to ASCII.
-
-  Detection note: multiplexers announce themselves with *prefixed* variables
-  (`HERDR_PANE_ID`, `CMUX_TAB_ID`, …), never a bare `HERDR` or `CMUX`, so the
-  check scans for the prefix. This matters because `TERM_PROGRAM=ghostty`
-  survives into a herdr pane while `TERM` degrades to `xterm-256color`, so
-  terminal sniffing alone reaches the wrong conclusion inside a pane.
+- **The start page renders the mark as a real image** where the terminal can do
+  it, otherwise as generated ASCII. `:DashboardLogoTier` reports both the layout
+  and the live terminal capability; `vim.g.dashboard_logo` ("kitty" or "ascii")
+  overrides. Three non-obvious constraints are documented in
+  `lua/plugins/dashboard.lua` and are easy to reintroduce by accident:
+  chafa in a `terminal` section does **not** work (nvim's libvterm swallows
+  graphics escapes), capability cannot be checked at startup (snacks queries the
+  terminal and needs a tty), and the buffer is found by polling because the
+  dashboard's `FileType` event does not reach a handler registered from config.
+- **Opening an image file renders it inline** (`snacks.image`). mini.files'
+  preview pane does not — it shows the file as text. Press `l` / `<Right>` /
+  `<CR>` to open it properly and see the image.
 - **netrw is deliberately left enabled** in `config/lazy.lua`, as a fallback
   path for browsing a directory that does not depend on mini.files loading.
 - **`json-lsp`, `html-lsp`, `css-lsp` and `eslint-lsp` are not installed via
@@ -123,7 +119,6 @@ in `lua/plugins/lsp.lua` so that no extra plugin is needed for this.
 ## First launch
 
 ```sh
-brew install chafa                      # optional, for the image logo tier
 npm i -g vscode-langservers-extracted   # json, html, css and eslint servers
 nvim                                    # lazy.nvim bootstraps and installs
 :MasonInstallServers                    # lua_ls, vtsls, tailwindcss

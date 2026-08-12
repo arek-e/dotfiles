@@ -1,23 +1,33 @@
 -- Start page.
 --
--- Renders the Legora mark two ways, best first, so the start page is never
--- broken regardless of where nvim is running:
+-- The header is the Legora mark, rendered one of two ways:
 --
---   1. kitty - a real image over the Kitty graphics protocol, via chafa.
---              Verified to emit a genuine _Ga= graphics escape (RGBA, 240x240
---              in 24x12 cells). Ghostty and Kitty only.
---   2. ascii - the mark generated from its own geometry. No external anything.
+--   1. image - the real PNG, drawn by Snacks.image over the Kitty graphics
+--              protocol. Ghostty, Kitty, and herdr panes (herdr speaks the
+--              protocol itself, as kitty_virtual_placeholder).
+--   2. ascii - the mark generated from its own geometry. Works anywhere.
 --
--- chafa's `symbols` mode was measured as a middle tier and dropped: at 24x12 it
--- only picks lower-half blocks, which halves the vertical resolution and reads
--- as a diamond rather than the mark. The hand-generated ASCII below is simply
--- better at this size, so there is no reason for an intermediate step.
+-- Three things about this were learned the hard way and are load-bearing:
 --
--- Tier 1 needs the terminal to pass graphics escapes through. Multiplexers have
--- to opt into that, so any detected multiplexer drops to ascii rather than
--- gambling and painting escape-code litter over the screen. Override with
---   vim.g.dashboard_logo = "kitty" | "ascii"
--- and check what was chosen with :DashboardLogoTier
+-- * The image is NOT produced by chafa in a `terminal` section. A terminal
+--   section runs its command inside nvim's own terminal emulator, and libvterm
+--   swallows Kitty graphics escapes instead of forwarding them, so the area
+--   renders empty. Snacks.image writes Kitty unicode placeholders straight to
+--   the tty, which is what actually arrives.
+--
+-- * Capability cannot be decided at startup. snacks decides by *querying* the
+--   terminal, which needs a real tty, so a headless or early check reports
+--   false even on Ghostty. logo_tier() only picks the layout; the real check
+--   runs per dashboard buffer.
+--
+-- * The FileType autocmd must be registered BEFORE Snacks.setup(). setup()
+--   opens the dashboard synchronously, so registering afterwards misses the
+--   event entirely and the image never gets placed. Placement also has to wait
+--   for the buffer to be written: snacks renders by setting lines, which drops
+--   any extmark already there.
+--
+-- Override with vim.g.dashboard_logo = "kitty" | "ascii", and see what was
+-- chosen with :DashboardLogoTier
 --
 -- The asset is generated from geometry, not traced: a square with a 90-degree
 -- arc carved out of three corners and a square notch in the fourth (top right).
@@ -26,7 +36,7 @@ local LOGO_PNG = vim.fn.stdpath("config") .. "/assets/legora-mark-light.png"
 local LOGO_HEIGHT = 12
 local LOGO_WIDTH = 24
 
--- Final fallback. Padded to equal width because each line is centred on its own.
+-- Fallback mark. Padded to equal width because each line is centred on its own.
 local LOGO_ASCII = {
   "        ▄         ",
   "        █         ",
@@ -56,14 +66,9 @@ end
 
 ---Are we inside a multiplexer that will *not* carry graphics escapes through?
 ---
----herdr is deliberately absent from this list. herdr 0.7.5 implements the Kitty
----graphics protocol: its API exposes pane.graphics.set / clear / info and
----PaneGraphicsSetParams (image_width, image_height, data_base64, placement),
----and its renderer handles kitty_virtual_placeholder. So graphics are expected
----to survive a herdr pane, and it gets the image tier.
----
----If that turns out to be wrong in practice, the symptom is escape-code litter
----on the start page; set vim.g.dashboard_logo = "ascii" to pin the fallback.
+---herdr is deliberately absent. Measured inside a real herdr pane, snacks
+---reports supports_terminal() = true and env name "ghostty", so both the
+---capability query and the graphics themselves survive a pane.
 ---@return boolean
 local function in_blind_multiplexer()
   if vim.env.TMUX or vim.env.ZELLIJ or vim.env.STY or vim.env.TERM_PROGRAM == "tmux" then
@@ -72,72 +77,109 @@ local function in_blind_multiplexer()
   return has_env_prefix("CMUX_")
 end
 
----Which rendering tier this environment can actually manage.
+---Layout guess, made at startup before any tty is available to query.
 ---@return "kitty"|"ascii"
 local function logo_tier()
   local forced = vim.g.dashboard_logo
   if forced == "kitty" or forced == "ascii" then
     return forced
   end
-
-  -- No chafa or no asset means nothing to render the image from.
-  if vim.fn.executable("chafa") ~= 1 or not vim.uv.fs_stat(LOGO_PNG) then
+  if not vim.uv.fs_stat(LOGO_PNG) then
     return "ascii"
   end
-
-  -- A multiplexer that does not carry graphics escapes renders them as litter.
   if in_blind_multiplexer() then
     return "ascii"
   end
-
-  -- herdr speaks the Kitty graphics protocol itself, so a herdr pane counts as
-  -- capable even though TERM inside one degrades to xterm-256color.
+  -- herdr counts as capable even though TERM inside a pane degrades to
+  -- xterm-256color, which is why this cannot rely on TERM alone.
   if has_env_prefix("HERDR_") then
     return "kitty"
   end
-
   local prog = (vim.env.TERM_PROGRAM or ""):lower()
   local term = (vim.env.TERM or ""):lower()
-  local kitty_capable = prog:find("ghostty", 1, true)
+  local capable = prog:find("ghostty", 1, true)
     or prog:find("kitty", 1, true)
     or term:find("ghostty", 1, true)
     or term:find("kitty", 1, true)
     or vim.env.KITTY_WINDOW_ID ~= nil
-
-  return kitty_capable and "kitty" or "symbols"
+  return capable and "kitty" or "ascii"
 end
 
 local function logo_section()
-  local tier = logo_tier()
-
-  -- The ascii tier goes through preset.header, which snacks centres for us.
-  -- `text` would need Text chunk tables rather than plain strings.
-  if tier == "ascii" then
+  if logo_tier() == "ascii" then
+    -- preset.header, which snacks centres for us. `text` would want Text chunk
+    -- tables rather than plain strings.
     return { section = "header", padding = 1 }
   end
+  -- Reserve a blank block for the image to be drawn over.
+  local blank = {}
+  for _ = 1, LOGO_HEIGHT do
+    table.insert(blank, string.rep(" ", LOGO_WIDTH))
+  end
+  return { text = table.concat(blank, "\n"), align = "center", padding = 1 }
+end
 
-  -- --size is in character cells. The mark is square and cells are roughly
-  -- 1:2, so width is double the height. The sleep lets chafa's output flush
-  -- before the terminal section is captured.
-  local cmd = table.concat({
-    "chafa",
-    vim.fn.shellescape(LOGO_PNG),
-    "--format kitty",
-    ("--size %dx%d"):format(LOGO_WIDTH, LOGO_HEIGHT),
-    "--clear",
-    "; sleep .1",
-  }, " ")
+---Write the ASCII mark into the reserved block, for when the terminal turns out
+---not to support graphics after all.
+---@param buf number
+---@param width number
+local function fill_with_ascii(buf, width)
+  local pad = math.max(0, math.floor((width - #LOGO_ASCII[1]) / 2))
+  local lines = {}
+  for _, l in ipairs(LOGO_ASCII) do
+    table.insert(lines, string.rep(" ", pad) .. l)
+  end
+  while #lines < LOGO_HEIGHT do
+    table.insert(lines, "")
+  end
+  local was = vim.bo[buf].modifiable
+  vim.bo[buf].modifiable = true
+  pcall(vim.api.nvim_buf_set_lines, buf, 0, LOGO_HEIGHT, false, lines)
+  vim.bo[buf].modifiable = was
+  vim.bo[buf].modified = false
+end
 
-  return {
-    section = "terminal",
-    cmd = cmd,
-    height = LOGO_HEIGHT,
+---@param buf number
+local function place_logo(buf)
+  if not vim.api.nvim_buf_is_valid(buf) or vim.bo[buf].filetype ~= "snacks_dashboard" then
+    return
+  end
+  local win = vim.fn.bufwinid(buf)
+  local width = win ~= -1 and vim.api.nvim_win_get_width(win) or vim.o.columns
+
+  -- Authoritative check, only meaningful once there is a tty to query.
+  if not Snacks.image.supports_terminal() then
+    fill_with_ascii(buf, width)
+    return
+  end
+
+  Snacks.image.placement.clean(buf) -- drop any copy from a previous render
+  local col = math.max(0, math.floor((width - LOGO_WIDTH) / 2))
+  local ok = pcall(Snacks.image.placement.new, buf, LOGO_PNG, {
+    pos = { 1, col },
     width = LOGO_WIDTH,
-    align = "center",
-    padding = 1,
-    -- Nothing in a static logo justifies re-running chafa on every open
-    ttl = 60 * 60 * 24,
-  }
+    auto_resize = true,
+  })
+  if not ok then
+    fill_with_ascii(buf, width)
+  end
+end
+
+---Poll until snacks has written the dashboard lines, then place the image.
+---@param buf number
+---@param attempt? number
+local function place_when_ready(buf, attempt)
+  attempt = attempt or 1
+  if attempt > 40 or not vim.api.nvim_buf_is_valid(buf) then
+    return
+  end
+  if vim.api.nvim_buf_line_count(buf) <= LOGO_HEIGHT then
+    vim.defer_fn(function()
+      place_when_ready(buf, attempt + 1)
+    end, 25)
+    return
+  end
+  place_logo(buf)
 end
 
 return {
@@ -147,7 +189,7 @@ return {
     lazy = false,
     opts = {
       -- Only these two. snacks is a bundle and the rest stays off on purpose;
-      -- see docs/TRIAGE.md.
+      -- see docs/TRIAGE.md. `image` also makes opening a .png render inline.
       image = { enabled = true },
       dashboard = {
         enabled = true,
@@ -197,10 +239,45 @@ return {
       vim.api.nvim_set_hl(0, "SnacksDashboardDesc", { fg = "#ebdbb2" })
       vim.api.nvim_set_hl(0, "SnacksDashboardFooter", { fg = "#928374", italic = true })
 
-      -- Report which tier was picked, so a silent downgrade is debuggable.
+      -- Find the dashboard buffer by polling rather than by autocmd.
+      --
+      -- FileType is not usable here: snacks sets the dashboard buffer options
+      -- during startup in a way that the event never reaches a handler
+      -- registered from this config, whether before or after setup(). Polling
+      -- for a snacks_dashboard buffer that has been written is event-agnostic
+      -- and costs a handful of 25ms timer ticks at startup only.
+      if logo_tier() == "kitty" then
+        local function scan(attempt)
+          attempt = attempt or 1
+          if attempt > 80 then
+            return
+          end
+          for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+            if
+              vim.api.nvim_buf_is_valid(buf)
+              and vim.bo[buf].filetype == "snacks_dashboard"
+              and vim.api.nvim_buf_line_count(buf) > LOGO_HEIGHT
+            then
+              place_logo(buf)
+              return
+            end
+          end
+          vim.defer_fn(function()
+            scan(attempt + 1)
+          end, 25)
+        end
+        scan()
+      end
+
       vim.api.nvim_create_user_command("DashboardLogoTier", function()
-        vim.notify("dashboard logo tier: " .. logo_tier(), vim.log.levels.INFO)
-      end, { desc = "Which logo rendering tier the dashboard chose" })
+        vim.notify(
+          ("dashboard logo: layout=%s  terminal_graphics=%s"):format(
+            logo_tier(),
+            tostring(Snacks.image.supports_terminal())
+          ),
+          vim.log.levels.INFO
+        )
+      end, { desc = "Which logo tier the dashboard chose" })
     end,
   },
 }

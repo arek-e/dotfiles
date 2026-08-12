@@ -26,7 +26,7 @@ These are capabilities the baseline genuinely lacks, not conveniences.
 | Plugin | Date | Why |
 |---|---|---|
 | `mini.files` + `mini.icons` | 2026-08-12 | File explorer. Miller columns, so each level you descend adds a column on the right and the parents stay visible. Column widths are deliberately narrow (16/28/34) so five or six levels fit at once. Editing the listing renames/creates/deletes, and renames are forwarded to the LSP so imports follow. |
-| `snacks.nvim` (dashboard + image) | 2026-08-12 | Start page. Replaced dashboard-nvim, which cannot render images. Shows the mark as a real image over the Kitty graphics protocol via chafa, falling back to generated ASCII under a multiplexer or an unsupporting terminal. chafa's own `symbols` mode was tried as a middle tier and dropped: at 24x12 it only picks lower-half blocks and reads as a diamond, so the hand-generated ASCII is better. Only `dashboard` and `image` are enabled out of the bundle. |
+| `snacks.nvim` (dashboard + image) | 2026-08-12 | Start page. Replaced dashboard-nvim, which cannot render images. Shows the mark as a real image via Snacks.image over the Kitty graphics protocol, falling back to generated ASCII where the terminal cannot. chafa was tried first and abandoned: its `symbols` mode reads as a diamond at 24x12, and its `kitty` mode cannot work at all from a dashboard `terminal` section because nvim's libvterm swallows graphics escapes. Only `dashboard` and `image` are enabled out of the bundle. |
 
 ## Tier 2 — strong candidates
 
@@ -78,6 +78,8 @@ These are capabilities the baseline genuinely lacks, not conveniences.
 
 ## Housekeeping
 
+- mini.files' preview pane shows images as text. Rendering images in the preview
+  would mean hooking `MiniFilesBufferUpdate` and placing them by hand; not done.
 - `stylua` is not installed, so `.stylua.toml` is currently unenforced.
   `brew install stylua`, or add it to mason and wire it into conform at item 1.
 - `~/.local/share/nvim/{lazy,mason}.reset-bak` and
