@@ -1,3 +1,36 @@
+# ============================================
+# Repair fpath before anything uses it
+# ============================================
+# FPATH is exported in this setup, so every child process inherits it. When zsh
+# itself is upgraded, a long-running parent (a multiplexer server, an editor, a
+# login shell from before the upgrade) keeps handing down an FPATH that still
+# points at the previous version's function directory. zsh initialises fpath
+# from that inherited value instead of its own compiled default, so
+# `_main_complete`, `compinit` and `add-zsh-hook` all become unfindable:
+#
+#   _main_complete: function definition file not found
+#
+# Fixing this needs two things: drop entries that no longer exist, and make sure
+# the running zsh's own function directory is present.
+#
+# Deliberately NOT wrapped in a function: inside one, `fpath=(...)` assigns a
+# function-local array and never reaches the global, which looks like it works
+# and does nothing.
+#
+# The brew path without a version in it is preferred, because it keeps pointing
+# at the current zsh; the versioned Cellar path is the fallback.
+for _zfn in \
+  /opt/homebrew/share/zsh/functions \
+  "/opt/homebrew/Cellar/zsh/${ZSH_VERSION}/share/zsh/functions" \
+  "/usr/share/zsh/${ZSH_VERSION}/functions"
+do
+  [[ -d $_zfn ]] && fpath=("$_zfn" $fpath) && break
+done
+unset _zfn
+# (N-/) keeps only entries that exist and are directories
+fpath=(${^fpath}(N-/))
+typeset -U fpath   # de-duplicate, keeping the first occurrence
+
 # Add local bin to PATH
 export PATH="$HOME/.local/bin:$PATH"
 
