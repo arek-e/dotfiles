@@ -37,6 +37,16 @@ explorer (mini.files). What remains below is preference, not gaps.
 | `conform.nvim` + `stylua` | Formatting, the last real gap. oxfmt/biome/prettier chosen by `stop_after_first` over resolvable binaries; stylua finally enforces the `.stylua.toml` that had sat unused since the reset. |
 | `tiny-inline-diagnostic.nvim` | Replaces the built-in virtual_text, which appended whole messages to the line end and collided with code. `virtual_text = false` is set in lsp.lua so both do not draw at once. |
 
+## Added 2026-08-13
+
+| Plugin | Why |
+|---|---|
+| `glance.nvim` | Peek a definition or reference without leaving the buffer, on `gp`/`gP`/`gR`/`gM`. `gr` avoided: it is the native `gr*` prefix. |
+| `tiny-code-action.nvim` | Code actions with a delta diff of what each would do, via the telescope picker. Replaces the native numbered list. |
+| `telescope-undo.nvim` | Visual undo history with per-state diffs. No overlap with anything installed. |
+| `telescope-frecency.nvim` | Frequency+recency file ranking, which `oldfiles` (pure recency) does not give. No sqlite needed. |
+| `nvim-neoclip.lua` | Yank history. Persistence deliberately off: it would need sqlite.lua plus a sqlite lib that is not installed. |
+
 ## Tier 2 — strong candidates
 
 | # | Candidate | Buys you | Watch out for |

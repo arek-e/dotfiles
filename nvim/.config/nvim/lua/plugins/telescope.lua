@@ -31,6 +31,22 @@ return {
           return vim.fn.executable("make") == 1
         end,
       },
+      -- Visual undo history, with a diff of each state
+      "debugloop/telescope-undo.nvim",
+      -- Ranks files by frequency + recency. No sqlite needed; uses fd/rg when
+      -- present (both are) and falls back to Lua otherwise.
+      "nvim-telescope/telescope-frecency.nvim",
+      -- Yank history. Persistence would need kkharji/sqlite.lua and a sqlite
+      -- lib, which is not installed, so this is session-scoped on purpose.
+      {
+        "AckslD/nvim-neoclip.lua",
+        opts = {
+          history = 200,
+          enable_persistent_history = false,
+          default_register = { '"', "+" },
+          content_spec_column = true,
+        },
+      },
     },
     keys = {
       -- Files and buffers.
@@ -64,6 +80,15 @@ return {
       { "<leader>sd", "<cmd>Telescope diagnostics<cr>", desc = "Diagnostics" },
       { "<leader>ss", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Document symbols" },
       { "<leader>sS", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", desc = "Workspace symbols" },
+
+      -- Frecency: the "what do I actually open" list, ranked by frequency and
+      -- recency rather than pure recency like oldfiles.
+      { "<leader>fz", "<cmd>Telescope frecency workspace=CWD<cr>", desc = "Frecent files (cwd)" },
+      { "<leader>fZ", "<cmd>Telescope frecency<cr>", desc = "Frecent files (all)" },
+
+      -- Undo history and yank history
+      { "<leader>fu", "<cmd>Telescope undo<cr>", desc = "Undo history" },
+      { "<leader>fy", "<cmd>Telescope neoclip<cr>", desc = "Yank history" },
 
       -- Meta
       { "<leader>sh", "<cmd>Telescope help_tags<cr>", desc = "Help tags" },
@@ -126,6 +151,22 @@ return {
             "pnpm%-lock%.yaml$",
           },
         },
+        extensions = {
+          undo = {
+            -- Side-by-side diff of the undo state, rather than unified
+            layout_strategy = "vertical",
+            layout_config = { preview_height = 0.7 },
+            side_by_side = true,
+            entry_format = "state #$ID, $STAT, $TIME",
+          },
+          frecency = {
+            -- Show the path, not just the filename, and hide the score column
+            show_scores = false,
+            show_unindexed = true,
+            disable_devicons = false,
+            ignore_patterns = { "*/node_modules/*", "*/.git/*", "*/dist/*" },
+          },
+        },
         pickers = {
           -- Show dotfiles, which your old neo-tree config also did
           find_files = { hidden = true },
@@ -139,7 +180,13 @@ return {
     config = function(_, opts)
       local telescope = require("telescope")
       telescope.setup(opts)
-      pcall(telescope.load_extension, "fzf")
+      -- pcall each: a missing or failed extension should not take telescope down
+      for _, ext in ipairs({ "fzf", "undo", "frecency", "neoclip" }) do
+        local ok, err = pcall(telescope.load_extension, ext)
+        if not ok then
+          vim.notify(("telescope: extension %q failed to load: %s"):format(ext, err), vim.log.levels.WARN)
+        end
+      end
 
       -- Gruvbox-dark values. Set from a ColorScheme autocmd so they survive a
       -- colorscheme reload, and applied once immediately for this session.

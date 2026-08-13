@@ -70,7 +70,7 @@ Three conventions keep this navigable:
 
 ## Plugins
 
-Twenty-four, of which twenty-one are declared and three are dependencies.
+Twenty-seven, of which twenty-two are declared and five are dependencies.
 
 | Plugin | Why |
 |---|---|
@@ -84,6 +84,9 @@ Twenty-four, of which twenty-one are declared and three are dependencies.
 | `friendly-snippets` | Snippet corpus (dependency) |
 | `telescope.nvim` | Fuzzy finder |
 | `telescope-fzf-native.nvim` | Compiled sorter for telescope |
+| `telescope-undo.nvim` | Visual undo history with diffs |
+| `telescope-frecency.nvim` | Files ranked by frequency + recency |
+| `nvim-neoclip.lua` | Yank history (session-scoped) |
 | `plenary.nvim` | Telescope dependency |
 | `mini.files` | File explorer, Miller columns. Org is `nvim-mini`, not `echasnovski`. |
 | `mini.icons` | Icons, and stands in for nvim-web-devicons via its shim |
@@ -208,6 +211,11 @@ nvim                                    # lazy.nvim bootstraps and installs
 Leader is `Space`. `<leader>?` shows what is bound in the current buffer, and
 `<leader>sk` searches all keymaps — both are more trustworthy than a table in a
 README, which is why there is no exhaustive list here.
+
+LSP location lists go through telescope, not the quickfix list: `gd`, `grr`,
+`gri` and `grt` are remapped buffer-locally over the native `gr*` family, because
+the built-ins dump results into quickfix with no preview. The native behaviour
+returns in buffers with no LSP attached.
 
 Hover (`K`) needs no plugin: `vim.o.winborder` gives it a rounded border and
 render-markdown renders the float automatically via its default `buftype.nofile`
