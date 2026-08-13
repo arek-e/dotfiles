@@ -193,6 +193,29 @@ diff. Resolving a disabled "Extract to type" makes tsserver throw
 surfaced as "Unable to preview code action". Filtering on the LSP `disabled`
 field removes both the noise and the crash: 17+ entries became 3.
 
+## Statusline
+
+Sections: mode letter, branch + git diff counts, filename relative to cwd, then
+LSP progress spinner, diagnostics, filetype icon, position. Three components
+appear only when they apply, so they cost no width at rest: an active macro
+recording (red `@q`), the search hit count, and the selected line count in
+visual mode. Pending plugin updates show from `lazy.status`.
+
+Two things about it are easy to break:
+
+- **The theme is explicitly `gruvbox_dark`, not `auto`.** gruvbox runs with
+  `transparent_mode = true`, and `auto` derives a theme from it in which every
+  section is `bg=NONE`. That leaves the mode indicator uncoloured and powerline
+  separators invisible, since a separator is drawn from the contrast between two
+  section backgrounds.
+- **Separators are written as UTF-8 byte escapes** (`"\238\130\176"`), not as
+  pasted glyphs. Literal Nerd Font characters get silently stripped by some
+  tooling, which leaves the strings empty and the separators simply absent.
+
+Note that lualine creates its highlight groups on first *render*, so
+`nvim_get_hl` on `lualine_*` returns nothing in `--headless`. Check colours in a
+real UI or the answer is meaningless.
+
 ## Gotchas worth knowing
 
 - **nvim-treesitter is on `branch = "main"`, and must be on 0.12.** The old
