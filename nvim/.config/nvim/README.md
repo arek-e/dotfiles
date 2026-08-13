@@ -30,6 +30,7 @@ lua/
     lsp-ui.lua            glance (peek) + tiny-code-action (diff preview)
     markdown.lua          render-markdown
     pairs.lua             mini.pairs
+    session.lua           persistence: restore buffers and layout
     snacks.lua            Start page, images, indent, notifier, input,
                           words, scroll
     explorer.lua
@@ -70,7 +71,7 @@ Three conventions keep this navigable:
 
 ## Plugins
 
-Twenty-eight, of which twenty-three are declared and five are dependencies.
+Twenty-nine, of which twenty-four are declared and five are dependencies.
 
 | Plugin | Why |
 |---|---|
@@ -99,6 +100,7 @@ Twenty-eight, of which twenty-three are declared and five are dependencies.
 | `gitsigns.nvim` | Git signs, hunk navigation, inline blame |
 | `edgy.nvim` | Pins quickfix, help and terminal splits to screen edges |
 | `fidget.nvim` | LSP progress, so a slow server is visibly working |
+| `persistence.nvim` | Session restore, per directory and git branch |
 | `glance.nvim` | Peek definitions/references without leaving the buffer |
 | `tiny-code-action.nvim` | Code actions with a delta diff preview |
 | `mini.icons` | Icons, and stands in for nvim-web-devicons via its shim |
@@ -166,6 +168,20 @@ itself, but at 28 ms that needs none.
 snacks.notifier was moved to the top right for this — it and fidget both default
 to the bottom right and overlapped.
 
+## Sessions
+
+`<leader>qs` restores the session for this directory and git branch, `<leader>ql`
+the last one anywhere, `<leader>qS` picks from a list, `<leader>qd` stops saving.
+The dashboard has it on `s`. Saving is automatic on exit; only restoring is a
+keypress, so `nvim somefile` never surprises you by reopening yesterday's twenty
+buffers.
+
+This does not overlap herdr's session restore: herdr brings back workspaces,
+tabs and panes, and knows nothing about what was open inside nvim.
+
+Transient windows (edgy, mini.files, terminals, the dashboard) are closed on
+`PersistenceSavePre`, or they come back empty and misplaced.
+
 ## Gotchas worth knowing
 
 - **nvim-treesitter is on `branch = "main"`, and must be on 0.12.** The old
@@ -229,10 +245,12 @@ Leader is `Space`. `<leader>?` shows what is bound in the current buffer, and
 `<leader>sk` searches all keymaps — both are more trustworthy than a table in a
 README, which is why there is no exhaustive list here.
 
-LSP location lists go through telescope, not the quickfix list: `gd`, `grr`,
-`gri` and `grt` are remapped buffer-locally over the native `gr*` family, because
-the built-ins dump results into quickfix with no preview. The native behaviour
-returns in buffers with no LSP attached.
+LSP location lists go through **glance**, not the quickfix list and not
+telescope: `gd`, `grr`, `gri` and `grt` open a peek window that keeps you in the
+buffer. There is one key per action; an earlier telescope-based set doing the
+same job from different keys was removed. `gr` is never mapped, being the prefix
+for the native `gr*` family. Telescope keeps the pickers glance has no
+equivalent for: `<leader>ss` / `<leader>sS` symbols and `<leader>sd` diagnostics.
 
 Hover (`K`) needs no plugin: `vim.o.winborder` gives it a rounded border and
 render-markdown renders the float automatically via its default `buftype.nofile`

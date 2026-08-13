@@ -217,6 +217,14 @@ return {
               { icon = " ", key = "f", desc = "Find file", action = ":Telescope find_files" },
               { icon = " ", key = "n", desc = "New file", action = ":ene | startinsert" },
               { icon = " ", key = "r", desc = "Recent files", action = ":Telescope oldfiles" },
+              {
+                icon = " ",
+                key = "s",
+                desc = "Restore session",
+                action = function()
+                  require("persistence").load()
+                end,
+              },
               { icon = " ", key = "g", desc = "Find text", action = ":Telescope live_grep" },
               {
                 icon = " ",

@@ -20,6 +20,7 @@ return {
         { "<leader>s", group = "search" },
         { "<leader>x", group = "diagnostics" },
         { "<leader>p", group = "project" },
+        { "<leader>q", group = "session" },
         { "[", group = "prev" },
         { "]", group = "next" },
         { "g", group = "goto" },

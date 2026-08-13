@@ -123,27 +123,14 @@ return {
             vim.keymap.set(mode or "n", keys, fn, { buffer = event.buf, desc = "LSP: " .. desc })
           end
 
-          -- Location lists go through telescope rather than the quickfix list.
+          -- Definitions, references, implementations and type definitions are
+          -- NOT mapped here. glance owns them (see plugins/lsp-ui.lua), because
+          -- a peek window keeps you in place where both a quickfix dump and a
+          -- telescope list take you out of the buffer.
           --
-          -- These override the native 0.11 gr* mappings on purpose: the built-in
-          -- versions dump results into the quickfix list, which has no preview
-          -- and loses the surrounding code. Telescope's LSP pickers show the
-          -- match in context and jump straight through when there is only one.
-          --
-          -- Buffer-local, so they only apply where a server is attached, and the
-          -- native behaviour returns in buffers without LSP.
-          local builtin = require("telescope.builtin")
-
-          map("gd", builtin.lsp_definitions, "Definitions (telescope)")
-          map("grr", function()
-            builtin.lsp_references({ include_declaration = false })
-          end, "References (telescope)")
-          map("gri", builtin.lsp_implementations, "Implementations (telescope)")
-          map("grt", builtin.lsp_type_definitions, "Type definitions (telescope)")
-
-          -- No telescope equivalent worth having for these two
+          -- glance maps them globally; nothing buffer-local may be set for those
+          -- keys or it would take precedence and win silently.
           map("gD", vim.lsp.buf.declaration, "Go to declaration")
-          map("gy", builtin.lsp_type_definitions, "Type definitions (telescope)")
           map("K", vim.lsp.buf.hover, "Hover documentation")
           map("<leader>cr", vim.lsp.buf.rename, "Rename symbol")
           -- <leader>ca is intentionally NOT mapped here. tiny-code-action owns

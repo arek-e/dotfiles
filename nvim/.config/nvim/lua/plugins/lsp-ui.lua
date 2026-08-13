@@ -50,13 +50,18 @@ return {
     "DNLHC/glance.nvim",
     cmd = "Glance",
     keys = {
-      -- Deliberately not `gr`: on 0.11+ that is the prefix for the native
-      -- grn / gra / grr / gri / grt / grx mappings, and taking it would either
-      -- shadow them or make every one of them wait for a timeout.
-      { "gp", "<cmd>Glance definitions<cr>", desc = "Peek definitions" },
-      { "gP", "<cmd>Glance type_definitions<cr>", desc = "Peek type definitions" },
-      { "gR", "<cmd>Glance references<cr>", desc = "Peek references" },
-      { "gM", "<cmd>Glance implementations<cr>", desc = "Peek implementations" },
+      -- One key per action, using the native 0.11 names so there is nothing to
+      -- remember twice. These replace the built-ins, which dump into the
+      -- quickfix list, and they replaced a second telescope-based set that did
+      -- the same job from a different keymap.
+      --
+      -- `gr` itself is deliberately never mapped: it is the prefix for
+      -- grn / gra / grr / gri / grt / grx, so taking it would make each of those
+      -- wait out a timeout.
+      { "gd", "<cmd>Glance definitions<cr>", desc = "Definitions (peek)" },
+      { "grr", "<cmd>Glance references<cr>", desc = "References (peek)" },
+      { "gri", "<cmd>Glance implementations<cr>", desc = "Implementations (peek)" },
+      { "grt", "<cmd>Glance type_definitions<cr>", desc = "Type definitions (peek)" },
     },
     opts = function()
       local actions = require("glance").actions
