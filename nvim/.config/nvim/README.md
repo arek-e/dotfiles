@@ -31,6 +31,7 @@ lua/
     markdown.lua          render-markdown
     pairs.lua             mini.pairs
     session.lua           persistence: restore buffers and layout
+    winbar.lua            incline + treesitter-context
     snacks.lua            Start page, images, indent, notifier, input,
                           words, scroll
     explorer.lua
@@ -71,7 +72,7 @@ Three conventions keep this navigable:
 
 ## Plugins
 
-Twenty-nine, of which twenty-four are declared and five are dependencies.
+Thirty-one, of which twenty-six are declared and five are dependencies.
 
 | Plugin | Why |
 |---|---|
@@ -101,6 +102,8 @@ Twenty-nine, of which twenty-four are declared and five are dependencies.
 | `edgy.nvim` | Pins quickfix, help and terminal splits to screen edges |
 | `fidget.nvim` | LSP progress, so a slow server is visibly working |
 | `persistence.nvim` | Session restore, per directory and git branch |
+| `incline.nvim` | Per-window filename label, top right |
+| `nvim-treesitter-context` | Pins the enclosing scope to the top of the window |
 | `glance.nvim` | Peek definitions/references without leaving the buffer |
 | `tiny-code-action.nvim` | Code actions with a delta diff preview |
 | `mini.icons` | Icons, and stands in for nvim-web-devicons via its shim |
@@ -192,6 +195,22 @@ diff. Resolving a disabled "Extract to type" makes tsserver throw
 `Debug Failure. False expression: Expected to find a range to extract`, which
 surfaced as "Unable to preview code action". Filtering on the LSP `disabled`
 field removes both the noise and the crash: 17+ entries became 3.
+
+## Top of the window
+
+Two different answers to "where am I", neither in the winbar (edgy already uses
+that line for its own window titles):
+
+- **incline** floats the filename, modified marker and per-buffer diagnostic
+  counts in each window's top right. This is information the statusline cannot
+  give: `laststatus = 3` means one bar for the whole editor, so with a split it
+  could only ever name one of the two buffers. The filename was removed from
+  lualine in favour of it. zindex 30, below floats, so it never covers telescope,
+  glance or a code action preview.
+- **treesitter-context** pins the enclosing scope to the top, so deep in a
+  function body you still see its signature. `<leader>uc` toggles it, `[c` jumps
+  to the context start. Note `min_window_height = 20`: it deliberately does
+  nothing in a short window, which looks like it is broken if you test in one.
 
 ## Statusline
 

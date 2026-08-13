@@ -209,14 +209,10 @@ return {
           },
 
           lualine_c = {
-            -- path = 1 is relative to the cwd, the only variant that tells you
-            -- anything in a monorepo.
-            {
-              "filename",
-              path = 1,
-              shorting_target = 40,
-              symbols = { modified = "  ", readonly = "  ", unnamed = "[No Name]" },
-            },
+            -- No filename here. incline shows it per window in the top right
+            -- (see plugins/winbar.lua), which this bar cannot do: globalstatus
+            -- means one statusline for the whole editor, so with a split it could
+            -- only ever name one of the two buffers.
             macro,
             -- Both of these appear only when relevant, so they cost no width at
             -- rest: the search hit count while searching, and how much is
