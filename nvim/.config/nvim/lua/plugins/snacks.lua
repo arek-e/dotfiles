@@ -170,6 +170,24 @@ return {
     "folke/snacks.nvim",
     priority = 1000,
     lazy = false,
+    keys = {
+      -- Notifications vanish after their timeout and were unrecoverable until
+      -- now, which makes a message you half-read genuinely lost.
+      {
+        "<leader>un",
+        function()
+          Snacks.notifier.show_history()
+        end,
+        desc = "Notification history",
+      },
+      {
+        "<leader>uN",
+        function()
+          Snacks.notifier.hide()
+        end,
+        desc = "Dismiss all notifications",
+      },
+    },
     opts = function()
       return {
         -- image is switched off entirely where graphics cannot work. Left on, it

@@ -255,6 +255,14 @@ Note that lualine creates its highlight groups on first *render*, so
 `nvim_get_hl` on `lualine_*` returns nothing under `--headless`. Check colours in
 a real UI or the answer is meaningless.
 
+## Notifications
+
+`snacks.notifier` owns `vim.notify`, so every message from any plugin goes through
+it. Top right, because fidget's LSP progress owns the bottom right and both
+default to the same corner. `<leader>un` shows the history, `<leader>uN` dismisses
+everything on screen — without the history binding a message you only half-read
+was simply gone.
+
 ## Gotchas worth knowing
 
 - **`flash` takes `s` and `S`**, which are Vim's substitute-character and

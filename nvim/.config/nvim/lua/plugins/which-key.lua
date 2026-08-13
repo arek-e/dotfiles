@@ -21,6 +21,7 @@ return {
         { "<leader>x", group = "diagnostics" },
         { "<leader>p", group = "project" },
         { "<leader>q", group = "session" },
+        { "<leader>u", group = "ui/toggles" },
         { "[", group = "prev" },
         { "]", group = "next" },
         { "g", group = "goto" },
