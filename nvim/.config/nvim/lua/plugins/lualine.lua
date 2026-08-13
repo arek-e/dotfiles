@@ -42,24 +42,25 @@ return {
             { "filename", path = 1, shorting_target = 40 },
           },
           lualine_x = {
+            -- LSP progress with a spinner. 0.12's default statusline shows
+            -- vim.ui.progress_status(), which lualine replaced, so this puts the
+            -- feedback back. It is what shows during the slow part of a big
+            -- TypeScript project: "Analyzing ... and its dependencies".
+            {
+              "lsp_status",
+              icon = "",
+              symbols = {
+                spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
+                done = "",
+                separator = " ",
+              },
+            },
             {
               "diagnostics",
               symbols = { error = " ", warn = " ", info = " ", hint = " " },
             },
-            -- Which LSP servers are actually attached to this buffer
-            {
-              function()
-                local names = {}
-                for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
-                  table.insert(names, client.name)
-                end
-                return table.concat(names, " ")
-              end,
-              icon = " ",
-              cond = function()
-                return #vim.lsp.get_clients({ bufnr = 0 }) > 0
-              end,
-            },
+            -- No separate "attached clients" component: lsp_status above already
+            -- names the servers, and having both printed "vtsls | vtsls".
             { "filetype", icon_only = false },
           },
           lualine_y = { "progress" },

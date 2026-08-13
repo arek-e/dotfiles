@@ -6,6 +6,44 @@
 -- `buftype.nofile` override.
 
 return {
+  -- Visible feedback while the language server is busy.
+  --
+  -- This is the answer to "did my keypress do anything". Measured on a 320
+  -- reference TypeScript project: the references *request* is 28ms warm and
+  -- 119ms cold, so it needs no spinner. The multi-second wait is tsserver
+  -- indexing, and vtsls does emit $/progress for that phase ("Analyzing
+  -- 'util.ts' and its dependencies", "Initializing tsconfig.json"). fidget
+  -- surfaces exactly those.
+  --
+  -- Bottom right; snacks.notifier was moved to the top right so they do not
+  -- overlap, since both default to the same corner.
+  {
+    "j-hui/fidget.nvim",
+    event = "LspAttach",
+    opts = {
+      progress = {
+        poll_rate = 0,
+        display = {
+          done_icon = "",
+          done_style = "Comment",
+          progress_style = "Comment",
+          group_style = "Title",
+          progress_icon = { pattern = "dots", period = 1 },
+        },
+      },
+      notification = {
+        poll_rate = 10,
+        window = {
+          winblend = 0, -- opaque, matching the telescope panes
+          border = "rounded",
+          relative = "editor",
+          align = "bottom",
+          x_padding = 1,
+        },
+      },
+    },
+  },
+
   -- Peek a definition or reference in a side window instead of jumping away and
   -- losing your place. This is the capability the old lspsaga config had on `gp`.
   {

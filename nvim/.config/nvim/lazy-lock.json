@@ -2,6 +2,7 @@
   "blink.cmp": { "branch": "main", "commit": "78336bc89ee5365633bcf754d93df01678b5c08f" },
   "conform.nvim": { "branch": "master", "commit": "016802de402556da54c36bd7359b441266b01cdd" },
   "edgy.nvim": { "branch": "main", "commit": "8bfd2808994a988c975694122f68624b8a219f5f" },
+  "fidget.nvim": { "branch": "main", "commit": "6f793b2bcd2d35e201c09520f698bb763220908a" },
   "friendly-snippets": { "branch": "main", "commit": "6cd7280adead7f586db6fccbd15d2cac7e2188b9" },
   "gitsigns.nvim": { "branch": "main", "commit": "5be654f2232c10ddcad19c1607a67b6b4b78fc29" },
   "glance.nvim": { "branch": "master", "commit": "bf86d8b79dce808e65fdb6e9269d0b4ed6d2eefc" },

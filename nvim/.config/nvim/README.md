@@ -70,7 +70,7 @@ Three conventions keep this navigable:
 
 ## Plugins
 
-Twenty-seven, of which twenty-two are declared and five are dependencies.
+Twenty-eight, of which twenty-three are declared and five are dependencies.
 
 | Plugin | Why |
 |---|---|
@@ -98,6 +98,7 @@ Twenty-seven, of which twenty-two are declared and five are dependencies.
 | `mini.pairs` | Autopairs for hand-typed brackets and quotes |
 | `gitsigns.nvim` | Git signs, hunk navigation, inline blame |
 | `edgy.nvim` | Pins quickfix, help and terminal splits to screen edges |
+| `fidget.nvim` | LSP progress, so a slow server is visibly working |
 | `glance.nvim` | Peek definitions/references without leaving the buffer |
 | `tiny-code-action.nvim` | Code actions with a delta diff preview |
 | `mini.icons` | Icons, and stands in for nvim-web-devicons via its shim |
@@ -148,6 +149,22 @@ subject as virtual text at the end of the cursor's line, after a 300 ms delay.
 
 Staging is deliberately not mapped — lazygit is bound to `prefix+alt+g` in herdr
 and that is where staging happens. `gitsigns.stage_hunk` exists if that changes.
+
+## When the LSP feels slow
+
+Measured on a synthetic 320-reference TypeScript project: the references request
+is **28 ms warm** and **119 ms cold**, and telescope adds **94 ms** on top. So
+neither is the delay.
+
+The multi-second wait is tsserver indexing, and it happens on the first request
+after opening a project. vtsls *does* emit `$/progress` for that phase
+("Analyzing … and its dependencies", "Initializing tsconfig.json"), which is why
+there are now two progress indicators: fidget bottom right, and lualine's
+`lsp_status` spinner. It does **not** emit progress for the references request
+itself, but at 28 ms that needs none.
+
+snacks.notifier was moved to the top right for this — it and fidget both default
+to the bottom right and overlapped.
 
 ## Gotchas worth knowing
 

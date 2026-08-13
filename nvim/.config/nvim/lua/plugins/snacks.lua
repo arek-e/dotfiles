@@ -191,7 +191,9 @@ return {
           enabled = true,
           timeout = 3000,
           style = "compact",
-          top_down = false, -- notifications rise from the bottom right
+          -- Top right, so the bottom right stays free for fidget's LSP
+          -- progress. Both defaulting to bottom right made them overlap.
+          top_down = true,
         },
 
         -- Replaces the single-line prompt for vim.ui.input, which is what
