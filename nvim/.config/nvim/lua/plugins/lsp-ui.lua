@@ -5,6 +5,20 @@
 -- render-markdown renders the float's markdown automatically through its default
 -- `buftype.nofile` override.
 
+-- Shared by <leader>ca and gra.
+--
+-- The filter is the difference between usable and unusable here. tsserver
+-- advertises every refactor it knows about at the cursor, most of them marked
+-- disabled for that position — "Extract to interface (disabled)", "Convert to
+-- optional chain expression (disabled)" and a dozen more. They drown the two or
+-- three actions that actually apply. LSP marks those with a `disabled` field, so
+-- dropping them leaves only what can really run.
+local ACTION_OPTS = {
+  filter = function(action, _client)
+    return action.disabled == nil
+  end,
+}
+
 return {
   -- Visible feedback while the language server is busy.
   --
@@ -117,10 +131,20 @@ return {
     dependencies = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim" },
     event = "LspAttach",
     keys = {
+      -- Both the leader chord and the native `gra` go here, so the same action
+      -- never has two different presentations depending on which key you hit.
       {
         "<leader>ca",
         function()
-          require("tiny-code-action").code_action()
+          require("tiny-code-action").code_action(ACTION_OPTS)
+        end,
+        mode = { "n", "v" },
+        desc = "Code action (with diff preview)",
+      },
+      {
+        "gra",
+        function()
+          require("tiny-code-action").code_action(ACTION_OPTS)
         end,
         mode = { "n", "v" },
         desc = "Code action (with diff preview)",

@@ -182,6 +182,17 @@ tabs and panes, and knows nothing about what was open inside nvim.
 Transient windows (edgy, mini.files, terminals, the dashboard) are closed on
 `PersistenceSavePre`, or they come back empty and misplaced.
 
+## Code actions
+
+`gra` and `<leader>ca` both go to tiny-code-action, so the same action never has
+two presentations. Disabled actions are filtered out, which is not cosmetic:
+tsserver advertises every refactor it knows at the cursor and marks most
+`disabled` for that position, and tiny-code-action resolves each one to build its
+diff. Resolving a disabled "Extract to type" makes tsserver throw
+`Debug Failure. False expression: Expected to find a range to extract`, which
+surfaced as "Unable to preview code action". Filtering on the LSP `disabled`
+field removes both the noise and the crash: 17+ entries became 3.
+
 ## Gotchas worth knowing
 
 - **nvim-treesitter is on `branch = "main"`, and must be on 0.12.** The old
