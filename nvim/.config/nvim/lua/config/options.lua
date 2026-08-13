@@ -52,6 +52,11 @@ opt.clipboard = "unnamedplus"
 -- Treat foo-bar as one word
 opt.iskeyword:append("-")
 
+-- Rounded borders on every float: hover, signature help, diagnostics, Lazy,
+-- Mason. Set here rather than in a plugin config, where it would only take
+-- effect once that plugin had loaded.
+vim.o.winborder = "rounded"
+
 -- Misc
 opt.termguicolors = true
 opt.mouse = "a"

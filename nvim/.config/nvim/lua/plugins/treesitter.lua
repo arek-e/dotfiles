@@ -94,6 +94,24 @@ return {
     end,
   },
 
+  -- Auto close and rename JSX/HTML tag pairs. mini.pairs handles brackets and
+  -- quotes; tags need the syntax tree, which is why this lives beside treesitter.
+  --
+  -- Uses its own setup(), NOT the nvim-treesitter.configs route, which upstream
+  -- has deprecated. It needs the parsers installed above but is otherwise
+  -- indifferent to which nvim-treesitter branch is in use.
+  {
+    "windwp/nvim-ts-autotag",
+    event = { "BufReadPost", "BufNewFile" },
+    opts = {
+      opts = {
+        enable_close = true, -- <div| -> <div></div>
+        enable_rename = true, -- renaming one half renames the other
+        enable_close_on_slash = false, -- </ closing the tag is more annoying than useful
+      },
+    },
+  },
+
   -- Incremental selection, which `main` no longer provides. Kept because the
   -- master-branch config had it on <C-space>.
   {

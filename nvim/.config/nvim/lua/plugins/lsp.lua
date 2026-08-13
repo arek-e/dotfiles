@@ -86,7 +86,13 @@ return {
   {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
-    dependencies = { "mason-org/mason.nvim" },
+    dependencies = {
+      "mason-org/mason.nvim",
+      -- after/lsp/jsonls.lua already does pcall(require, "schemastore") and
+      -- degrades gracefully, so installing it is the whole integration: schema
+      -- validation and completion for package.json, tsconfig.json, biome.json.
+      { "b0o/SchemaStore.nvim", version = false },
+    },
     config = function()
       -- Diagnostic presentation
       vim.diagnostic.config({
@@ -109,9 +115,6 @@ return {
           },
         },
       })
-
-      -- Rounded borders for hover and signature help
-      vim.o.winborder = "rounded"
 
       -- Buffer-local keymaps, set only once a server actually attaches.
       -- grn, gra, grr, gri and gO are native 0.11 defaults, so they are not

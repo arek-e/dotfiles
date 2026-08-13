@@ -37,6 +37,15 @@ explorer (mini.files). What remains below is preference, not gaps.
 | `conform.nvim` + `stylua` | Formatting, the last real gap. oxfmt/biome/prettier chosen by `stop_after_first` over resolvable binaries; stylua finally enforces the `.stylua.toml` that had sat unused since the reset. |
 | `tiny-inline-diagnostic.nvim` | Replaces the built-in virtual_text, which appended whole messages to the line end and collided with code. `virtual_text = false` is set in lsp.lua so both do not draw at once. |
 
+## Added 2026-08-13 (second batch)
+
+| Plugin | Why |
+|---|---|
+| `SchemaStore.nvim` | Pure drop-in: `after/lsp/jsonls.lua` already required it and degraded gracefully. Installing it passes 1418 schemas to jsonls, so `package.json`, `tsconfig.json` and `biome.json` get validation and completion. |
+| `nvim-ts-autotag` | Auto close and rename JSX/HTML tag pairs. mini.pairs covers brackets and quotes; tags need the syntax tree. Uses its own `setup()`, not the deprecated `nvim-treesitter.configs` route. |
+| `todo-comments.nvim` | Highlights and searches TODO/FIX/HACK/NOTE. `<leader>st` searches, `]t`/`[t` navigate. |
+| `flash.nvim` | Jump to any on-screen position by label. Takes `s` and `S` from substitute-char and substitute-line; `cl` and `cc` do the same thing, which is the trade nearly every flash config makes. Also labels `f`/`F`/`t`/`T` without needing a key. |
+
 ## Added 2026-08-13
 
 | Plugin | Why |
@@ -53,12 +62,7 @@ explorer (mini.files). What remains below is preference, not gaps.
 |---|---|---|---|
 | 4 | `harpoon` | Pinned file slots 1–5. Genuinely different from a fuzzy finder. | Old binding was `<leader>A` to add, to avoid a Claude Code clash. |
 | 5 | `diffview.nvim` | `origin/main...HEAD` review view, file history. | Overlaps `:Gitsigns diffthis` for single files. |
-| 6 | `flash.nvim` | Fast on-screen jumps. | Clashed with Claude Code bindings before; check that. |
-| 7 | `todo-comments.nvim` | TODO/FIX highlighting and search. | Cheap, low risk. |
-| 8 | `nvim-ts-autotag` | Auto close/rename JSX and HTML tags. | Near-essential for React work. |
-| 9 | `SchemaStore.nvim` | JSON/YAML schema validation. | `after/lsp/jsonls.lua` **already tries to require it** and degrades gracefully, so this is a drop-in. |
-| 10 | `lualine.nvim` | Statusline. `laststatus=3` currently shows the plain one. | Old theme hardcoded tokyonight hex; needs regruvboxing. |
-| 11 | `nvim-treesitter-textobjects` | `af`/`if`/`ac` function and class textobjects. | Must also be pinned to `master`, same 0.12 trap as treesitter. |
+| 6 | `nvim-treesitter-textobjects` | `af`/`if`/`ac` function and class textobjects. | Pin `branch = "main"` to match nvim-treesitter, which now tracks `main`. The old note here said `master`, which was correct only while treesitter was on `master`. |
 
 ## Tier 3 — was in the old config, justify before restoring
 

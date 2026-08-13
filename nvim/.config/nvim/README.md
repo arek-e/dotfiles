@@ -26,6 +26,7 @@ lua/
     lualine.lua
     edgy.lua              split windows pinned to screen edges
     git.lua               gitsigns: signs, hunks, inline blame
+    editor.lua            todo-comments + flash
     icons.lua             mini.icons, eager (telescope/lualine need it early)
     lsp-ui.lua            glance (peek) + tiny-code-action (diff preview)
     markdown.lua          render-markdown
@@ -72,7 +73,7 @@ Three conventions keep this navigable:
 
 ## Plugins
 
-Thirty-one, of which twenty-six are declared and five are dependencies.
+Thirty-five, of which thirty are declared and five are dependencies.
 
 | Plugin | Why |
 |---|---|
@@ -102,6 +103,10 @@ Thirty-one, of which twenty-six are declared and five are dependencies.
 | `edgy.nvim` | Pins quickfix, help and terminal splits to screen edges |
 | `fidget.nvim` | LSP progress, so a slow server is visibly working |
 | `persistence.nvim` | Session restore, per directory and git branch |
+| `SchemaStore.nvim` | JSON schemas for jsonls |
+| `nvim-ts-autotag` | Auto close/rename JSX and HTML tags |
+| `todo-comments.nvim` | Highlight and search TODO/FIX |
+| `flash.nvim` | Jump to any on-screen position by label |
 | `incline.nvim` | Per-window filename label, top right |
 | `nvim-treesitter-context` | Pins the enclosing scope to the top of the window |
 | `glance.nvim` | Peek definitions/references without leaving the buffer |
@@ -251,6 +256,10 @@ Note that lualine creates its highlight groups on first *render*, so
 a real UI or the answer is meaningless.
 
 ## Gotchas worth knowing
+
+- **`flash` takes `s` and `S`**, which are Vim's substitute-character and
+  substitute-line. `cl` and `cc` are exact replacements. Deleting those two `keys`
+  entries still leaves flash labelling `f`/`F`/`t`/`T`, which needs no mapping.
 
 - **nvim-treesitter is on `branch = "main"`, and must be on 0.12.** The old
   `master` branch is locked upstream for 0.11 and genuinely breaks on 0.12: its
