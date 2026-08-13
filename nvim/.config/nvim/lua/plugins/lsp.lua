@@ -128,7 +128,10 @@ return {
           map("gy", vim.lsp.buf.type_definition, "Go to type definition")
           map("K", vim.lsp.buf.hover, "Hover documentation")
           map("<leader>cr", vim.lsp.buf.rename, "Rename symbol")
-          map("<leader>ca", vim.lsp.buf.code_action, "Code action", { "n", "v" })
+          -- <leader>ca is intentionally NOT mapped here. tiny-code-action owns
+          -- it (see plugins/lsp-ui.lua) and provides a diff preview; a
+          -- buffer-local mapping set here would take precedence over its global
+          -- one and silently win.
 
           -- Inlay hints, off by default, toggled per buffer
           local client = vim.lsp.get_client_by_id(event.data.client_id)

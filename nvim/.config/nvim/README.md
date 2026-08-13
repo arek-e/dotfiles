@@ -27,6 +27,7 @@ lua/
     edgy.lua              split windows pinned to screen edges
     git.lua               gitsigns: signs, hunks, inline blame
     icons.lua             mini.icons, eager (telescope/lualine need it early)
+    lsp-ui.lua            glance (peek) + tiny-code-action (diff preview)
     markdown.lua          render-markdown
     pairs.lua             mini.pairs
     snacks.lua            Start page, images, indent, notifier, input,
@@ -69,7 +70,7 @@ Three conventions keep this navigable:
 
 ## Plugins
 
-Twenty-two, of which nineteen are declared and three are dependencies.
+Twenty-four, of which twenty-one are declared and three are dependencies.
 
 | Plugin | Why |
 |---|---|
@@ -94,6 +95,8 @@ Twenty-two, of which nineteen are declared and three are dependencies.
 | `mini.pairs` | Autopairs for hand-typed brackets and quotes |
 | `gitsigns.nvim` | Git signs, hunk navigation, inline blame |
 | `edgy.nvim` | Pins quickfix, help and terminal splits to screen edges |
+| `glance.nvim` | Peek definitions/references without leaving the buffer |
+| `tiny-code-action.nvim` | Code actions with a delta diff preview |
 | `mini.icons` | Icons, and stands in for nvim-web-devicons via its shim |
 | `which-key.nvim` | Keymap discovery |
 
@@ -205,6 +208,12 @@ nvim                                    # lazy.nvim bootstraps and installs
 Leader is `Space`. `<leader>?` shows what is bound in the current buffer, and
 `<leader>sk` searches all keymaps — both are more trustworthy than a table in a
 README, which is why there is no exhaustive list here.
+
+Hover (`K`) needs no plugin: `vim.o.winborder` gives it a rounded border and
+render-markdown renders the float automatically via its default `buftype.nofile`
+override. `gp` / `gP` / `gR` / `gM` peek definitions, type definitions,
+references and implementations via glance. `gr` is deliberately left unmapped
+because it is the prefix for the native `gr*` family.
 
 The 0.11 native LSP defaults are in play: `grn` rename, `gra` code action,
 `grr` references, `gri` implementation, `gO` document symbols, `]d` / `[d`
