@@ -564,7 +564,7 @@ binding = "Unassigned"
 id = "switchWorkspaceSlot.1"
 
 [[hotkeys]]
-binding = "Control+Shift+1"
+binding = "Unassigned"
 id = "moveToWorkspaceSlot.1"
 
 [[hotkeys]]
@@ -572,7 +572,7 @@ binding = "Unassigned"
 id = "switchWorkspaceSlot.2"
 
 [[hotkeys]]
-binding = "Control+Shift+2"
+binding = "Unassigned"
 id = "moveToWorkspaceSlot.2"
 
 [[hotkeys]]
@@ -580,7 +580,7 @@ binding = "Unassigned"
 id = "switchWorkspaceSlot.3"
 
 [[hotkeys]]
-binding = "Control+Shift+3"
+binding = "Unassigned"
 id = "moveToWorkspaceSlot.3"
 
 [[hotkeys]]
@@ -588,7 +588,7 @@ binding = "Unassigned"
 id = "switchWorkspaceSlot.4"
 
 [[hotkeys]]
-binding = "Control+Shift+4"
+binding = "Unassigned"
 id = "moveToWorkspaceSlot.4"
 
 [[hotkeys]]
@@ -596,7 +596,7 @@ binding = "Unassigned"
 id = "switchWorkspaceSlot.5"
 
 [[hotkeys]]
-binding = "Control+Shift+5"
+binding = "Unassigned"
 id = "moveToWorkspaceSlot.5"
 
 [[hotkeys]]
@@ -604,7 +604,7 @@ binding = "Unassigned"
 id = "switchWorkspaceSlot.6"
 
 [[hotkeys]]
-binding = "Control+Shift+6"
+binding = "Unassigned"
 id = "moveToWorkspaceSlot.6"
 
 [[hotkeys]]
@@ -612,7 +612,7 @@ binding = "Unassigned"
 id = "switchWorkspaceSlot.7"
 
 [[hotkeys]]
-binding = "Control+Shift+7"
+binding = "Unassigned"
 id = "moveToWorkspaceSlot.7"
 
 [[hotkeys]]
@@ -620,7 +620,7 @@ binding = "Unassigned"
 id = "switchWorkspaceSlot.8"
 
 [[hotkeys]]
-binding = "Control+Shift+8"
+binding = "Unassigned"
 id = "moveToWorkspaceSlot.8"
 
 [[hotkeys]]
@@ -628,7 +628,7 @@ binding = "Unassigned"
 id = "switchWorkspaceSlot.9"
 
 [[hotkeys]]
-binding = "Control+Shift+9"
+binding = "Unassigned"
 id = "moveToWorkspaceSlot.9"
 
 [[hotkeys]]
@@ -1329,7 +1329,7 @@ type = "main"
 
 [[workspaces]]
 id = "454CECD4-5E9D-4ED1-95D7-979D48817F5F"
-layoutType = "niri"
+layoutType = "dwindle"
 name = "2"
 
 [workspaces.monitorAssignment]
