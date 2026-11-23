@@ -150,6 +150,7 @@ mkdir -p ~/.config
 stow_dirs=(
     "atuin"
     "ghostty"
+    "hammerspoon"
     "herdr"
     "neofetch"
     "nvim"
@@ -173,6 +174,12 @@ for dir in "${stow_dirs[@]}"; do
         print_success "$dir configured"
     fi
 done
+
+# OmniWM settings are copied, not linked, because the app rewrites them.
+if [ -d "omniwm" ]; then
+    print_step "Installing OmniWM settings..."
+    ./omniwm/setup.sh
+fi
 
 print_success "All dotfiles linked"
 

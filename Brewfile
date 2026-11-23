@@ -17,6 +17,8 @@ brew "stow"               # Dotfiles management
 # Terminal Emulator
 # ==============================================
 cask "ghostty"            # Fast, native terminal
+cask "omniwm"              # Niri-style tiling window manager
+cask "hammerspoon"         # Lua automation for global hotkeys
 
 # ==============================================
 # Productivity Apps
